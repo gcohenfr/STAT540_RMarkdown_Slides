@@ -1,0 +1,294 @@
+---
+title: "Statistical Methods for <br>High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>"
+subtitle: "<font color=red> Lecture 5 -- Two Group Comparisons </font> <br style=line-height:2><br> Gabriela Cohen Freue"
+date: "<font size=5> Other contributors: Jenny Bryan, Sara Mostafavi, Su-In Lee</font>"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+![Picture from Dr. Fowler, UW](L5_TwoGroupComp_files/statInference.png)
+### We want to understand a **population** (e.g., gene behaviour) but we can only study a <font color=red>**random sample**</font> from it.
+### <font size=5><p align=right> Picture from Dr. Fowler, UW </p></font>
+---
+
+# <center> Hypothesis Testing in Genomics
+![](L5_TwoGroupComp_files/paperRef.PNG)
+
+<big>
+
+<img width="300" style="padding:0 px; float:right" src="L5_TwoGroupComp_files/cellTypes.png">
+- Retina presents a model system for investigating **regulatory networks** underlying neuronal differentiation.
+
+- **Nrl** transcription factor is known to be important for Rod development
+
+- <font color="red">**What happens if you delete Nrl?**
+
+---
+
+# <center> Why a hypothesis test?
+<big>
+From paper: *". we hypothesized that Nrl is the ideal transcription factor to gain insights into gene expression changes ..."*
+
+> **Biological question:** Is the expression level of gene A affected by ablation of the Nrl gene in mice?
+
+**Experimental Design: <font color=red>we observe a random sample</font>**
+<br> (random sample of gene expressions from our experiment)
+
+
+
+<img width="350" style="padding:0 px; float:right" src="L5_TwoGroupComp_files/NrlKOmouse.png">
+
+<br> 4 Developmental stages
+<br> 2 genotypes: Wild type, NrlKO
+<br> 3-4 replicas for each combination
+
+### We can use **statistical inference** to better understand our biological question.
+---
+class: middle, center
+### Let's take a look at 4 genes as an example: **Irs4 and Nrl**
+
+### <font color="red"> Are these genes truly different in NrlKO compared to WT?</font>
+
+### We only observe a random sample.
+```{r, include=FALSE}
+library(lattice)
+library(latticeExtra)
+
+jCols <- c(x = "blue", y = "orange")
+trellis.par.set(superpose.symbol = list(col = jCols),
+                superpose.line = list(col = jCols))
+jCex <- 3 
+
+prDes <- readRDS("data/GSE4051_design.rds")
+str(prDes)
+
+prDat<-read.table("data/GSE4051_data.tsv",
+                      sep = "\t", header = T, row.names = 1)
+str(prDat, list.len = 10)
+
+miniDat <- as.vector(t(prDat[c("1422248_at", "1450946_at"), ]))
+miniDat <- data.frame(gene = rep(c("Irs4", "Nrl"), each = nrow(prDes)),
+                      gExp = miniDat)
+miniDat <- data.frame(prDes, miniDat) # ignore the warning about row names
+str(miniDat)
+```
+
+```{r echo=FALSE, fig.height=3.5, dev='svg'}
+stripplot(gType ~ gExp | gene, miniDat,
+          scales = list(x = list(relation = "free")),
+          groups = gType, auto.key = FALSE,
+          aspect = 1, layout = c(2, 1),
+          alpha = 0.4, pch = 16)
+```
+
+---
+
+# <center> Statistical Hypothesis
+<big>
+** Experimental Design:**
+  - 2 conditions: Wt *vs* NrlKO
+  - ranom sample: we observe the expression of many genes in all mice
+
+** Biological Hypothesis:** for some  genes, the expression levels are different in both conditions.
+
+** Statistical Hypotheses:** one gene at a time
+  - H<sub>0</sub> (null hypothesis): the expression level of gene A is the same.
+  - <font color="blue">H<sub>A</sub> (alternative hypothesis): the expression level of gene A is different.</font>
+---
+class: middle, center
+### <font color="red"> Are these genes truly different in NrlKO compared to WT?</font>
+
+### H<sub>0</sub>: the expression level of gene A is the same.
+
+### Is there **enough** evidence in the data to reject H<sub>0</sub>?
+
+```{r echo=FALSE, fig.height=3.5, dev='svg'}
+stripplot(gType ~ gExp | gene, miniDat,
+          scales = list(x = list(relation = "free")),
+          groups = gType, auto.key = FALSE,
+          aspect = 1, layout = c(2, 1),
+          alpha = 0.4, pch = 16)
+```
+
+---
+class: center, middle
+Empirical distributions are **based on DATA**
+```{r echo=FALSE, fig.height=3, dev='svg'}
+densityplot(~ gExp | gene, miniDat,
+            scales = list(x = list(relation = "free")),
+            groups = gType, auto.key = TRUE,
+            aspect = 0.5,
+            alpha = 0.4, pch = 16)
+```
+
+The true underlying distribution is **unknown**
+```{r echo=FALSE, fig.height=3, dev='svg'}
+stripplot(gType ~ gExp | gene, miniDat,
+          scales = list(x = list(relation = "free")),
+          groups = gType, auto.key = FALSE,
+          aspect = 0.5, layout = c(2, 1),
+          alpha = 0.4, pch = 16)
+```
+
+---
+
+# Slide 9
+
+---
+
+# <center> Notation
+
+<big>
+
+- ### Random variables (we can observe)
+
+$Y_i$ : expression of gene A in the WT <font color="red">sample</font> $i$
+
+$Z_i$: expression of gene A in NrlKO sample $i$
+
+$Y_1, Y_2,..., Y_{n_Y}$ : a <font color="green">random sample</font> of size $n_Y$
+
+$\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}$: sample mean of expression levels of gene A from WT mice
+
+- ### Population parameters (unknown)
+
+$\mu_Y = E[Y]$ : the (population) expected expression level of gene A in WT mice
+---
+class: middle
+### We observe... the difference between the **sample averages**!
+``` {r echo=FALSE, fig.height=2.5, dev='svg'}
+jFudge <- 0.35
+stripplot(gType ~ gExp | gene, miniDat,
+          grid = TRUE,
+          scales = list(x = list(relation = "free")),
+          groups = gType, jitter.data = TRUE,
+          aspect = 0.5, layout = c(2, 1),
+          alpha = 0.4, pch = 16,
+          panel = panel.superpose,
+          panel.groups = function(x, y, ..., group.number) {
+            yo <- group.number
+            panel.stripplot(x, y, ...)
+            theAvg <- mean(x)
+            panel.points(theAvg, y[1], pch = "|", cex = jCex,
+                         col = jCols[group.number])
+            jLab <- substitute(paste(bar(Z), " = ", foo),
+                        list(Z = c("Y", "Z")[group.number],
+                             foo = round(theAvg, 2)))
+            panel.text(x = mean(x), y = y[1] + jFudge,
+                       jLab)
+          })
+```
+
+```{r}
+(theAvgs <- with(miniDat,
+                 tapply(gExp, list(gType, gene), mean)))
+```
+
+```{r}
+(theDiff <- theAvgs["NrlKO", ] - theAvgs["wt", ])
+```
+
+---
+## Is this convincing evidence that $\mu_Y \neq \mu_Z$?
+``` {r echo=FALSE,fig.height=3, dev='svg'}
+jFudge <- 0.35
+stripplot(gType ~ gExp | gene, miniDat,
+          grid = TRUE,
+          scales = list(x = list(relation = "free")),
+          groups = gType, jitter.data = TRUE,
+          aspect = 0.5, layout = c(2, 1),
+          alpha = 0.4, pch = 16,
+          panel = panel.superpose,
+          panel.groups = function(x, y, ..., group.number) {
+            yo <- group.number
+            panel.stripplot(x, y, ...)
+            theAvg <- mean(x)
+            panel.points(theAvg, y[1], pch = "|", cex = jCex,
+                         col = jCols[group.number])
+            jLab <- substitute(paste(bar(Z), " = ", foo),
+                        list(Z = c("Y", "Z")[group.number],
+                             foo = round(theAvg, 2)))
+            panel.text(x = mean(x), y = y[1] + jFudge,
+                       jLab)
+          })
+```
+.pull-left[
+### $H_0 : \mu_Y = \mu_Z$
+### $H_A : \mu_Y \neq \mu_Z$
+]
+.pull-right[
+<center>
+### **Statistical Inference**
+### Sample estimates -> Population parameters
+]
+
+---
+## Is this convincing evidence that $\mu_Y \neq \mu_Z$?
+
+.center[artificial vs Nrl plot]
+
+<big>
+- The sample means by themselves are not enough to make conclusions about the population
+
+- What is a "large" difference? "Large" relative to what?
+---
+class: center, middle
+![](L5_TwoGroupComp_files/diffVariance.png)
+
+.pull-left[
+### What do we want to know to help us interpret the mean difference?
+]
+.pull-right[
+### $$\frac{\bar{Y}-\bar{Z}}{??}$$
+]
+---
+class: center
+# What do we want to know to help us interpret the mean difference?
+
+.pull-left[
+## "Large" relative to the observed variation
+]
+.pull-right[
+## $\frac{\bar{Y}-\bar{Z}}{\sqrt{V(\bar{Y}-\bar{Z})}}$
+]
+
+.center[artificial vs Nrl plot]
+---
+### Assuming that the random variables of each group are independent and identically distributed (iid):
+<big>
+  - $Y_1, Y_2,..., Y_{n_Y}$ are iid
+  - $Z_1, Z_2,..., Z_{n_Z}$ are iid
+  - $Y_i, Z_j$ are independent
+
+$$V(\bar{Z}-\bar{Y})=\frac{\sigma_Z^2}{n_Z}+\frac{\sigma_Y^2}{n_Y}$$
+
+### If we also assume equal population variances: $\sigma_Z^2=\sigma_Y^2=\sigma^2$
+$$V(\bar{Z}-\bar{Y})=\frac{\sigma_Z^2}{n_Z}+\frac{\sigma_Y^2}{n_Y}$$
+$$=\sigma^2\left[\frac{1}{n_Z}+\frac{1}{n_Y}\right]$$
+---
+### ... the sample variances (combined, somehow)!
+```{r echo=FALSE, fig.height=3.5, dev='svg'}
+stripplot(gType ~ gExp | gene, miniDat,
+          scales = list(x = list(relation = "free")),
+          groups = gType, auto.key = FALSE,
+          aspect = 0.5, layout = c(2, 1),
+          alpha = 0.4, pch = 16)
+```
+
+```
+(theVars <- with(miniDat,
+                 tapply(gExp, list(gType, gene), var)))
+```
+.pull-left[
+```{r echo=FALSE}
+(theVars <- with(miniDat,
+                 tapply(gExp, list(gType, gene), var)))
+```
+]
+.pull-right[
+$$S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2$$
+]
