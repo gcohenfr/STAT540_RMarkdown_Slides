@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Statistical Methods for  High Dimensional Biology STAT/BIOF/GSAT 540</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Statistical Methods for <br>High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>
+## <font color=red> Lecture 5 – Two Group Comparisons </font> <br style=line-height:2><br> Gabriela Cohen Freue
+### <font size=5> Other contributors: Jenny Bryan, Sara Mostafavi, Su-In Lee</font>
+
+---
+
+![Picture from Dr. Fowler, UW](L5_TwoGroupComp_files/statInference.png)
+### We want to understand a **population** (e.g., gene behaviour) but we can only study a &lt;font color=red&gt;**random sample**&lt;/font&gt; from it.
+### &lt;font size=5&gt;&lt;p align=right&gt; Picture from Dr. Fowler, UW &lt;/p&gt;&lt;/font&gt;
+---
+
+# &lt;center&gt; Hypothesis Testing in Genomics
+![](L5_TwoGroupComp_files/paperRef.PNG)
+
+&lt;big&gt;
+
+&lt;img width="300" style="padding:0 px; float:right" src="L5_TwoGroupComp_files/cellTypes.png"&gt;
+- Retina presents a model system for investigating **regulatory networks** underlying neuronal differentiation.
+
+- **Nrl** transcription factor is known to be important for Rod development
+
+- &lt;font color="red"&gt;**What happens if you delete Nrl?**
+
+---
+
+# &lt;center&gt; Why a hypothesis test?
+&lt;big&gt;
+From paper: *". we hypothesized that Nrl is the ideal transcription factor to gain insights into gene expression changes ..."*
+
+&gt; **Biological question:** Is the expression level of gene A affected by ablation of the Nrl gene in mice?
+
+**Experimental Design: &lt;font color=red&gt;we observe a random sample&lt;/font&gt;**
+&lt;br&gt; (random sample of gene expressions from our experiment)
+
+
+
+&lt;img width="350" style="padding:0 px; float:right" src="L5_TwoGroupComp_files/NrlKOmouse.png"&gt;
+
+&lt;br&gt; 4 Developmental stages
+&lt;br&gt; 2 genotypes: Wild type, NrlKO
+&lt;br&gt; 3-4 replicas for each combination
+
+### We can use **statistical inference** to better understand our biological question.
+---
+class: middle, center
+### Let's take a look at 4 genes as an example: **Irs4 and Nrl**
+
+### &lt;font color="red"&gt; Are these genes truly different in NrlKO compared to WT?&lt;/font&gt;
+
+### We only observe a random sample.
+
+
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-2-1.svg)&lt;!-- --&gt;
+
+---
+
+# &lt;center&gt; Statistical Hypothesis
+&lt;big&gt;
+** Experimental Design:**
+  - 2 conditions: Wt *vs* NrlKO
+  - ranom sample: we observe the expression of many genes in all mice
+
+** Biological Hypothesis:** for some  genes, the expression levels are different in both conditions.
+
+** Statistical Hypotheses:** one gene at a time
+  - H&lt;sub&gt;0&lt;/sub&gt; (null hypothesis): the expression level of gene A is the same.
+  - &lt;font color="blue"&gt;H&lt;sub&gt;A&lt;/sub&gt; (alternative hypothesis): the expression level of gene A is different.&lt;/font&gt;
+---
+class: middle, center
+### &lt;font color="red"&gt; Are these genes truly different in NrlKO compared to WT?&lt;/font&gt;
+
+### H&lt;sub&gt;0&lt;/sub&gt;: the expression level of gene A is the same.
+
+### Is there **enough** evidence in the data to reject H&lt;sub&gt;0&lt;/sub&gt;?
+
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-3-1.svg)&lt;!-- --&gt;
+
+---
+class: center, middle
+Empirical distributions are **based on DATA**
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-4-1.svg)&lt;!-- --&gt;
+
+The true underlying distribution is **unknown**
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-5-1.svg)&lt;!-- --&gt;
+
+---
+
+# Slide 9
+
+---
+
+# &lt;center&gt; Notation
+
+&lt;big&gt;
+
+- ### Random variables (we can observe)
+
+`\(Y_i\)` : expression of gene A in the WT &lt;font color="red"&gt;sample&lt;/font&gt; `\(i\)`
+
+`\(Z_i\)`: expression of gene A in NrlKO sample `\(i\)`
+
+`\(Y_1, Y_2,..., Y_{n_Y}\)` : a &lt;font color="green"&gt;random sample&lt;/font&gt; of size `\(n_Y\)`
+
+`\(\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}\)`: sample mean of expression levels of gene A from WT mice
+
+- ### Population parameters (unknown)
+
+`\(\mu_Y = E[Y]\)` : the (population) expected expression level of gene A in WT mice
+---
+class: middle
+### We observe... the difference between the **sample averages**!
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-6-1.svg)&lt;!-- --&gt;
+
+
+```r
+(theAvgs &lt;- with(miniDat,
+                 tapply(gExp, list(gType, gene), mean)))
+```
+
+```
+##           Irs4       Nrl
+## wt    7.765750 11.244200
+## NrlKO 7.739684  6.089632
+```
+
+
+```r
+(theDiff &lt;- theAvgs["NrlKO", ] - theAvgs["wt", ])
+```
+
+```
+##        Irs4         Nrl 
+## -0.02606579 -5.15456842
+```
+
+---
+## Is this convincing evidence that `\(\mu_Y \neq \mu_Z\)`?
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-9-1.svg)&lt;!-- --&gt;
+.pull-left[
+### `\(H_0 : \mu_Y = \mu_Z\)`
+### `\(H_A : \mu_Y \neq \mu_Z\)`
+]
+.pull-right[
+&lt;center&gt;
+### **Statistical Inference**
+### Sample estimates -&gt; Population parameters
+]
+
+---
+## Is this convincing evidence that `\(\mu_Y \neq \mu_Z\)`?
+
+.center[artificial vs Nrl plot]
+
+&lt;big&gt;
+- The sample means by themselves are not enough to make conclusions about the population
+
+- What is a "large" difference? "Large" relative to what?
+---
+class: center, middle
+![](L5_TwoGroupComp_files/diffVariance.png)
+
+.pull-left[
+### What do we want to know to help us interpret the mean difference?
+]
+.pull-right[
+### `$$\frac{\bar{Y}-\bar{Z}}{??}$$`
+]
+---
+class: center
+# What do we want to know to help us interpret the mean difference?
+
+.pull-left[
+## "Large" relative to the observed variation
+]
+.pull-right[
+## `\(\frac{\bar{Y}-\bar{Z}}{\sqrt{V(\bar{Y}-\bar{Z})}}\)`
+]
+
+.center[artificial vs Nrl plot]
+---
+### Assuming that the random variables of each group are independent and identically distributed (iid):
+&lt;big&gt;
+  - `\(Y_1, Y_2,..., Y_{n_Y}\)` are iid
+  - `\(Z_1, Z_2,..., Z_{n_Z}\)` are iid
+  - `\(Y_i, Z_j\)` are independent
+
+`$$V(\bar{Z}-\bar{Y})=\frac{\sigma_Z^2}{n_Z}+\frac{\sigma_Y^2}{n_Y}$$`
+
+### If we also assume equal population variances: `\(\sigma_Z^2=\sigma_Y^2=\sigma^2\)`
+`$$V(\bar{Z}-\bar{Y})=\frac{\sigma_Z^2}{n_Z}+\frac{\sigma_Y^2}{n_Y}$$`
+`$$=\sigma^2\left[\frac{1}{n_Z}+\frac{1}{n_Y}\right]$$`
+---
+### ... the sample variances (combined, somehow)!
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-10-1.svg)&lt;!-- --&gt;
+
+```
+(theVars &lt;- with(miniDat,
+                 tapply(gExp, list(gType, gene), var)))
+```
+.pull-left[
+
+```
+##             Irs4       Nrl
+## wt    0.02403557 1.2243331
+## NrlKO 0.02332078 0.5942802
+```
+]
+.pull-right[
+`$$S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2$$`
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
