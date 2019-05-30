@@ -441,7 +441,7 @@ class: middle
 
 ## Assuming that H<sub>0</sub> is true:
 ```{r}
-tstStat <- theDiff / sqrt(s2Diff)
+(tstStat <- theDiff / sqrt(s2Diff))
 ```
 <center><img src="L5_TwoGroupComp_files/nDist.png" width=400 ></center>
 
