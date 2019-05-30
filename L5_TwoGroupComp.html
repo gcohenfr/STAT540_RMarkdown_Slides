@@ -136,16 +136,26 @@ theAvgs &lt;- with(miniDat,
                  tapply(gExp, list(gType, gene), mean))
 ```
 
+```
+##           Irs4       Nrl
+## wt    7.765750 11.244200
+## NrlKO 7.739684  6.089632
+```
+
 
 ```r
 theDiff &lt;- theAvgs["NrlKO", ] - theAvgs["wt", ]
 ```
 
+```
+##        Irs4         Nrl 
+## -0.02606579 -5.15456842
+```
 ---
 class: middle
 
 ## Is this convincing evidence that `\(\mu_Y \neq \mu_Z\)`?
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-9-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-11-1.svg)&lt;!-- --&gt;
 .pull-left[
 ### `\(H_0 : \mu_Y = \mu_Z\)`
 ### `\(H_A : \mu_Y \neq \mu_Z\)`
@@ -211,7 +221,7 @@ If we also assume equal population variances:&lt;/big&gt; `\(\sigma_Z^2=\sigma_Y
 class: middle
 
 ### ...using the sample variances (combined, somehow)!
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-10-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-12-1.svg)&lt;!-- --&gt;
 
 ```
 (theVars &lt;- with(miniDat,
@@ -247,12 +257,8 @@ Assuming &lt;b&gt;unequal&lt;/b&gt; variance of Y's and Z's
 class: middle
 
 
-.pull-left[
-`$$T=\frac{\bar{Z}_n-\bar{Y}_n}{{\hat{\sigma}}_{_{Z{n}-Y{n}}}}$$`
-]
-.pull-right[
-## &lt;u&gt;*T* &amp;nbsp;is a test statistic&lt;/u&gt;
-]
+&lt;center&gt;*T*&amp;nbsp; is a test statistic:&amp;nbsp; `\(T=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}\)`
+&lt;/center&gt;
 Assuming equal variances:
 
 ```r

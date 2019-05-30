@@ -167,7 +167,7 @@ $\mu_Y = E[Y]$ : the (population) expected expression level of gene A in WT mice
 class: middle
 
 ### We observe... the difference between the **sample averages**!
-``` {r echo=FALSE, fig.height=2.5, dev='svg'}
+``` {r echo=FALSE, fig.height=2.25, dev='svg'}
 jFudge <- 0.35
 stripplot(gType ~ gExp | gene, miniDat,
           grid = TRUE,
@@ -194,11 +194,16 @@ stripplot(gType ~ gExp | gene, miniDat,
 theAvgs <- with(miniDat,
                  tapply(gExp, list(gType, gene), mean))
 ```
+```{r, echo=FALSE}
+theAvgs
+```
 
 ```{r}
 theDiff <- theAvgs["NrlKO", ] - theAvgs["wt", ]
 ```
-
+```{r, echo=FALSE}
+theDiff
+```
 ---
 class: middle
 
@@ -369,12 +374,8 @@ by(miniDat, miniDat$gene, function(theDat) {
   t.test(gExp ~ gType, theDat, var.equal = TRUE)
 })
 ```
-.pull-left[
-$$T=\frac{\bar{Z}_n-\bar{Y}_n}{{\hat{\sigma}}_{_{Z{n}-Y{n}}}}$$
-]
-.pull-right[
-## <u>*T* &nbsp;is a test statistic</u>
-]
+<center>*T*&nbsp; is a test statistic:&nbsp; $T=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}$
+</center>
 Assuming equal variances:
 ```{r}
 tstStat <- theDiff / sqrt(s2Diff)
