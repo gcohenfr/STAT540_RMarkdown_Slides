@@ -11,6 +11,7 @@ output:
       countIncrementalSlides: false
 ---
 class: middle
+
 ![Picture from Dr. Fowler, UW](L5_TwoGroupComp_files/statInference.png)
 ### We want to understand a **population** (e.g., gene behaviour) but we can only study a <font color=red>**random sample**</font> from it.
 ### <font size=5><p align=right> Picture from Dr. Fowler, UW </p></font>
@@ -30,6 +31,7 @@ class: middle
 
 ---
 class: middle
+
 # <center> Why a hypothesis test?
 <big>
 From paper: *". we hypothesized that Nrl is the ideal transcription factor to gain insights into gene expression changes ..."*
@@ -88,6 +90,7 @@ stripplot(gType ~ gExp | gene, miniDat,
 
 ---
 class: middle
+
 # <center> Statistical Hypothesis
 <big>
 ** Experimental Design:**
@@ -117,6 +120,7 @@ stripplot(gType ~ gExp | gene, miniDat,
 
 ---
 class: center, middle
+
 Empirical distributions are **based on DATA**
 ```{r echo=FALSE, fig.height=3, dev='svg'}
 densityplot(~ gExp | gene, miniDat,
@@ -141,6 +145,7 @@ stripplot(gType ~ gExp | gene, miniDat,
 
 ---
 class: middle
+
 # <center> Notation
 
 <big>
@@ -160,6 +165,7 @@ $\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}$: sample mean of expression levels of g
 $\mu_Y = E[Y]$ : the (population) expected expression level of gene A in WT mice
 ---
 class: middle
+
 ### We observe... the difference between the **sample averages**!
 ``` {r echo=FALSE, fig.height=2.5, dev='svg'}
 jFudge <- 0.35
@@ -185,16 +191,17 @@ stripplot(gType ~ gExp | gene, miniDat,
 ```
 
 ```{r}
-(theAvgs <- with(miniDat,
-                 tapply(gExp, list(gType, gene), mean)))
+theAvgs <- with(miniDat,
+                 tapply(gExp, list(gType, gene), mean))
 ```
 
 ```{r}
-(theDiff <- theAvgs["NrlKO", ] - theAvgs["wt", ])
+theDiff <- theAvgs["NrlKO", ] - theAvgs["wt", ]
 ```
 
 ---
 class: middle
+
 ## Is this convincing evidence that $\mu_Y \neq \mu_Z$?
 ``` {r echo=FALSE,fig.height=3, dev='svg'}
 jFudge <- 0.35
@@ -230,6 +237,7 @@ stripplot(gType ~ gExp | gene, miniDat,
 
 ---
 class: middle
+
 ## Is this convincing evidence that $\mu_Y \neq \mu_Z$?
 
 .center[
@@ -242,6 +250,7 @@ class: middle
 - What is a "large" difference? "Large" relative to what?
 ---
 class: center, middle
+
 ![](L5_TwoGroupComp_files/diffVariance.png)
 
 .pull-left[
@@ -266,6 +275,7 @@ class: center, middle
 ]
 ---
 class: middle
+
 ### Assuming that the random variables of each group are independent and identically distributed (iid):
 - $Y_1, Y_2,..., Y_{n_Y}$ are iid
 - $Z_1, Z_2,..., Z_{n_Z}$ are iid
@@ -278,6 +288,7 @@ $$V(\bar{Z}-\bar{Y})=\frac{\sigma_Z^2}{n_Z}+\frac{\sigma_Y^2}{n_Y}=\sigma^2\left
 ### But how can we calculate population variance $\sigma$ if it is **unknown**?
 ---
 class: middle
+
 ### ...using the sample variances (combined, somehow)!
 ```{r echo=FALSE, fig.height=3.5, dev='svg'}
 stripplot(gType ~ gExp | gene, miniDat,
@@ -302,6 +313,7 @@ $$S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2$$
 ]
 ---
 class: middle
+
 ## Plug these sample variances into your chosen formula for the variance of the difference of sample means.
 
 Assuming <b>equal</b> variance of Y's and Z's
@@ -316,6 +328,7 @@ $$\hat{V}(\bar{Z_n}-\bar{Y_n})=\hat{\sigma}_{\bar{Z}_n-\bar{Y}_n}^2=\frac{S_Y^2}
 
 ---
 class: middle
+
 ```{r, include=FALSE}
 ## compute difference of sample averages
 (theAvgs <- with(miniDat,
@@ -359,20 +372,23 @@ by(miniDat, miniDat$gene, function(theDat) {
 .pull-left[
 $$T=\frac{\bar{Z}_n-\bar{Y}_n}{{\hat{\sigma}}_{_{Z{n}-Y{n}}}}$$
 ]
-
 .pull-right[
 ## <u>*T* &nbsp;is a test statistic</u>
 ]
-
 Assuming equal variances:
 ```{r}
 tstStat <- theDiff / sqrt(s2Diff)
+```
+```{r, echo=FALSE}
+tstStat
 ```
 Without assuming equal variances:
 ```{r}
 welchStat <- theDiff / sqrt(s2DiffWelch)
 ```
-
+```{r, echo=FALSE}
+welchStat
+```
 ### Now we can we say the observed differences are 'big'?
 
 The difference is about half a standard deviation for Irs4 and ~16 standard deviations for Nrl.
@@ -381,6 +397,7 @@ I predict we will conclude that true means are same for Irs and different for Nr
 
 ---
 class: middle
+
 ## The test statistic *t* &nbsp; is a <font color=red>random variable</font> because it's based on our random sample.
 
 ### We need a measure of its uncertainty to determine how big/small T is:
@@ -390,6 +407,7 @@ class: middle
 ### However, this is unknown to us so we need to **make more assumptions**.
 ---
 class: middle
+
 ## Theory now tells us specific **null distributions** for this test statistic, depending on your assumptions.
 
 > ### Willing to assume that F and G are normal distributions?
@@ -408,15 +426,18 @@ $$T\sim t_{<something\,ugly>}$$
 Then go right ahead and use the t-distribution above or even a normal distribution as a decent approximation.
 
 ---
+class: middle
+
 ## Student's t-distribution
 ### Recall that *T*&nbsp; is a **random variable**. Under certain assumptions, we can prove that *T*&nbsp; follows a **t-distribution**.
 
-<center><img src="L5_TwoGroupComp_files/stuTDist.png" width="550">
+<center><img src="L5_TwoGroupComp_files/stuTDist.png" width="400">
 
 where df = degrees of freedom.
 
 ---
 class: middle
+
 ## Assuming that H<sub>0</sub> is true:
 ```{r}
 tstStat <- theDiff / sqrt(s2Diff)
@@ -433,6 +454,7 @@ We see that probability of seeing a test statistic as extreme that observed (T =
 
 ---
 class: middle
+
 # Hypothesis testing
 
 ### 1. Define a **test statistic** (*T*&nbsp;).
@@ -442,6 +464,7 @@ class: middle
 
 ---
 class: middle
+
 # What is a p-value?
 <big>
 > Likelihood of obtaining a test statistic at least <font color=green> as extreme as the one observed</font>, given that the null hypothesis is true (we are making a conditional p-value statement)
@@ -474,12 +497,14 @@ class: middle
 
 ---
 class: middle
+
 # Errors in hypothesis testing
 
 <center>![](L5_TwoGroupComp_files/hypError.png)
 
 ---
 class: middle
+
 <big>
 What if you don't wish to assume the underlying data is normally distributed AND you aren't sure your samples are large enough to invoke CLT?
 </big>
@@ -496,6 +521,7 @@ Alternatively, there are *non-parametric* tests that are available here:
 
 ---
 class: middle
+
 # Wilcoxon rank sum test
 
 <big>
@@ -513,6 +539,7 @@ Null distribution of such statistics can be worked out or approximated.
 
 ---
 class: middle
+
 # Kolmogorov-Smirnov test (two sample)
 
 <big>
@@ -536,6 +563,7 @@ Null distribution does not depend on F, G (!)
 
 ---
 class: middle
+
 # Discussion and questions ...
 <big>
 
