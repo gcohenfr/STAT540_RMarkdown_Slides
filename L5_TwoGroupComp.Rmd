@@ -140,10 +140,6 @@ stripplot(gType ~ gExp | gene, miniDat,
 ```
 
 ---
-
-# Slide 9 -> Toss or keep?
-
----
 class: middle
 
 # <center> Notation
@@ -450,9 +446,9 @@ We see that probability of seeing a test statistic as extreme that observed (T =
 ### <center><font color=red>Thus, we don't have *enough*&nbsp; evidence to reject H<sub>0</sub>!
 
 ---
+class: center
 
-# Slide 24 -> Report
-
+![](L5_TwoGroupComp_files/slide23.png)
 ---
 class: middle
 
@@ -536,7 +532,7 @@ Null distribution of such statistics can be worked out or approximated.
 
 ---
 
-# Slide 32 -> Report
+![](L5_TwoGroupComp_files/slide32.png)
 
 ---
 class: middle
@@ -560,7 +556,7 @@ Null distribution does not depend on F, G (!)
 
 ---
 
-# Slide 34 -> Report
+![](L5_TwoGroupComp_files/slide34.png)
 
 ---
 class: middle
