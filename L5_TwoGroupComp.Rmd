@@ -58,6 +58,11 @@ class: middle, center
 
 ### We only observe a random sample.
 ```{r, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+library(grid)
+library(gridExtra)
 library(lattice)
 library(latticeExtra)
 
@@ -81,11 +86,24 @@ str(miniDat)
 ```
 
 ```{r echo=FALSE, fig.height=3.5, dev='svg'}
-stripplot(gType ~ gExp | gene, miniDat,
-          scales = list(x = list(relation = "free")),
-          groups = gType, auto.key = FALSE,
-          aspect = 1, layout = c(2, 1),
-          alpha = 0.4, pch = 16)
+irsDat <- filter(miniDat, gene == "Irs4")
+nrlDat <- filter(miniDat, gene == "Nrl")
+
+irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "Irs4 Gene Expression") +
+             theme(legend.position = "none") +
+             xlim(5, 15)
+
+nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "Nrl Gene Expression") +
+             theme(legend.position = "none") +
+             xlim(5, 15)
+
+options(repr.plot.width=8, repr.plot.height=5)
+
+grid.arrange(irsLim, nrlLim, ncol = 1)
 ```
 
 ---
@@ -111,32 +129,69 @@ class: middle, center
 ### Is there **enough** evidence in the data to reject H<sub>0</sub>?
 
 ```{r echo=FALSE, fig.height=3.5, dev='svg'}
-stripplot(gType ~ gExp | gene, miniDat,
-          scales = list(x = list(relation = "free")),
-          groups = gType, auto.key = FALSE,
-          aspect = 1, layout = c(2, 1),
-          alpha = 0.4, pch = 16)
+irsDat <- filter(miniDat, gene == "Irs4")
+nrlDat <- filter(miniDat, gene == "Nrl")
+
+irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "Irs4 Gene Expression") +
+             theme(legend.position = "none") +
+             xlim(5, 15)
+
+nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "Nrl Gene Expression") +
+             theme(legend.position = "none") +
+             xlim(5, 15)
+
+options(repr.plot.width=8, repr.plot.height=5)
+
+grid.arrange(irsLim, nrlLim, ncol = 1)
 ```
 
 ---
 class: center, middle
 
-Empirical distributions are **based on DATA**
-```{r echo=FALSE, fig.height=3, dev='svg'}
-densityplot(~ gExp | gene, miniDat,
-            scales = list(x = list(relation = "free")),
-            groups = gType, auto.key = TRUE,
-            aspect = 0.5,
-            alpha = 0.4, pch = 16)
+**Empirical distributions are based on DATA**
+```{r echo=FALSE, fig.height=2.5, dev='svg'}
+irsDens <- ggplot(irsDat, aes(x = gExp)) + 
+             geom_density(aes(fill = gType, alpha = I(0.5))) +
+             labs(title = "Irs4 Gene Expression") +
+             theme(legend.position = "none") + 
+             ylim(0, 3)
+
+nrlDens <- ggplot(nrlDat, aes(x = gExp)) + 
+             geom_density(aes(fill = gType, alpha = I(0.5))) +
+             labs(title = "Nrl Gene Expression") +
+             theme(legend.position = "none") + 
+             ylim(0, 3)
+
+# Combine plots together
+options(repr.plot.width=8, repr.plot.height=5)
+
+grid.arrange(irsDens, nrlDens, nrow = 1)
 ```
 
-The true underlying distribution is **unknown**
+**The true underlying distribution is unknown**
 ```{r echo=FALSE, fig.height=3, dev='svg'}
-stripplot(gType ~ gExp | gene, miniDat,
-          scales = list(x = list(relation = "free")),
-          groups = gType, auto.key = FALSE,
-          aspect = 0.5, layout = c(2, 1),
-          alpha = 0.4, pch = 16)
+irsDat <- filter(miniDat, gene == "Irs4")
+nrlDat <- filter(miniDat, gene == "Nrl")
+
+irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "Irs4 Gene Expression") +
+             theme(legend.position = "none") +
+             xlim(5, 15)
+
+nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "Nrl Gene Expression") +
+             theme(legend.position = "none") +
+             xlim(5, 15)
+
+options(repr.plot.width=8, repr.plot.height=5)
+
+grid.arrange(irsLim, nrlLim, ncol = 1)
 ```
 
 ---
@@ -164,26 +219,22 @@ class: middle
 
 ### We observe... the difference between the **sample averages**!
 ``` {r echo=FALSE, fig.height=2.25, dev='svg'}
-jFudge <- 0.35
-stripplot(gType ~ gExp | gene, miniDat,
-          grid = TRUE,
-          scales = list(x = list(relation = "free")),
-          groups = gType, jitter.data = TRUE,
-          aspect = 0.5, layout = c(2, 1),
-          alpha = 0.4, pch = 16,
-          panel = panel.superpose,
-          panel.groups = function(x, y, ..., group.number) {
-            yo <- group.number
-            panel.stripplot(x, y, ...)
-            theAvg <- mean(x)
-            panel.points(theAvg, y[1], pch = "|", cex = jCex,
-                         col = jCols[group.number])
-            jLab <- substitute(paste(bar(Z), " = ", foo),
-                        list(Z = c("Y", "Z")[group.number],
-                             foo = round(theAvg, 2)))
-            panel.text(x = mean(x), y = y[1] + jFudge,
-                       jLab)
-          })
+irsBox <- ggplot(irsDat, aes(y = gExp, x = gType)) + 
+             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
+             labs(title = "Irs4 Gene Expression") +
+             theme(legend.position = "none") +
+             coord_flip()
+
+nrlBox <- ggplot(nrlDat, aes(y = gExp, x = gType)) + 
+             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
+             labs(title = "Nrl Gene Expression") +
+             theme(legend.position = "none") +
+             coord_flip()
+
+# Combine plots together
+options(repr.plot.width=8, repr.plot.height = 3)
+
+grid.arrange(irsBox, nrlBox, nrow = 1)
 ```
 
 ```{r}
@@ -191,40 +242,36 @@ theAvgs <- with(miniDat,
                  tapply(gExp, list(gType, gene), mean))
 ```
 ```{r, echo=FALSE}
-theAvgs
+round(theAvgs, 3)
 ```
 
 ```{r}
 theDiff <- theAvgs["NrlKO", ] - theAvgs["wt", ]
 ```
 ```{r, echo=FALSE}
-theDiff
+round(theDiff, 3)
 ```
 ---
 class: middle
 
 ## Is this convincing evidence that $\mu_Y \neq \mu_Z$?
 ``` {r echo=FALSE,fig.height=3, dev='svg'}
-jFudge <- 0.35
-stripplot(gType ~ gExp | gene, miniDat,
-          grid = TRUE,
-          scales = list(x = list(relation = "free")),
-          groups = gType, jitter.data = TRUE,
-          aspect = 0.5, layout = c(2, 1),
-          alpha = 0.4, pch = 16,
-          panel = panel.superpose,
-          panel.groups = function(x, y, ..., group.number) {
-            yo <- group.number
-            panel.stripplot(x, y, ...)
-            theAvg <- mean(x)
-            panel.points(theAvg, y[1], pch = "|", cex = jCex,
-                         col = jCols[group.number])
-            jLab <- substitute(paste(bar(Z), " = ", foo),
-                        list(Z = c("Y", "Z")[group.number],
-                             foo = round(theAvg, 2)))
-            panel.text(x = mean(x), y = y[1] + jFudge,
-                       jLab)
-          })
+irsBox <- ggplot(irsDat, aes(y = gExp, x = gType)) + 
+             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
+             labs(title = "Irs4 Gene Expression") +
+             theme(legend.position = "none") +
+             coord_flip()
+
+nrlBox <- ggplot(nrlDat, aes(y = gExp, x = gType)) + 
+             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
+             labs(title = "Nrl Gene Expression") +
+             theme(legend.position = "none") +
+             coord_flip()
+
+# Combine plots together
+options(repr.plot.width=8, repr.plot.height = 3)
+
+grid.arrange(irsBox, nrlBox, nrow = 1)
 ```
 .pull-left[
 ### $H_0 : \mu_Y = \mu_Z$
@@ -292,21 +339,31 @@ class: middle
 
 ### ...using the sample variances (combined, somehow)!
 ```{r echo=FALSE, fig.height=3.5, dev='svg'}
-stripplot(gType ~ gExp | gene, miniDat,
-          scales = list(x = list(relation = "free")),
-          groups = gType, auto.key = FALSE,
-          aspect = 0.5, layout = c(2, 1),
-          alpha = 0.4, pch = 16)
+irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "Irs4 Gene Expression") +
+             theme(legend.position = "none") +
+             xlim(5, 15)
+
+nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "Nrl Gene Expression") +
+             theme(legend.position = "none") +
+             xlim(5, 15)
+
+options(repr.plot.width=8, repr.plot.height=5)
+
+grid.arrange(irsLim, nrlLim, ncol = 1)
 ```
 
-```
-(theVars <- with(miniDat,
-                 tapply(gExp, list(gType, gene), var)))
+``` {r}
+theVars <- with(miniDat,
+                 tapply(gExp, list(gType, gene), var))
 ```
 .pull-left[
-```{r echo=FALSE}
-(theVars <- with(miniDat,
-                 tapply(gExp, list(gType, gene), var)))
+
+```{r, echo = FALSE}
+round(theVars, 3)
 ```
 ]
 .pull-right[
@@ -315,7 +372,8 @@ $$S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2$$
 ---
 class: middle
 
-## Plug these sample variances into your chosen formula for the variance of the difference of sample means.
+## Plug these sample variances into your chosen formula for the variance of the difference of sample means.xiv
+
 
 Assuming <b>equal</b> variance of Y's and Z's
 
@@ -377,14 +435,14 @@ Assuming equal variances:
 tstStat <- theDiff / sqrt(s2Diff)
 ```
 ```{r, echo=FALSE}
-tstStat
+round(tstStat, 3)
 ```
 Without assuming equal variances:
 ```{r}
 welchStat <- theDiff / sqrt(s2DiffWelch)
 ```
 ```{r, echo=FALSE}
-welchStat
+round(welchStat, 3)
 ```
 ### Now we can we say the observed differences are 'big'?
 
@@ -437,7 +495,10 @@ class: middle
 
 ## Assuming that H<sub>0</sub> is true:
 ```{r}
-(tstStat <- theDiff / sqrt(s2Diff))
+tstStat <- theDiff / sqrt(s2Diff)
+```
+```{r, echo=FALSE}
+round(tstStat, 3)
 ```
 <center><img src="L5_TwoGroupComp_files/nDist.png" width=400 ></center>
 

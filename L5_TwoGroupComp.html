@@ -94,10 +94,10 @@ class: middle, center
 ---
 class: center, middle
 
-Empirical distributions are **based on DATA**
+**Empirical distributions are based on DATA**
 ![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-4-1.svg)&lt;!-- --&gt;
 
-The true underlying distribution is **unknown**
+**The true underlying distribution is unknown**
 ![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-5-1.svg)&lt;!-- --&gt;
 
 ---
@@ -133,9 +133,9 @@ theAvgs &lt;- with(miniDat,
 ```
 
 ```
-##           Irs4       Nrl
-## wt    7.765750 11.244200
-## NrlKO 7.739684  6.089632
+##        Irs4    Nrl
+## wt    7.766 11.244
+## NrlKO 7.740  6.090
 ```
 
 
@@ -144,8 +144,8 @@ theDiff &lt;- theAvgs["NrlKO", ] - theAvgs["wt", ]
 ```
 
 ```
-##        Irs4         Nrl 
-## -0.02606579 -5.15456842
+##   Irs4    Nrl 
+## -0.026 -5.155
 ```
 ---
 class: middle
@@ -219,16 +219,18 @@ class: middle
 ### ...using the sample variances (combined, somehow)!
 ![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-12-1.svg)&lt;!-- --&gt;
 
-```
-(theVars &lt;- with(miniDat,
-                 tapply(gExp, list(gType, gene), var)))
+
+```r
+theVars &lt;- with(miniDat,
+                 tapply(gExp, list(gType, gene), var))
 ```
 .pull-left[
 
+
 ```
-##             Irs4       Nrl
-## wt    0.02403557 1.2243331
-## NrlKO 0.02332078 0.5942802
+##        Irs4   Nrl
+## wt    0.024 1.224
+## NrlKO 0.023 0.594
 ```
 ]
 .pull-right[
@@ -237,7 +239,8 @@ class: middle
 ---
 class: middle
 
-## Plug these sample variances into your chosen formula for the variance of the difference of sample means.
+## Plug these sample variances into your chosen formula for the variance of the difference of sample means.xiv
+
 
 Assuming &lt;b&gt;equal&lt;/b&gt; variance of Y's and Z's
 
@@ -262,8 +265,8 @@ tstStat &lt;- theDiff / sqrt(s2Diff)
 ```
 
 ```
-##        Irs4         Nrl 
-##  -0.5286494 -16.7947224
+##    Irs4     Nrl 
+##  -0.529 -16.795
 ```
 Without assuming equal variances:
 
@@ -272,8 +275,8 @@ welchStat &lt;- theDiff / sqrt(s2DiffWelch)
 ```
 
 ```
-##        Irs4         Nrl 
-##  -0.5288595 -16.9486146
+##    Irs4     Nrl 
+##  -0.529 -16.949
 ```
 ### Now we can we say the observed differences are 'big'?
 
@@ -327,12 +330,12 @@ class: middle
 ## Assuming that H&lt;sub&gt;0&lt;/sub&gt; is true:
 
 ```r
-(tstStat &lt;- theDiff / sqrt(s2Diff))
+tstStat &lt;- theDiff / sqrt(s2Diff)
 ```
 
 ```
-##        Irs4         Nrl 
-##  -0.5286494 -16.7947224
+##    Irs4     Nrl 
+##  -0.529 -16.795
 ```
 &lt;center&gt;&lt;img src="L5_TwoGroupComp_files/nDist.png" width=400 &gt;&lt;/center&gt;
 
