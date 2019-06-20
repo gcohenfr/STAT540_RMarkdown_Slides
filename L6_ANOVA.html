@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Statistical Methods for  High Dimensional Biology STAT/BIOF/GSAT 540</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Statistical Methods for <br>High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>
+## <font color=red> Lecture 6 – ANOVA and Linear Models</font> <br style=line-height:2><br> Gabriela Cohen Freue
+### <font size=5> Other contributors: Jenny Bryan, Sara Mostafavi, Su-In Lee</font>
+
+---
+
+class: middle, center
+### &lt;font color="red"&gt; Are these genes truly different in NrlKO compared to WT?&lt;/font&gt;
+
+### H&lt;sub&gt;0&lt;/sub&gt;: the expression level of gene A is the same.
+
+### Is there **enough** evidence in the data to reject H&lt;sub&gt;0&lt;/sub&gt;?
+
+
+![](L6_ANOVA_files/figure-html/unnamed-chunk-2-1.svg)&lt;!-- --&gt;
+
+---
+class: center
+
+.pull-left[
+## **Population** (unknown)
+&lt;br&gt;
+`$$Y\sim F$$`
+`$$Z\sim G$$`
+&lt;br&gt; &lt;br&gt;
+`$$E[Y] = \mu_Y$$`
+`$$E[Z] = \mu_Z$$`
+&lt;br&gt; &lt;br&gt; &lt;br&gt;
+`$$H_0 : \mu_Y = \mu_Z$$`
+`$$H_A : \mu_Y \neq \mu_Z$$`
+]
+.pull-right[
+## **Sample** (observed with randomness)
+`$$Y_1, Y_2, ... Y_{n_Y}$$`
+`$$Z_1, Z_2, ... Z_{n_Z}$$`
+&lt;br&gt;
+`$$\hat{\mu}_Y = \bar{Y} = \frac{\sum^{n_Y}_{i=1} Y_i}{n_Y}$$`
+`$$\hat{\mu}_Z = \bar{Z} = \frac{\sum^{n_Z}_{i=1} Z_i}{n_Z}$$`
+&lt;br&gt;
+`$$T = \frac{\bar{Y}-\bar{Z}}{\sqrt{V(\bar{Y} - \bar{Z})}}$$`
+]
+---
+
+class: middle
+![](L6_ANOVA_files/slide4.png)
+
+---
+
+class: middle
+![](L6_ANOVA_files/slide5.png)
+
+---
+
+class: middle
+
+# Today: beyond 2-groups comparisons
+
+
+## &lt;font color = "red"&gt;t-test&lt;/font&gt; 
+special case of **ANOVA**, where the only difference is that with ANOVA you can compare more than two groups.
+
+&lt;br&gt;
+
+## &lt;font color = "red"&gt;ANOVA&lt;/font&gt; 
+special case of **linear regression/model**, where the only difference is with linear models you can consider quantitative and categorical variables. 
+
+---
+class: center, middle
+# From t-test to linear regression
+Change of notation to be consistent with conventions used in linear regression
+&lt;br&gt; &lt;br&gt;
+`$$Y \sim F; E[Y] = \mu_Y$$`
+**↓**
+`$$Y = \mu_Y + \varepsilon_Y; \varepsilon_Y \sim F; E[\varepsilon_Y] = 0$$`
+**↓**
+`$$Y_j = \mu_j + \varepsilon_j; \varepsilon_j ~ F_j; E[\varepsilon_j] = 0; j = \textrm{\{wt, NrlKO}\} \rightarrow \textrm{\{1, 2}\}$$`
+&lt;br&gt;
+where `\(Y_j\)` is the **response variable**. For `\(\varepsilon_j ~ F_j\)`, we may even assume a common distribution `\(F\)` for all groups, equal variances, etc.
+---
+class: middle
+
+## Let's map this notation to our working example
+.pull-left[
+### &lt;center&gt; Group 1 (WT)
+`$$Y_1 = \mu_1 + \varepsilon_1; \varepsilon_1 \sim F_1; E[\varepsilon_1] = 0;$$`
+]
+.pull-right[
+### &lt;center&gt; Group 2 (NrlKO)
+`$$Y_2 = \mu_2 + \varepsilon_2; \varepsilon_2 \sim F_2; E[\varepsilon_2] = 0;$$`
+]
+&lt;br&gt;
+- Note that for each group: `\(E[Y_j] = \mu_j\)`
+- `\(H_0 : \mu_1 = \mu_2\)`
+- But we may actually have many groups, not just 2! **(ANOVA)**
+- To test our hypothesis, we take a random sample:
+`$$Y_{ij}: \textrm{gene expression of gene A in condition j for the ith observation}$$`
+---
+class: middle
+&lt;font size = 6&gt; `$$H_0 : \mu_1 = \mu_2$$` &lt;/font&gt;
+.pull-left[
+```
+data: gExp by gType
+t = 0.5286, df = 37, p=value = 0.6002
+&lt;snip, snip&gt;
+sample estimates:
+  mean in group wt mean in group NrlKO
+          7.765750        7.739684
+```
+]
+.pull-right[
+![](L6_ANOVA_files/figure-html/unnamed-chunk-3-1.svg)&lt;!-- --&gt;
+]
+### **Where's the line?**
+```
+summary(lm(gExp ~ gType, miniDat,
+           subset = gene == "Irs4"))
+&lt;snip, snip&gt;
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) 7.76575     0.03441 225.650   &lt;2e-16 ***
+gTypeNrlKO -0.02607     0.04931  -0.529      0.6
+&lt;snip, snip&gt;
+F-statistic: 0.2795 on 1 and 37 DF, p-value: 0.6002
+```
+---
+class: middle, center
+![](L6_ANOVA_files/slide10.png)
+---
+class: middle
+![](L6_ANOVA_files/slide11.png)
+--
+For example:
+`$$Y_{11} = 1 \ast \mu_1 + 0 \ast \mu_2 + \varepsilon_{11} = \mu_1 + \varepsilon_{11}$$`
+`$$Y_{n_22} = 0 \ast \mu_1 + 1 \ast \mu_2 + \varepsilon_{n_22} = \mu_2 + \varepsilon_{n_22}$$`
+---
+class: middle
+![](L6_ANOVA_files/slide12.png)
+---
+class: middle
+
+&lt;font size = 12&gt; `$$Y = X\alpha + \varepsilon$$` &lt;/font&gt;
+&lt;font color = red&gt; `\(Y:\)` &lt;/font&gt; The column vector of the responses, one element per experimental unit
+
+&lt;font color = red&gt; `\(X:\)` &lt;/font&gt; a (design) matrix that represents covariate info, one row per experimental unit
+
+&lt;font color = red&gt; `\(\alpha:\)` &lt;/font&gt; a column vector of parameters in the linear model
+
+&lt;font color = red&gt; `\(\varepsilon:\)` &lt;/font&gt; a column vector of the errors
+&lt;br&gt;
+### Generic linear model, using conventional matrix formulation
+---
+class: middle
+![](L6_ANOVA_files/slide14.png)
+---
+class: middle
+![](L6_ANOVA_files/slide15.png)
+--
+![](L6_ANOVA_files/slide15-1.png)
+---
+class: middle
+![](L6_ANOVA_files/slide16.png)
+--
+![](L6_ANOVA_files/slide16-1.png)
+---
+class: middle
+![](L6_ANOVA_files/slide17.png)
+---
+class: middle
+![](L6_ANOVA_files/slide18.png)
+---
+class: middle
+![](L6_ANOVA_files/slide19.png)
+---
+class: middle
+![](L6_ANOVA_files/slide20.png)
+---
+class: middle, center
+
+## How it works in practice using &lt;font color=red&gt;lm()&lt;/font&gt; in R
+
+&lt;font size = 5&gt; `$$Y = X\alpha + \varepsilon$$` **↓**
+&lt;br&gt;
+```
+lm(y ~ x, data = jDat)
+```
+&lt;/font&gt;
+.pull-left[
+&lt;font color = red&gt; y ~ x: &lt;/font&gt; formula, y numeric, x factor
+]
+
+.pull-right[
+&lt;font color = red&gt; jDat: &lt;/font&gt; optional data.frame in which x and y are to be found (I recommend this style)
+]
+&lt;br&gt;
+### By default, R uses a ref-tx parametrization but you can control that!(called "contr.treatment"; see?contrasts)
+---
+class: middle
+![](L6_ANOVA_files/slide22.png)
+---
+class: middle
+## Back to our example!
+### &lt;font color="red"&gt; Is the gene expression of gene A different at different developmental stages?&lt;/font&gt;
+
+`$$H_0 : \mu_{E16} = \mu_{P2} = \mu_{P6} = \mu_{P10} = \mu_{4weeks}$$`
+&lt;center&gt;
+
+```
+## Warning in data.frame(prDes, miniDat): row names were found from a short
+## variable and have been discarded
+```
+
+![](L6_ANOVA_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+---
+class: middle
+
+```r
+with(miniDat,
+     tapply(gExp, list(devStage, gene), mean))
+```
+
+```
+##          theBore   theHit
+## E16     7.544143 5.540857
+## P2      7.583500 5.844875
+## P6      7.554000 5.784250
+## P10     7.571000 6.375125
+## 4_weeks 7.559000 9.173375
+```
+&lt;center&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+---
+class: middle
+![](L6_ANOVA_files/slide25.png)
+---
+class: middle
+![](L6_ANOVA_files/slide26.png)
+---
+class: middle
+![](L6_ANOVA_files/slide27.png)
+---
+class: middle
+![](L6_ANOVA_files/slide28.png)
+---
+class: middle
+&lt;big&gt;
+&lt;font size = 5&gt;$$Y = X \alpha + \varepsilon$$&lt;/font&gt;
+`$$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4weeks})$$`
+
+### in the context of this model, we generally test null hypothesis of two types:
+.pull-left[
+&lt;center&gt;
+`$$H_0: \tau_j = 0$$`
+vs
+`$$H_0: \tau_j \neq 0$$`
+for each *j* individually
+]
+
+.pull-right[
+&lt;center&gt;
+`$$H_0: \tau_j = 0$$`
+vs
+`$$H_0: \tau_j \neq 0$$`
+for all *j* at the same time
+]
+---
+class: middle
+![](L6_ANOVA_files/slide30.png)
+---
+class: middle
+
+## F-test and overall significance of one or more covariates
+&lt;big&gt;
+- the t-stat in linear regression allows us to test simple hypotheses:
+`$$H_0 : \tau_i = 0$$`
+`$$H_A : \tau_j \neq 0$$`
+- But when we have multiple covariates/factors, we often like to test more complex hypotheses: 
+`$$H_0 : \tau_2 = \tau_3 = ... = 0\textrm{ [AND statement]}$$`
+`$$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$`
+- F-test allows us to test such compound tests
+---
+class: middle
+### Increasing the complexity of our linear regression model ...
+What if you have two categorical variables: genotype and time
+(we will simplify the example by only considering two time points E16 and 4weeks)
+
+&gt; ### Is the assocation between gene expression and genotype different at different developmental stages?
+
+![](L6_ANOVA_files/slide32.png)
+---
+class: middle
+![](L6_ANOVA_files/slide33.png)
+---
+class: middle
+![](L6_ANOVA_files/slide34.png)
+---
+class: middle
+![](L6_ANOVA_files/slide35.png)
+---
+class: middle
+![](L6_ANOVA_files/slide36.png)
+---
+class: middle
+![](L6_ANOVA_files/slide37.png)
+---
+class: middle
+![](L6_ANOVA_files/slide38.png)
+---
+class: middle
+
+## Let's go through some example genes to get a sense of what an interaction effect looks like.
+
+We have three parameters we'd like to interpret:
+.pull-left[
+### Main effect: genotype
+### Main effect: age
+### Interaction: genotype * age
+]
+.pull-right[
+&lt;br&gt;
+![](L6_ANOVA_files/slide39.png)
+]
+---
+class: middle
+![](L6_ANOVA_files/slide40.png)
+---
+class: middle
+![](L6_ANOVA_files/slide41.png)
+---
+class: middle
+![](L6_ANOVA_files/slide42.png)
+---
+class: middle
+![](L6_ANOVA_files/slide43.png)
+---
+class: middle
+![](L6_ANOVA_files/slide44.png)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
