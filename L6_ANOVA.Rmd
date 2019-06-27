@@ -76,8 +76,9 @@ $$Y\sim F$$
 $$Z\sim G$$
 <br> <br>
 $$E[Y] = \mu_Y$$
+<br>
 $$E[Z] = \mu_Z$$
-<br> <br> <br>
+<br> <br>
 $$H_0 : \mu_Y = \mu_Z$$
 $$H_A : \mu_Y \neq \mu_Z$$
 ]
@@ -88,16 +89,14 @@ $$Z_1, Z_2, ... Z_{n_Z}$$
 <br>
 $$\hat{\mu}_Y = \bar{Y} = \frac{\sum^{n_Y}_{i=1} Y_i}{n_Y}$$
 $$\hat{\mu}_Z = \bar{Z} = \frac{\sum^{n_Z}_{i=1} Z_i}{n_Z}$$
-<br>
+<br> <br>
 $$T = \frac{\bar{Y}-\bar{Z}}{\sqrt{V(\bar{Y} - \bar{Z})}}$$
 ]
 ---
 
 class: middle
 ![](L6_ANOVA_files/slide4.png)
-
 ---
-
 class: middle
 ![](L6_ANOVA_files/slide5.png)
 
@@ -109,25 +108,25 @@ class: middle
 
 
 ## <font color = "red">t-test</font> 
-special case of **ANOVA**, where the only difference is that with ANOVA you can compare more than two groups.
+> Special case of **ANOVA**, where the only difference is that with ANOVA you can compare more than two groups.
 
 <br>
 
 ## <font color = "red">ANOVA</font> 
-special case of **linear regression/model**, where the only difference is with linear models you can consider quantitative and categorical variables. 
+> Special case of **linear regression/model**, where the only difference is with linear models you can consider quantitative and categorical variables. 
 
 ---
 class: center, middle
 # From t-test to linear regression
 Change of notation to be consistent with conventions used in linear regression
 <br> <br>
-$$Y \sim F; E[Y] = \mu_Y$$
+$$Y \sim F; \; E[Y] = \mu_Y$$
 **↓**
-$$Y = \mu_Y + \varepsilon_Y; \varepsilon_Y \sim F; E[\varepsilon_Y] = 0$$
+$$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim F; \; E[\varepsilon_Y] = 0$$
 **↓**
-$$Y_j = \mu_j + \varepsilon_j; \varepsilon_j ~ F_j; E[\varepsilon_j] = 0; j = \textrm{\{wt, NrlKO}\} \rightarrow \textrm{\{1, 2}\}$$
+$$Y_j = \mu_j + \varepsilon_j; \; \varepsilon_j \sim F_j; \; E[\varepsilon_j] = 0; \; j = \textrm{\{wt, NrlKO}\} \rightarrow \textrm{\{1, 2}\}$$
 <br>
-where $Y_j$ is the **response variable**. For $\varepsilon_j ~ F_j$, we may even assume a common distribution $F$ for all groups, equal variances, etc.
+where $Y_j$ is the **response variable**. For $\varepsilon_j \sim F_j$, we may even assume a common distribution $F$ for all groups, equal variances, etc.
 ---
 class: middle
 
@@ -148,18 +147,9 @@ $$Y_2 = \mu_2 + \varepsilon_2; \varepsilon_2 \sim F_2; E[\varepsilon_2] = 0;$$
 $$Y_{ij}: \textrm{gene expression of gene A in condition j for the ith observation}$$
 ---
 class: middle
-<font size = 6> $$H_0 : \mu_1 = \mu_2$$ </font>
 .pull-left[
-```
-data: gExp by gType
-t = 0.5286, df = 37, p=value = 0.6002
-<snip, snip>
-sample estimates:
-  mean in group wt mean in group NrlKO
-          7.765750        7.739684
-```
-]
-.pull-right[
+<big> $$H_0 : \mu_1 = \mu_2$$
+
 ```{r echo=FALSE, fig.width=5, fig.height= 3, dev='svg'}
 irsDat <- filter(miniDat, gene == "Irs4")
 nrlDat <- filter(miniDat, gene == "Nrl")
@@ -179,6 +169,21 @@ nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) +
 grid.arrange(irsLim, nrlLim, ncol = 1)
 ```
 ]
+
+.pull-right[
+<br>
+```
+data: gExp by gType
+t = 0.5286, df = 37, p=value = 0.6002
+<snip, snip>
+sample estimates:
+  mean in group wt mean in group NrlKO
+          7.765750        7.739684
+```
+]
+
+
+
 ### **Where's the line?**
 ```
 summary(lm(gExp ~ gType, miniDat,
@@ -206,7 +211,7 @@ class: middle
 ![](L6_ANOVA_files/slide12.png)
 ---
 class: middle
-
+<big>
 <font size = 12> $$Y = X\alpha + \varepsilon$$ </font>
 <font color = red> $Y:$ </font> The column vector of the responses, one element per experimental unit
 
@@ -219,6 +224,7 @@ class: middle
 ### Generic linear model, using conventional matrix formulation
 ---
 class: middle
+
 ![](L6_ANOVA_files/slide14.png)
 ---
 class: middle
@@ -247,6 +253,8 @@ class: middle, center
 
 ## How it works in practice using <font color=red>lm()</font> in R
 
+<big>
+
 <font size = 5> $$Y = X\alpha + \varepsilon$$ **↓**
 <br>
 ```
@@ -272,7 +280,7 @@ class: middle
 
 $$H_0 : \mu_{E16} = \mu_{P2} = \mu_{P6} = \mu_{P10} = \mu_{4weeks}$$
 <center>
-```{r, echo=FALSE, fig.height= 4}
+```{r, include=FALSE}
 library(lattice)
 
 prDes <- readRDS("data/GSE4051_design.rds")
@@ -287,16 +295,33 @@ theBore <- which(rownames(prDat) == "1443184_at") # 18898
 
 keepers <- data.frame(row = c(theBore, theHit),
                        probesetID = I(rownames(prDat)[c(theBore, theHit)]))
-## WOW! forget to protect probesetID with I() and you get totally the
-## wrong data; great example of Jenny's Factor Law!
+
 miniDat <- as.vector(t(prDat[keepers$probesetID, ]))
 miniDat <- data.frame(gene = rep(c("theBore", "theHit"), each = nrow(prDes)),
                       gExp = miniDat)
 miniDat <- data.frame(prDes, miniDat)
 
-stripplot(gExp ~ devStage | gene, miniDat,
-          grid = TRUE, type = c('p', 'a'),
-          jitter.data = TRUE)
+boreDat <- filter(miniDat, gene == "theBore")
+hitDat <- filter(miniDat, gene == "theHit")
+```
+
+```{r, echo=FALSE, fig.height= 4}
+boreLim <- ggplot(boreDat, aes(x = devStage, y = gExp)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "theBore") +
+             theme(legend.position = "none") +
+             ylim(5, 10) +
+             xlab("")
+
+hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "theHit") +
+             theme(legend.position = "none") +
+             ylim(5, 10) +
+             ylab("") +
+             xlab("")
+
+grid.arrange(boreLim, hitLim, nrow = 1)
 ```
 ---
 class: middle
@@ -305,22 +330,62 @@ with(miniDat,
      tapply(gExp, list(devStage, gene), mean))
 ```
 <center>
-``` {r, echo=FALSE, fig.height = 5}
-stripplot(gExp ~ devStage | gene, miniDat,
-          grid = TRUE, type = c('p', 'a'),
-          jitter.data = TRUE)
+```{r, echo=FALSE, fig.height= 4}
+boreLim <- ggplot(boreDat, aes(x = devStage, y = gExp)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "theBore") +
+             theme(legend.position = "none") +
+             ylim(5, 10) +
+             xlab("")
+
+hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "theHit") +
+             theme(legend.position = "none") +
+             ylim(5, 10) +
+             ylab("") +
+             xlab("")
+
+grid.arrange(boreLim, hitLim, nrow = 1)
 ```
 ---
 class: middle
 ![](L6_ANOVA_files/slide25.png)
 ---
 class: middle
+```{r, echo=FALSE, fig.height= 4}
+(hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "theHit") +
+             theme(legend.position = "none") +
+             ylim(5, 10) +
+             ylab("") +
+             xlab(""))
+```
 ![](L6_ANOVA_files/slide26.png)
 ---
 class: middle
+```{r, echo=FALSE, fig.height= 4}
+(hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "theHit") +
+             theme(legend.position = "none") +
+             ylim(5, 10) +
+             ylab("") +
+             xlab(""))
+```
 ![](L6_ANOVA_files/slide27.png)
 ---
 class: middle
+```{r, echo=FALSE, fig.height= 4}
+(hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "theHit") +
+             theme(legend.position = "none") +
+             ylim(5, 10) +
+             ylab("") +
+             xlab(""))
+```
 ![](L6_ANOVA_files/slide28.png)
 ---
 class: middle
@@ -393,9 +458,9 @@ class: middle
 
 We have three parameters we'd like to interpret:
 .pull-left[
-### Main effect: genotype
+> ### Main effect: genotype
 ### Main effect: age
-### Interaction: genotype * age
+### Interaction: genotype*age
 ]
 .pull-right[
 <br>

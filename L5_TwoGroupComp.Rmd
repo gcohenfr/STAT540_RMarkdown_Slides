@@ -13,8 +13,7 @@ output:
 class: middle
 
 ![Picture from Dr. Fowler, UW](L5_TwoGroupComp_files/statInference.png)
-### We want to understand a **population** (e.g., gene behaviour) but we can only study a <font color=red>**random sample**</font> from it.
-### <font size=5><p align=right> Picture from Dr. Fowler, UW </p></font>
+We want to understand a **population** (e.g., gene behaviour) but we can only study a <font color=red>**random sample**</font> from it. *[Picture from Dr. Fowler, UW]*
 ---
 class: middle
 # <center> Hypothesis Testing in Genomics
@@ -288,9 +287,26 @@ class: middle
 
 ## Is this convincing evidence that $\mu_Y \neq \mu_Z$?
 
-.center[
-![](L5_TwoGroupComp_files/artifPlot.png)
-]
+``` {r echo=FALSE,fig.height=3, dev='svg'}
+artDat <- data.frame("gExp" = c(rnorm(50, mean = 23, sd = 1), rnorm(50, mean = 28, sd = 1)), "gType" = c(rep("NrlKO", times = 50),rep("wt" , times = 50)))
+
+artBox <- ggplot(artDat, aes(y = gExp, x = gType)) + 
+             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
+             labs(title = "Artificial Gene Expression") +
+             theme(legend.position = "none") +
+             coord_flip()
+
+nrlBox <- ggplot(nrlDat, aes(y = gExp, x = gType)) + 
+             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
+             labs(title = "Nrl Gene Expression") +
+             theme(legend.position = "none") +
+             coord_flip()
+
+# Combine plots together
+options(repr.plot.width=8, repr.plot.height = 3)
+
+grid.arrange(artBox, nrlBox, nrow = 1)
+```
 
 <big>
 - The sample means by themselves are not enough to make conclusions about the population
@@ -309,18 +325,21 @@ class: center, middle
 ]
 ---
 class: center, middle
-# What do we want to know to help us interpret the mean difference?
+## What do we want to know to help us interpret the mean difference?
 
 .pull-left[
-## "Large" relative to the observed variation
+### "Large" relative to the observed variation
 ]
 .pull-right[
-## $\frac{\bar{Y}-\bar{Z}}{\sqrt{V(\bar{Y}-\bar{Z})}}$
+### $\frac{\bar{Y}-\bar{Z}}{\sqrt{V(\bar{Y}-\bar{Z})}}$
 ]
 
-.center[
-![](L5_TwoGroupComp_files/artifPlot.png)
-]
+``` {r echo=FALSE,fig.height=3, dev='svg'}
+# Combine plots together
+options(repr.plot.width=8, repr.plot.height = 3)
+
+grid.arrange(artBox, nrlBox, nrow = 1)
+```
 ---
 class: middle
 
@@ -489,7 +508,6 @@ class: middle
 <center><img src="L5_TwoGroupComp_files/stuTDist.png" width="400">
 
 where df = degrees of freedom.
-
 ---
 class: middle
 
@@ -524,7 +542,7 @@ class: middle
 class: middle
 
 # What is a p-value?
-<big>
+
 > Likelihood of obtaining a test statistic at least <font color=green> as extreme as the one observed</font>, given that the null hypothesis is true (we are making a conditional p-value statement)
 
 # What is a p-value <font color=red>NOT</font>?
@@ -537,6 +555,7 @@ class: middle
 
 - Does not <font color=red>indicate the size or importance</font> of observed effects. 
 
+*[Credit to Dr. Fowler, UW]*
 ---
 <big>
 ## "Genome-wide" testing of differential expression
@@ -556,10 +575,10 @@ class: middle
 ---
 class: middle
 
-# Errors in hypothesis testing
+# Types of Errors in Hypothesis Testing
 
 <center>![](L5_TwoGroupComp_files/hypError.png)
-
+*[Picture from Dr. Fowler, UW]*
 ---
 class: middle
 
@@ -592,9 +611,14 @@ Rank all data, ignoring the **grouping** variable
 Null distribution of such statistics can be worked out or approximated.
 
 ---
-
+class: middle, center
 ![](L5_TwoGroupComp_files/slide32.png)
 
+```{r echo=FALSE, fig.height=3, dev='svg'}
+options(repr.plot.width=8, repr.plot.height=3)
+
+grid.arrange(irsLim, nrlLim, ncol = 1)
+```
 ---
 class: middle
 

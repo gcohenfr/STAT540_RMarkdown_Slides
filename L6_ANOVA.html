@@ -24,7 +24,7 @@ class: middle, center
 ### Is there **enough** evidence in the data to reject H&lt;sub&gt;0&lt;/sub&gt;?
 
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-2-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-3-1.svg)&lt;!-- --&gt;
 
 ---
 class: center
@@ -36,8 +36,9 @@ class: center
 `$$Z\sim G$$`
 &lt;br&gt; &lt;br&gt;
 `$$E[Y] = \mu_Y$$`
+&lt;br&gt;
 `$$E[Z] = \mu_Z$$`
-&lt;br&gt; &lt;br&gt; &lt;br&gt;
+&lt;br&gt; &lt;br&gt;
 `$$H_0 : \mu_Y = \mu_Z$$`
 `$$H_A : \mu_Y \neq \mu_Z$$`
 ]
@@ -48,16 +49,14 @@ class: center
 &lt;br&gt;
 `$$\hat{\mu}_Y = \bar{Y} = \frac{\sum^{n_Y}_{i=1} Y_i}{n_Y}$$`
 `$$\hat{\mu}_Z = \bar{Z} = \frac{\sum^{n_Z}_{i=1} Z_i}{n_Z}$$`
-&lt;br&gt;
+&lt;br&gt; &lt;br&gt;
 `$$T = \frac{\bar{Y}-\bar{Z}}{\sqrt{V(\bar{Y} - \bar{Z})}}$$`
 ]
 ---
 
 class: middle
 ![](L6_ANOVA_files/slide4.png)
-
 ---
-
 class: middle
 ![](L6_ANOVA_files/slide5.png)
 
@@ -69,25 +68,25 @@ class: middle
 
 
 ## &lt;font color = "red"&gt;t-test&lt;/font&gt; 
-special case of **ANOVA**, where the only difference is that with ANOVA you can compare more than two groups.
+&gt; Special case of **ANOVA**, where the only difference is that with ANOVA you can compare more than two groups.
 
 &lt;br&gt;
 
 ## &lt;font color = "red"&gt;ANOVA&lt;/font&gt; 
-special case of **linear regression/model**, where the only difference is with linear models you can consider quantitative and categorical variables. 
+&gt; Special case of **linear regression/model**, where the only difference is with linear models you can consider quantitative and categorical variables. 
 
 ---
 class: center, middle
 # From t-test to linear regression
 Change of notation to be consistent with conventions used in linear regression
 &lt;br&gt; &lt;br&gt;
-`$$Y \sim F; E[Y] = \mu_Y$$`
+`$$Y \sim F; \; E[Y] = \mu_Y$$`
 **↓**
-`$$Y = \mu_Y + \varepsilon_Y; \varepsilon_Y \sim F; E[\varepsilon_Y] = 0$$`
+`$$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim F; \; E[\varepsilon_Y] = 0$$`
 **↓**
-`$$Y_j = \mu_j + \varepsilon_j; \varepsilon_j ~ F_j; E[\varepsilon_j] = 0; j = \textrm{\{wt, NrlKO}\} \rightarrow \textrm{\{1, 2}\}$$`
+`$$Y_j = \mu_j + \varepsilon_j; \; \varepsilon_j \sim F_j; \; E[\varepsilon_j] = 0; \; j = \textrm{\{wt, NrlKO}\} \rightarrow \textrm{\{1, 2}\}$$`
 &lt;br&gt;
-where `\(Y_j\)` is the **response variable**. For `\(\varepsilon_j ~ F_j\)`, we may even assume a common distribution `\(F\)` for all groups, equal variances, etc.
+where `\(Y_j\)` is the **response variable**. For `\(\varepsilon_j \sim F_j\)`, we may even assume a common distribution `\(F\)` for all groups, equal variances, etc.
 ---
 class: middle
 
@@ -108,8 +107,14 @@ class: middle
 `$$Y_{ij}: \textrm{gene expression of gene A in condition j for the ith observation}$$`
 ---
 class: middle
-&lt;font size = 6&gt; `$$H_0 : \mu_1 = \mu_2$$` &lt;/font&gt;
 .pull-left[
+&lt;big&gt; `$$H_0 : \mu_1 = \mu_2$$`
+
+![](L6_ANOVA_files/figure-html/unnamed-chunk-4-1.svg)&lt;!-- --&gt;
+]
+
+.pull-right[
+&lt;br&gt;
 ```
 data: gExp by gType
 t = 0.5286, df = 37, p=value = 0.6002
@@ -119,9 +124,9 @@ sample estimates:
           7.765750        7.739684
 ```
 ]
-.pull-right[
-![](L6_ANOVA_files/figure-html/unnamed-chunk-3-1.svg)&lt;!-- --&gt;
-]
+
+
+
 ### **Where's the line?**
 ```
 summary(lm(gExp ~ gType, miniDat,
@@ -149,7 +154,7 @@ class: middle
 ![](L6_ANOVA_files/slide12.png)
 ---
 class: middle
-
+&lt;big&gt;
 &lt;font size = 12&gt; `$$Y = X\alpha + \varepsilon$$` &lt;/font&gt;
 &lt;font color = red&gt; `\(Y:\)` &lt;/font&gt; The column vector of the responses, one element per experimental unit
 
@@ -162,6 +167,7 @@ class: middle
 ### Generic linear model, using conventional matrix formulation
 ---
 class: middle
+
 ![](L6_ANOVA_files/slide14.png)
 ---
 class: middle
@@ -190,6 +196,8 @@ class: middle, center
 
 ## How it works in practice using &lt;font color=red&gt;lm()&lt;/font&gt; in R
 
+&lt;big&gt;
+
 &lt;font size = 5&gt; `$$Y = X\alpha + \varepsilon$$` **↓**
 &lt;br&gt;
 ```
@@ -216,12 +224,8 @@ class: middle
 `$$H_0 : \mu_{E16} = \mu_{P2} = \mu_{P6} = \mu_{P10} = \mu_{4weeks}$$`
 &lt;center&gt;
 
-```
-## Warning in data.frame(prDes, miniDat): row names were found from a short
-## variable and have been discarded
-```
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
 ---
 class: middle
 
@@ -239,18 +243,21 @@ with(miniDat,
 ## 4_weeks 7.559000 9.173375
 ```
 &lt;center&gt;
-![](L6_ANOVA_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
 ---
 class: middle
 ![](L6_ANOVA_files/slide25.png)
 ---
 class: middle
+![](L6_ANOVA_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide26.png)
 ---
 class: middle
+![](L6_ANOVA_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide27.png)
 ---
 class: middle
+![](L6_ANOVA_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide28.png)
 ---
 class: middle
@@ -323,9 +330,9 @@ class: middle
 
 We have three parameters we'd like to interpret:
 .pull-left[
-### Main effect: genotype
+&gt; ### Main effect: genotype
 ### Main effect: age
-### Interaction: genotype * age
+### Interaction: genotype*age
 ]
 .pull-right[
 &lt;br&gt;
