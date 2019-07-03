@@ -37,31 +37,33 @@ class: middle
 ---
 class: middle
 
-# &lt;center&gt; Why a hypothesis test?
+# &lt;center&gt; Why a Hypothesis Test?
 &lt;big&gt;
 From paper: *". we hypothesized that Nrl is the ideal transcription factor to gain insights into gene expression changes ..."*
 
-&gt; **Biological question:** Is the expression level of gene A affected by ablation of the Nrl gene in mice?
+&gt; **Biological question:** Is the expression level of gene A affected by ablation of the Nrl gene?
 
-**Experimental Design: &lt;font color=red&gt;we observe a random sample&lt;/font&gt;**
-&lt;br&gt; (random sample of gene expressions from our experiment)
+### We can use &lt;font color=red&gt;statistical inference&lt;/font&gt; to answer this biological question!
 
-
+**Statistical inference**: we observe and study a &lt;font color=red&gt;random sample&lt;/font&gt; to make conclusions about a population (e.g., random sample of gene expressions from mice)
 
 &lt;img width="350" style="padding:0 px; float:right" src="L5_TwoGroupComp_files/NrlKOmouse.png"&gt;
-
-&lt;br&gt; 4 Developmental stages
+**Experimental design**:
+&lt;br&gt; 4 developmental stages
 &lt;br&gt; 2 genotypes: Wild type, NrlKO
 &lt;br&gt; 3-4 replicas for each combination
 
-### We can use **statistical inference** to better understand our biological question.
+
 ---
-class: middle, center
-### Let's take a look at 4 genes as an example: **Irs4 and Nrl**
+&lt;big&gt;
+Let's take a look at 2 genes as an example: **Irs4 and Nrl**
 
-### &lt;font color="red"&gt; Are these genes truly different in NrlKO compared to WT?&lt;/font&gt;
+&gt; **Biological question**: Are these genes truly different in NrlKO compared to WT?
 
-### We only observe a random sample.
+We can't answer this question in general. We can *only* study these genes in collected data.
+
+### &lt;center&gt;&lt;font color="red"&gt; We only observe a random sample of gene expressions.&lt;/font&gt;
+
 
 
 ![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-2-1.svg)&lt;!-- --&gt;
@@ -71,32 +73,33 @@ class: middle
 
 # &lt;center&gt; Statistical Hypothesis
 &lt;big&gt;
-** Experimental Design:**
+** Experimental design:**
   - 2 conditions: Wt *vs* NrlKO
   - random sample: we observe the expression of many genes in all mice
 
-** Biological Hypothesis:** for some  genes, the expression levels are different in both conditions.
+** Biological hypothesis:** for some  genes, the expression levels are different in both conditions.
 
-** Statistical Hypotheses:** one gene at a time
-  - H&lt;sub&gt;0&lt;/sub&gt; (null hypothesis): the expression level of gene A is the same.
+** Statistical hypotheses:** (for each gene ...)
+  - H&lt;sub&gt;0&lt;/sub&gt; (null hypothesis): the expression level of gene A is the same in both conditions.
   - &lt;font color="blue"&gt;H&lt;sub&gt;A&lt;/sub&gt; (alternative hypothesis): the expression level of gene A is different.&lt;/font&gt;
 ---
-class: middle, center
-### &lt;font color="red"&gt; Are these genes truly different in NrlKO compared to WT?&lt;/font&gt;
+&lt;big&gt;
 
-### H&lt;sub&gt;0&lt;/sub&gt;: the expression level of gene A is the same.
+&gt; **Statistical hypothesis**: 
+&lt;br&gt;
+H&lt;sub&gt;0&lt;/sub&gt;: the expression of gene A is the same in both conditions.
 
-### Is there **enough** evidence in the data to reject H&lt;sub&gt;0&lt;/sub&gt;?
+### &lt;center&gt;&lt;font color="red"&gt;  Is there **enough** evidence in the data to reject H&lt;sub&gt;0&lt;/sub&gt;? &lt;/font&gt;
 
 ![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-3-1.svg)&lt;!-- --&gt;
 
 ---
 class: center, middle
-
+**The true underlying distribution is unknown**
 **Empirical distributions are based on DATA**
 ![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-4-1.svg)&lt;!-- --&gt;
 
-**The true underlying distribution is unknown**
+
 ![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-5-1.svg)&lt;!-- --&gt;
 
 ---
@@ -106,19 +109,20 @@ class: middle
 
 &lt;big&gt;
 
-- ### Random variables (we can observe)
+- ### Random variables and estimates (we can observe)
 
-`\(Y_i\)` : expression of gene A in the WT &lt;font color="red"&gt;sample&lt;/font&gt; `\(i\)`
+`\(Y_i\)` : expression of gene A in the WT sample `\(i\)`
 
 `\(Z_i\)`: expression of gene A in NrlKO sample `\(i\)`
 
-`\(Y_1, Y_2,..., Y_{n_Y}\)` : a &lt;font color="green"&gt;random sample&lt;/font&gt; of size `\(n_Y\)`
+`\(Y_1, Y_2,..., Y_{n_Y}\)` : a &lt;font color="red"&gt;random sample&lt;/font&gt; of size `\(n_Y\)`
 
-`\(\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}\)`: sample mean of expression levels of gene A from WT mice
+`\(\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}\)`: sample mean of gene A expressions from WT mice
 
 - ### Population parameters (unknown)
 
-`\(\mu_Y = E[Y]\)` : the (population) expected expression level of gene A in WT mice
+`\(\mu_Y = E[Y]\)` : the (population) expected expression of gene A in WT mice
+&gt; &lt;small&gt; note the different meanings of the word "sample"
 ---
 class: middle
 
@@ -149,17 +153,11 @@ theDiff &lt;- theAvgs["NrlKO", ] - theAvgs["wt", ]
 ---
 class: middle
 
-## Is this convincing evidence that `\(\mu_Y \neq \mu_Z\)`?
+### Is this convincing evidence that the population parameters `\(\mu_Y \neq \mu_Z\)`?
+
 ![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-11-1.svg)&lt;!-- --&gt;
-.pull-left[
-### `\(H_0 : \mu_Y = \mu_Z\)`
-### `\(H_A : \mu_Y \neq \mu_Z\)`
-]
-.pull-right[
-&lt;center&gt;
-### **Statistical Inference**
-### Sample estimates -&gt; Population parameters
-]
+
+### **Statistical Inference**: random samples are used to learn about the population 
 
 ---
 class: middle
@@ -171,30 +169,32 @@ class: middle
 &lt;big&gt;
 - The sample means by themselves are not enough to make conclusions about the population
 
-- What is a "large" difference? "Large" relative to what?
+- What is a "large" difference? "large" relative to what?
 ---
 class: center, middle
 
-![](L5_TwoGroupComp_files/diffVariance.png)
+
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
+
 
 .pull-left[
-### What do we want to know to help us interpret the mean difference?
+### What can we use to help us interpret the size of the mean difference?
 ]
 .pull-right[
 ### `$$\frac{\bar{Y}-\bar{Z}}{??}$$`
 ]
 ---
 class: center, middle
-## What do we want to know to help us interpret the mean difference?
+## What can we use to help us interpret the size of the mean difference?
 
 .pull-left[
-### "Large" relative to the observed variation
+### "large" relative to the observed variation
 ]
 .pull-right[
 ### `\(\frac{\bar{Y}-\bar{Z}}{\sqrt{V(\bar{Y}-\bar{Z})}}\)`
 ]
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-14-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 
@@ -212,7 +212,7 @@ If we also assume equal population variances:&lt;/big&gt; `\(\sigma_Z^2=\sigma_Y
 class: middle
 
 ### ...using the sample variances (combined, somehow)!
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-14-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-15-1.svg)&lt;!-- --&gt;
 
 
 ```r
@@ -229,12 +229,12 @@ theVars &lt;- with(miniDat,
 ```
 ]
 .pull-right[
-`$$S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2$$`
+&lt;small&gt; `$$\text{e.g., } S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2=1.224$$`
 ]
 ---
 class: middle
 
-## Plug these sample variances into your chosen formula for the variance of the difference of sample means.xiv
+## Plug these sample variances into your chosen formula for the variance of the difference of sample means
 
 
 Assuming &lt;b&gt;equal&lt;/b&gt; variance of Y's and Z's
@@ -245,14 +245,16 @@ Assuming &lt;b&gt;equal&lt;/b&gt; variance of Y's and Z's
 Assuming &lt;b&gt;unequal&lt;/b&gt; variance of Y's and Z's
 `$$\hat{V}(\bar{Z_n}-\bar{Y_n})=\hat{\sigma}_{\bar{Z}_n-\bar{Y}_n}^2=\frac{S_Y^2}{n_Y}+\frac{S_Z^2}{n_Z}$$`
 
-&gt; Note: the caret symbol (^) represents the 'estimate'.
+&gt; Note: the 'hat' (^) is used to distinguish an 'estimate' from a 'parameter'.
 
 ---
 class: middle
 
 
-&lt;center&gt;*T*&amp;nbsp; is a test statistic:&amp;nbsp; `\(T=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}\)`
-&lt;/center&gt;
+---
+class: middle
+## &lt;center&gt; The Test Statistic:  &lt;small&gt; `\(t=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}\)`&lt;/small&gt;
+
 Assuming equal variances:
 
 ```r
@@ -273,19 +275,17 @@ welchStat &lt;- theDiff / sqrt(s2DiffWelch)
 ##    Irs4     Nrl 
 ##  -0.529 -16.949
 ```
-### Now we can we say the observed differences are 'big'?
+### Can we now say that the observed differences are 'big'?
 
-The difference is about half a standard deviation for Irs4 and ~16 standard deviations for Nrl.
-
-I predict we will conclude that true means are same for Irs and different for Nrl.
+The difference is about half a standard deviation for Irs4 and ~16 standard deviations for Nrl. 
 
 ---
 class: middle
 
-## The test statistic *t* &amp;nbsp; is a &lt;font color=red&gt;random variable&lt;/font&gt; because it's based on our random sample.
+## The test statistic *t* &amp;nbsp; is a &lt;font color=red&gt;random variable&lt;/font&gt; because it's based on our &lt;font color=red&gt;random sample&lt;/font&gt;.
 
-### We need a measure of its uncertainty to determine how big/small T is:
-&gt; ### If we were to repeat the experiment many times, what's the probability of observing a value of T **as extreme** as the one we observed?
+### We need a measure of its uncertainty to determine how big *t* is:
+&gt; ### If we were to repeat the experiment many times, what's the probability of observing a value of *t* **as extreme** as the one we observed?
 
 ### We need to have a probability distribution!
 ### However, this is unknown to us so we need to **make more assumptions**.
@@ -297,23 +297,25 @@ class: middle
 &gt; ### Willing to assume that F and G are normal distributions?
 
 .pull-left[
-### &lt;center&gt; equal variance
+### &lt;center&gt; 2-sample *t*-test: 
+ &lt;center&gt; (equal variances)
 `$$T\sim t_{n_Y+n_Z-2}$$`
 ]
 .pull-right[
-### &lt;center&gt; unequal variance
+### &lt;center&gt; Welch test:
+&lt;center&gt; (unequal variances)
 `$$T\sim t_{&lt;something\,ugly&gt;}$$`
 ]
-&lt;br&gt;
+
 &gt; ### Unwilling to assume that F and G are normal distributions? But you feel that n&lt;sub&gt;Y&lt;/sub&gt; and n&lt;sub&gt;Z&lt;/sub&gt; are large enough?
 
-Then go right ahead and use the t-distribution above or even a normal distribution as a decent approximation.
+Then the t-distributions above or even a normal distribution are decent approximations.
 
 ---
 class: middle
 
 ## Student's t-distribution
-### Recall that *T*&amp;nbsp; is a **random variable**. Under certain assumptions, we can prove that *T*&amp;nbsp; follows a **t-distribution**.
+### Recall that *t*&amp;nbsp; is a **random variable**. Under certain assumptions, we can prove that *t*&amp;nbsp; follows a **t-distribution**.
 
 &lt;center&gt;&lt;img src="L5_TwoGroupComp_files/stuTDist.png" width="400"&gt;
 
@@ -427,7 +429,7 @@ Null distribution of such statistics can be worked out or approximated.
 class: middle, center
 ![](L5_TwoGroupComp_files/slide32.png)
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-25-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 

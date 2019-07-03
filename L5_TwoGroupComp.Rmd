@@ -31,31 +31,33 @@ class: middle
 ---
 class: middle
 
-# <center> Why a hypothesis test?
+# <center> Why a Hypothesis Test?
 <big>
 From paper: *". we hypothesized that Nrl is the ideal transcription factor to gain insights into gene expression changes ..."*
 
-> **Biological question:** Is the expression level of gene A affected by ablation of the Nrl gene in mice?
+> **Biological question:** Is the expression level of gene A affected by ablation of the Nrl gene?
 
-**Experimental Design: <font color=red>we observe a random sample</font>**
-<br> (random sample of gene expressions from our experiment)
+### We can use <font color=red>statistical inference</font> to answer this biological question!
 
-
+**Statistical inference**: we observe and study a <font color=red>random sample</font> to make conclusions about a population (e.g., random sample of gene expressions from mice)
 
 <img width="350" style="padding:0 px; float:right" src="L5_TwoGroupComp_files/NrlKOmouse.png">
-
-<br> 4 Developmental stages
+**Experimental design**:
+<br> 4 developmental stages
 <br> 2 genotypes: Wild type, NrlKO
 <br> 3-4 replicas for each combination
 
-### We can use **statistical inference** to better understand our biological question.
+
 ---
-class: middle, center
-### Let's take a look at 4 genes as an example: **Irs4 and Nrl**
+<big>
+Let's take a look at 2 genes as an example: **Irs4 and Nrl**
 
-### <font color="red"> Are these genes truly different in NrlKO compared to WT?</font>
+> **Biological question**: Are these genes truly different in NrlKO compared to WT?
 
-### We only observe a random sample.
+We can't answer this question in general. We can *only* study these genes in collected data.
+
+### <center><font color="red"> We only observe a random sample of gene expressions.</font>
+
 ```{r, include=FALSE}
 library(dplyr)
 library(ggplot2)
@@ -90,13 +92,13 @@ nrlDat <- filter(miniDat, gene == "Nrl")
 
 irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
-             labs(title = "Irs4 Gene Expression") +
+             labs(title = "Irs4 gene") +
              theme(legend.position = "none") +
              xlim(5, 15)
 
 nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
-             labs(title = "Nrl Gene Expression") +
+             labs(title = "Nrl gene") +
              theme(legend.position = "none") +
              xlim(5, 15)
 
@@ -110,22 +112,23 @@ class: middle
 
 # <center> Statistical Hypothesis
 <big>
-** Experimental Design:**
+** Experimental design:**
   - 2 conditions: Wt *vs* NrlKO
   - random sample: we observe the expression of many genes in all mice
 
-** Biological Hypothesis:** for some  genes, the expression levels are different in both conditions.
+** Biological hypothesis:** for some  genes, the expression levels are different in both conditions.
 
-** Statistical Hypotheses:** one gene at a time
-  - H<sub>0</sub> (null hypothesis): the expression level of gene A is the same.
+** Statistical hypotheses:** (for each gene ...)
+  - H<sub>0</sub> (null hypothesis): the expression level of gene A is the same in both conditions.
   - <font color="blue">H<sub>A</sub> (alternative hypothesis): the expression level of gene A is different.</font>
 ---
-class: middle, center
-### <font color="red"> Are these genes truly different in NrlKO compared to WT?</font>
+<big>
 
-### H<sub>0</sub>: the expression level of gene A is the same.
+> **Statistical hypothesis**: 
+<br>
+H<sub>0</sub>: the expression of gene A is the same in both conditions.
 
-### Is there **enough** evidence in the data to reject H<sub>0</sub>?
+### <center><font color="red">  Is there **enough** evidence in the data to reject H<sub>0</sub>? </font>
 
 ```{r echo=FALSE, fig.height=3.5, dev='svg'}
 irsDat <- filter(miniDat, gene == "Irs4")
@@ -133,13 +136,13 @@ nrlDat <- filter(miniDat, gene == "Nrl")
 
 irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
-             labs(title = "Irs4 Gene Expression") +
+             labs(title = "Irs4 gene") +
              theme(legend.position = "none") +
              xlim(5, 15)
 
 nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
-             labs(title = "Nrl Gene Expression") +
+             labs(title = "Nrl gene") +
              theme(legend.position = "none") +
              xlim(5, 15)
 
@@ -150,18 +153,18 @@ grid.arrange(irsLim, nrlLim, ncol = 1)
 
 ---
 class: center, middle
-
+**The true underlying distribution is unknown**
 **Empirical distributions are based on DATA**
 ```{r echo=FALSE, fig.height=2.5, dev='svg'}
 irsDens <- ggplot(irsDat, aes(x = gExp)) + 
              geom_density(aes(fill = gType, alpha = I(0.5))) +
-             labs(title = "Irs4 Gene Expression") +
+             labs(title = "Irs4 gene") +
              theme(legend.position = "none") + 
              ylim(0, 3)
 
 nrlDens <- ggplot(nrlDat, aes(x = gExp)) + 
              geom_density(aes(fill = gType, alpha = I(0.5))) +
-             labs(title = "Nrl Gene Expression") +
+             labs(title = "Nrl gene") +
              theme(legend.position = "none") + 
              ylim(0, 3)
 
@@ -171,20 +174,20 @@ options(repr.plot.width=8, repr.plot.height=5)
 grid.arrange(irsDens, nrlDens, nrow = 1)
 ```
 
-**The true underlying distribution is unknown**
+
 ```{r echo=FALSE, fig.height=3, dev='svg'}
 irsDat <- filter(miniDat, gene == "Irs4")
 nrlDat <- filter(miniDat, gene == "Nrl")
 
 irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
-             labs(title = "Irs4 Gene Expression") +
+             labs(title = "Irs4 gene") +
              theme(legend.position = "none") +
              xlim(5, 15)
 
 nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
-             labs(title = "Nrl Gene Expression") +
+             labs(title = "Nrl gene") +
              theme(legend.position = "none") +
              xlim(5, 15)
 
@@ -200,19 +203,20 @@ class: middle
 
 <big>
 
-- ### Random variables (we can observe)
+- ### Random variables and estimates (we can observe)
 
-$Y_i$ : expression of gene A in the WT <font color="red">sample</font> $i$
+$Y_i$ : expression of gene A in the WT sample $i$
 
 $Z_i$: expression of gene A in NrlKO sample $i$
 
-$Y_1, Y_2,..., Y_{n_Y}$ : a <font color="green">random sample</font> of size $n_Y$
+$Y_1, Y_2,..., Y_{n_Y}$ : a <font color="red">random sample</font> of size $n_Y$
 
-$\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}$: sample mean of expression levels of gene A from WT mice
+$\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}$: sample mean of gene A expressions from WT mice
 
 - ### Population parameters (unknown)
 
-$\mu_Y = E[Y]$ : the (population) expected expression level of gene A in WT mice
+$\mu_Y = E[Y]$ : the (population) expected expression of gene A in WT mice
+> <small> note the different meanings of the word "sample"
 ---
 class: middle
 
@@ -220,13 +224,13 @@ class: middle
 ``` {r echo=FALSE, fig.height=2.25, dev='svg'}
 irsBox <- ggplot(irsDat, aes(y = gExp, x = gType)) + 
              geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Irs4 Gene Expression") +
+             labs(title = "Irs4 gene") +
              theme(legend.position = "none") +
              coord_flip()
 
 nrlBox <- ggplot(nrlDat, aes(y = gExp, x = gType)) + 
              geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Nrl Gene Expression") +
+             labs(title = "Nrl gene") +
              theme(legend.position = "none") +
              coord_flip()
 
@@ -253,17 +257,18 @@ round(theDiff, 3)
 ---
 class: middle
 
-## Is this convincing evidence that $\mu_Y \neq \mu_Z$?
+### Is this convincing evidence that the population parameters $\mu_Y \neq \mu_Z$?
+
 ``` {r echo=FALSE,fig.height=3, dev='svg'}
 irsBox <- ggplot(irsDat, aes(y = gExp, x = gType)) + 
              geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Irs4 Gene Expression") +
+             labs(title = "Irs4 gene") +
              theme(legend.position = "none") +
              coord_flip()
 
 nrlBox <- ggplot(nrlDat, aes(y = gExp, x = gType)) + 
              geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Nrl Gene Expression") +
+             labs(title = "Nrl gene") +
              theme(legend.position = "none") +
              coord_flip()
 
@@ -272,15 +277,8 @@ options(repr.plot.width=8, repr.plot.height = 3)
 
 grid.arrange(irsBox, nrlBox, nrow = 1)
 ```
-.pull-left[
-### $H_0 : \mu_Y = \mu_Z$
-### $H_A : \mu_Y \neq \mu_Z$
-]
-.pull-right[
-<center>
-### **Statistical Inference**
-### Sample estimates -> Population parameters
-]
+
+### **Statistical Inference**: random samples are used to learn about the population 
 
 ---
 class: middle
@@ -292,13 +290,13 @@ artDat <- data.frame("gExp" = c(rnorm(50, mean = 23, sd = 1), rnorm(50, mean = 2
 
 artBox <- ggplot(artDat, aes(y = gExp, x = gType)) + 
              geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Artificial Gene Expression") +
+             labs(title = "Artificial gene") +
              theme(legend.position = "none") +
              coord_flip()
 
 nrlBox <- ggplot(nrlDat, aes(y = gExp, x = gType)) + 
              geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Nrl Gene Expression") +
+             labs(title = "Nrl gene") +
              theme(legend.position = "none") +
              coord_flip()
 
@@ -311,24 +309,31 @@ grid.arrange(artBox, nrlBox, nrow = 1)
 <big>
 - The sample means by themselves are not enough to make conclusions about the population
 
-- What is a "large" difference? "Large" relative to what?
+- What is a "large" difference? "large" relative to what?
 ---
 class: center, middle
 
-![](L5_TwoGroupComp_files/diffVariance.png)
+
+``` {r echo=FALSE,fig.height=3, dev='svg'}
+# Combine plots together
+options(repr.plot.width=8, repr.plot.height = 3)
+
+grid.arrange(artBox, nrlBox, nrow = 1)
+```
+
 
 .pull-left[
-### What do we want to know to help us interpret the mean difference?
+### What can we use to help us interpret the size of the mean difference?
 ]
 .pull-right[
 ### $$\frac{\bar{Y}-\bar{Z}}{??}$$
 ]
 ---
 class: center, middle
-## What do we want to know to help us interpret the mean difference?
+## What can we use to help us interpret the size of the mean difference?
 
 .pull-left[
-### "Large" relative to the observed variation
+### "large" relative to the observed variation
 ]
 .pull-right[
 ### $\frac{\bar{Y}-\bar{Z}}{\sqrt{V(\bar{Y}-\bar{Z})}}$
@@ -360,13 +365,13 @@ class: middle
 ```{r echo=FALSE, fig.height=3.5, dev='svg'}
 irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
-             labs(title = "Irs4 Gene Expression") +
+             labs(title = "Irs4 gene") +
              theme(legend.position = "none") +
              xlim(5, 15)
 
 nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
-             labs(title = "Nrl Gene Expression") +
+             labs(title = "Nrl gene") +
              theme(legend.position = "none") +
              xlim(5, 15)
 
@@ -386,12 +391,12 @@ round(theVars, 3)
 ```
 ]
 .pull-right[
-$$S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2$$
+<small> $$\text{e.g., } S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2=1.224$$
 ]
 ---
 class: middle
 
-## Plug these sample variances into your chosen formula for the variance of the difference of sample means.xiv
+## Plug these sample variances into your chosen formula for the variance of the difference of sample means
 
 
 Assuming <b>equal</b> variance of Y's and Z's
@@ -402,7 +407,7 @@ $$\hat{V}(\bar{Z_n}-\bar{Y_n})=\;'pooled'\;\hat{\sigma}^2\left[\frac{1}{n_Y}+\fr
 Assuming <b>unequal</b> variance of Y's and Z's
 $$\hat{V}(\bar{Z_n}-\bar{Y_n})=\hat{\sigma}_{\bar{Z}_n-\bar{Y}_n}^2=\frac{S_Y^2}{n_Y}+\frac{S_Z^2}{n_Z}$$
 
-> Note: the caret symbol (^) represents the 'estimate'.
+> Note: the 'hat' (^) is used to distinguish an 'estimate' from a 'parameter'.
 
 ---
 class: middle
@@ -447,8 +452,10 @@ by(miniDat, miniDat$gene, function(theDat) {
   t.test(gExp ~ gType, theDat, var.equal = TRUE)
 })
 ```
-<center>*T*&nbsp; is a test statistic:&nbsp; $T=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}$
-</center>
+---
+class: middle
+## <center> The Test Statistic:  <small> $t=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}$</small>
+
 Assuming equal variances:
 ```{r}
 tstStat <- theDiff / sqrt(s2Diff)
@@ -463,19 +470,17 @@ welchStat <- theDiff / sqrt(s2DiffWelch)
 ```{r, echo=FALSE}
 round(welchStat, 3)
 ```
-### Now we can we say the observed differences are 'big'?
+### Can we now say that the observed differences are 'big'?
 
-The difference is about half a standard deviation for Irs4 and ~16 standard deviations for Nrl.
-
-I predict we will conclude that true means are same for Irs and different for Nrl.
+The difference is about half a standard deviation for Irs4 and ~16 standard deviations for Nrl. 
 
 ---
 class: middle
 
-## The test statistic *t* &nbsp; is a <font color=red>random variable</font> because it's based on our random sample.
+## The test statistic *t* &nbsp; is a <font color=red>random variable</font> because it's based on our <font color=red>random sample</font>.
 
-### We need a measure of its uncertainty to determine how big/small T is:
-> ### If we were to repeat the experiment many times, what's the probability of observing a value of T **as extreme** as the one we observed?
+### We need a measure of its uncertainty to determine how big *t* is:
+> ### If we were to repeat the experiment many times, what's the probability of observing a value of *t* **as extreme** as the one we observed?
 
 ### We need to have a probability distribution!
 ### However, this is unknown to us so we need to **make more assumptions**.
@@ -487,23 +492,25 @@ class: middle
 > ### Willing to assume that F and G are normal distributions?
 
 .pull-left[
-### <center> equal variance
+### <center> 2-sample *t*-test: 
+ <center> (equal variances)
 $$T\sim t_{n_Y+n_Z-2}$$
 ]
 .pull-right[
-### <center> unequal variance
+### <center> Welch test:
+<center> (unequal variances)
 $$T\sim t_{<something\,ugly>}$$
 ]
-<br>
+
 > ### Unwilling to assume that F and G are normal distributions? But you feel that n<sub>Y</sub> and n<sub>Z</sub> are large enough?
 
-Then go right ahead and use the t-distribution above or even a normal distribution as a decent approximation.
+Then the t-distributions above or even a normal distribution are decent approximations.
 
 ---
 class: middle
 
 ## Student's t-distribution
-### Recall that *T*&nbsp; is a **random variable**. Under certain assumptions, we can prove that *T*&nbsp; follows a **t-distribution**.
+### Recall that *t*&nbsp; is a **random variable**. Under certain assumptions, we can prove that *t*&nbsp; follows a **t-distribution**.
 
 <center><img src="L5_TwoGroupComp_files/stuTDist.png" width="400">
 
