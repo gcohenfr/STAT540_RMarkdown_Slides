@@ -1,6 +1,6 @@
 ---
 title: "Statistical Methods for <br>High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>"
-subtitle: "<font color=red> Lecture 6 -- ANOVA and Linear Models</font> <br style=line-height:2><br> Gabriela Cohen Freue"
+subtitle: "<font color=red> Lecture 6 -- ANOVA and Linear Models</font> <br style=line-height:2> Gabriela Cohen Freue"
 date: "<font size=5> Other contributors: Jenny Bryan, Sara Mostafavi, Su-In Lee</font>"
 output:
   xaringan::moon_reader:
@@ -52,12 +52,14 @@ nrlDat <- filter(miniDat, gene == "Nrl")
 irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
              labs(title = "Irs4 Gene Expression") +
+             theme_bw() +
              theme(legend.position = "none") +
              xlim(5, 15)
 
 nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
              labs(title = "Nrl Gene Expression") +
+             theme_bw() +
              theme(legend.position = "none") +
              xlim(5, 15)
 
@@ -157,12 +159,14 @@ nrlDat <- filter(miniDat, gene == "Nrl")
 irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
              labs(title = "Irs4 Gene Expression") +
+             theme_bw() +           
              theme(legend.position = "none") +
              xlim(5, 15)
 
 nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
              labs(title = "Nrl Gene Expression") +
+             theme_bw() +
              theme(legend.position = "none") +
              xlim(5, 15)
 
@@ -305,21 +309,25 @@ boreDat <- filter(miniDat, gene == "theBore")
 hitDat <- filter(miniDat, gene == "theHit")
 ```
 
-```{r, echo=FALSE, fig.height= 4}
+```{r, echo=FALSE, fig.height= 3, dev='svg'}
 boreLim <- ggplot(boreDat, aes(x = devStage, y = gExp)) + 
-             geom_point(alpha = 0.5) +
+             geom_jitter(width = 0.2, alpha = 0.5) +
              labs(title = "theBore") +
+             theme_bw() +
              theme(legend.position = "none") +
              ylim(5, 10) +
-             xlab("")
+             xlab("") +
+             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
 
 hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
-             geom_point(alpha = 0.5) +
+             geom_jitter(width = 0.2, alpha = 0.5) +
              labs(title = "theHit") +
+             theme_bw() +
              theme(legend.position = "none") +
              ylim(5, 10) +
              ylab("") +
-             xlab("")
+             xlab("") +
+             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
 
 grid.arrange(boreLim, hitLim, nrow = 1)
 ```
@@ -330,21 +338,25 @@ with(miniDat,
      tapply(gExp, list(devStage, gene), mean))
 ```
 <center>
-```{r, echo=FALSE, fig.height= 4}
+```{r, echo=FALSE, fig.height= 3, dev='svg'}
 boreLim <- ggplot(boreDat, aes(x = devStage, y = gExp)) + 
-             geom_point(alpha = 0.5) +
+             geom_jitter(width = 0.2, alpha = 0.5) +
              labs(title = "theBore") +
+             theme_bw() +           
              theme(legend.position = "none") +
              ylim(5, 10) +
-             xlab("")
+             xlab("") +
+             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
 
 hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
-             geom_point(alpha = 0.5) +
+             geom_jitter(width = 0.2, alpha = 0.5) +
              labs(title = "theHit") +
+             theme_bw() +
              theme(legend.position = "none") +
              ylim(5, 10) +
              ylab("") +
-             xlab("")
+             xlab("") +
+             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
 
 grid.arrange(boreLim, hitLim, nrow = 1)
 ```
@@ -353,38 +365,44 @@ class: middle
 ![](L6_ANOVA_files/slide25.png)
 ---
 class: middle
-```{r, echo=FALSE, fig.height= 4}
+```{r, echo=FALSE, fig.height= 3, dev='svg'}
 (hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
-             geom_point(alpha = 0.5) +
+             geom_jitter(width = 0.2, alpha = 0.5) +
              labs(title = "theHit") +
+             theme_bw() +
              theme(legend.position = "none") +
              ylim(5, 10) +
              ylab("") +
-             xlab(""))
+             xlab("")) +
+             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
 ```
 ![](L6_ANOVA_files/slide26.png)
 ---
 class: middle
-```{r, echo=FALSE, fig.height= 4}
+```{r, echo=FALSE, fig.height= 3, dev='svg'}
 (hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
-             geom_point(alpha = 0.5) +
+             geom_jitter(width = 0.2, alpha = 0.5) +
              labs(title = "theHit") +
+             theme_bw() +
              theme(legend.position = "none") +
              ylim(5, 10) +
              ylab("") +
-             xlab(""))
+             xlab("")) +
+             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
 ```
 ![](L6_ANOVA_files/slide27.png)
 ---
 class: middle
-```{r, echo=FALSE, fig.height= 4}
+```{r, echo=FALSE, fig.height= 3, dev='svg'}
 (hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
-             geom_point(alpha = 0.5) +
+             geom_jitter(width = 0.2, alpha = 0.5) +
              labs(title = "theHit") +
+             theme_bw() +
              theme(legend.position = "none") +
              ylim(5, 10) +
              ylab("") +
-             xlab(""))
+             xlab("")) +
+             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
 ```
 ![](L6_ANOVA_files/slide28.png)
 ---
