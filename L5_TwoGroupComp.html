@@ -83,33 +83,13 @@ class: middle
   - H&lt;sub&gt;0&lt;/sub&gt; (null hypothesis): the expression level of gene A is the same in both conditions.
   - &lt;font color="blue"&gt;H&lt;sub&gt;A&lt;/sub&gt; (alternative hypothesis): the expression level of gene A is different.&lt;/font&gt;
 ---
-&lt;big&gt;
-
-&gt; **Statistical hypothesis**: 
-&lt;br&gt;
-H&lt;sub&gt;0&lt;/sub&gt;: the expression of gene A is the same in both conditions.
-
-### &lt;center&gt;&lt;font color="red"&gt;  Is there **enough** evidence in the data to reject H&lt;sub&gt;0&lt;/sub&gt;? &lt;/font&gt;
-
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-3-1.svg)&lt;!-- --&gt;
-
----
-class: center, middle
-**The true underlying distribution is unknown**
-**Empirical distributions are based on DATA**
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-4-1.svg)&lt;!-- --&gt;
-
-
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-5-1.svg)&lt;!-- --&gt;
-
----
 class: middle
 
-# &lt;center&gt; Notation
+## Notation
 
 &lt;big&gt;
 
-- ### Random variables and estimates (we can observe)
+### Random variables and estimates (we can observe)
 
 `\(Y_i\)` : expression of gene A in the WT sample `\(i\)`
 
@@ -119,15 +99,26 @@ class: middle
 
 `\(\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}\)`: sample mean of gene A expressions from WT mice
 
-- ### Population parameters (unknown)
+### Population parameters (unknown)
 
 `\(\mu_Y = E[Y]\)` : the (population) expected expression of gene A in WT mice
 &gt; &lt;small&gt; note the different meanings of the word "sample"
 ---
+
+&lt;big&gt;
+
+### &lt;font color="red"&gt;  Is there **enough** evidence in the data to reject H&lt;sub&gt;0&lt;/sub&gt;? &lt;/font&gt;
+
+&gt; H&lt;sub&gt;0&lt;/sub&gt;: `\(\mu_Y = \mu_Z\)`
+
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-3-1.svg)&lt;!-- --&gt;
+
+### **Statistical Inference**: random samples are used to learn about the population 
+---
 class: middle
 
-### We observe... the difference between the **sample averages**!
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-6-1.svg)&lt;!-- --&gt;
+### We observe... the difference between the **sample averages**: `\(\bar{Y}\)` vs `\(\bar{Z}\)`
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-4-1.svg)&lt;!-- --&gt;
 
 
 ```r
@@ -150,42 +141,34 @@ theDiff &lt;- theAvgs["NrlKO", ] - theAvgs["wt", ]
 ##   Irs4    Nrl 
 ## -0.026 -5.155
 ```
----
-class: middle
-
-### Is this convincing evidence that the population parameters `\(\mu_Y \neq \mu_Z\)`?
-
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-11-1.svg)&lt;!-- --&gt;
-
-### **Statistical Inference**: random samples are used to learn about the population 
 
 ---
 class: middle
 
-## Is this convincing evidence that `\(\mu_Y \neq \mu_Z\)`?
+### Is the difference between `\(\bar{Y}\)` and `\(\bar{Z}\)` informative to reject H&lt;sub&gt;0&lt;/sub&gt;?
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-12-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-9-1.svg)&lt;!-- --&gt;
 
 &lt;big&gt;
-- The sample means by themselves are not enough to make conclusions about the population
+- The sample means, `\(\bar{Y}\)` vs `\(\bar{Z}\)`, by themselves are not enough to make conclusions about the population
 
 - What is a "large" difference? "large" relative to what?
 ---
 class: center, middle
 
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-10-1.svg)&lt;!-- --&gt;
 
 
 .pull-left[
-### What can we use to help us interpret the size of the mean difference?
+### What can we use to interpret the size of the mean difference?
 ]
 .pull-right[
 ### `$$\frac{\bar{Y}-\bar{Z}}{??}$$`
 ]
 ---
 class: center, middle
-## What can we use to help us interpret the size of the mean difference?
+### What can we use to interpret the size of the mean difference?
 
 .pull-left[
 ### "large" relative to the observed variation
@@ -194,7 +177,7 @@ class: center, middle
 ### `\(\frac{\bar{Y}-\bar{Z}}{\sqrt{V(\bar{Y}-\bar{Z})}}\)`
 ]
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-14-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-11-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 
@@ -212,7 +195,7 @@ If we also assume equal population variances:&lt;/big&gt; `\(\sigma_Z^2=\sigma_Y
 class: middle
 
 ### ...using the sample variances (combined, somehow)!
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-15-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-12-1.svg)&lt;!-- --&gt;
 
 
 ```r
@@ -229,12 +212,12 @@ theVars &lt;- with(miniDat,
 ```
 ]
 .pull-right[
-&lt;small&gt; `$$\text{e.g., } S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2=1.224$$`
+&lt;small&gt; `$$\text{e.g., for Nrl: } S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2=1.224$$`
 ]
 ---
 class: middle
 
-## Plug these sample variances into your chosen formula for the variance of the difference of sample means
+### Plug these sample variances into your chosen formula for the variance of the difference of sample means
 
 
 Assuming &lt;b&gt;equal&lt;/b&gt; variance of Y's and Z's
@@ -251,8 +234,8 @@ Assuming &lt;b&gt;unequal&lt;/b&gt; variance of Y's and Z's
 class: middle
 
 
----
-class: middle
+
+
 ## &lt;center&gt; The Test Statistic:  &lt;small&gt; `\(t=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}\)`&lt;/small&gt;
 
 Assuming equal variances:
@@ -282,7 +265,7 @@ The difference is about half a standard deviation for Irs4 and ~16 standard devi
 ---
 class: middle
 
-## The test statistic *t* &amp;nbsp; is a &lt;font color=red&gt;random variable&lt;/font&gt; because it's based on our &lt;font color=red&gt;random sample&lt;/font&gt;.
+### The test statistic *t* &amp;nbsp; is a &lt;font color=red&gt;random variable&lt;/font&gt; because it's based on our &lt;font color=red&gt;random sample&lt;/font&gt;.
 
 ### We need a measure of its uncertainty to determine how big *t* is:
 &gt; ### If we were to repeat the experiment many times, what's the probability of observing a value of *t* **as extreme** as the one we observed?
@@ -292,7 +275,7 @@ class: middle
 ---
 class: middle
 
-## Theory now tells us specific **null distributions** for this test statistic, depending on your assumptions.
+### Theory now tells us specific **null distributions** for this test statistic, depending on your assumptions.
 
 &gt; ### Willing to assume that F and G are normal distributions?
 
@@ -322,8 +305,11 @@ class: middle
 where df = degrees of freedom.
 ---
 class: middle
+# &lt;center&gt; Hypothesis testing
 
-## Assuming that H&lt;sub&gt;0&lt;/sub&gt; is true:
+### 1. Define a **test statistic**: 2-sample *t*-test
+### 2. Compute the &lt;font color=red&gt;observed value&lt;/font&gt; for the test statistic
+
 
 ```r
 tstStat &lt;- theDiff / sqrt(s2Diff)
@@ -333,11 +319,24 @@ tstStat &lt;- theDiff / sqrt(s2Diff)
 ##    Irs4     Nrl 
 ##  -0.529 -16.795
 ```
-&lt;center&gt;&lt;img src="L5_TwoGroupComp_files/nDist.png" width=400 &gt;&lt;/center&gt;
 
-We see that probability of seeing a test statistic as extreme that observed (T = -0.53) is pretty high.
+### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
 
-### &lt;center&gt;&lt;font color=red&gt;Thus, we don't have *enough*&amp;nbsp; evidence to reject H&lt;sub&gt;0&lt;/sub&gt;!
+[COMPUTE p-val and ADD CODE HERE]
+---
+class: middle
+
+### 4. Make a decision about significance of results, based on a pre-specified value (alpha, significance level)
+
+.pull-left[
+### Assuming that H&lt;sub&gt;0&lt;/sub&gt; is true: 
+for Irs4, the probability of seeing a test statistic as extreme that observed (*t* = -0.53) is pretty high (*p*=0.6).
+]
+.pull-right[
+&lt;img src="L5_TwoGroupComp_files/nDist.png" width=400 &gt;
+]
+
+Thus, we don't have &lt;font color=red&gt;*enough*&amp;nbsp; evidence &lt;/font&gt; to claim that Irs4 has a differential expression in WT compared to Nrl models. We do not reject H&lt;sub&gt;0&lt;/sub&gt;!
 
 ---
 class: center
@@ -346,21 +345,11 @@ class: center
 ---
 class: middle
 
-# Hypothesis testing
-
-### 1. Define a **test statistic** (*T*&amp;nbsp;).
-### 2. Compute the observed value for the test statistic based on our random sample.
-### 3. Compute p-value for the observed statistic under its **null sampling distribution**. 
-### 4. Make a decision about significance of results, based on a pre-specified value (alpha, significance level)
-
----
-class: middle
-
-# What is a p-value?
+## What is a p-value?
 
 &gt; Likelihood of obtaining a test statistic at least &lt;font color=green&gt; as extreme as the one observed&lt;/font&gt;, given that the null hypothesis is true (we are making a conditional p-value statement)
 
-# What is a p-value &lt;font color=red&gt;NOT&lt;/font&gt;?
+## What is a p-value &lt;font color=red&gt;NOT&lt;/font&gt;?
 
 - Not the probability that the &lt;font color=red&gt;null hypothesis is true&lt;/font&gt;
 
@@ -374,7 +363,7 @@ class: middle
 ---
 &lt;big&gt;
 ## "Genome-wide" testing of differential expression
-- In genomics, we often perform thousands of statistical tests (e.g., a **t-test** per gene)
+- In genomics, we often perform thousands of statistical tests (e.g., a *t*-test per gene)
 
 - The distribution of p-values across all tests provide good diagnostics/insights.
 
@@ -400,7 +389,7 @@ class: middle
 &lt;big&gt;
 What if you don't wish to assume the underlying data is normally distributed AND you aren't sure your samples are large enough to invoke CLT?
 &lt;/big&gt;
-# What are alternatives to the t test?
+## What are alternatives to the t test?
 
 &lt;big&gt;
 First, one could use the t test statistic but use a **bootstrap approach** to obtain statistical significance. We will cover this later on.
@@ -421,7 +410,7 @@ Rank all data, ignoring the **grouping** variable
 
 **Test statistic** = sum of the ranks for one group (optionally, subtract the minimum possible which is `\(\frac{n_Y(n_Y+1)}{2}\)`)
 
-(Alternative but equivalent formulation based on the number of y&lt;sub&gt;i&lt;/sub&gt;, z&lt;sub&gt;i&lt;/sub&gt; pairs for which y&lt;sub&gt;i&lt;/sub&gt; &gt;= z&lt;sub&gt;i&lt;/sub&gt;)
+(Alternative but equivalent formulation based on the number of `\(y_i, z_i\)` pairs for which `\(y_i \geq z_i\)`)
 
 Null distribution of such statistics can be worked out or approximated.
 
@@ -429,7 +418,7 @@ Null distribution of such statistics can be worked out or approximated.
 class: middle, center
 ![](L5_TwoGroupComp_files/slide32.png)
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-25-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-22-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 
@@ -462,7 +451,7 @@ class: middle
 
 What if you are unsure whether your sample size is large enough? Outliers with small samples could be problematic
 
-Which test result should one report ... the two sample t-test, the Wilcoxon, or the KS?
+Which test result should one report ... the 2-sample *t*-test, the Wilcoxon, or the KS?
 
 Treat p-values as one type of evidence that you should incorporate with others. 
 

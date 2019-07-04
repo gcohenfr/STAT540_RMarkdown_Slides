@@ -122,13 +122,33 @@ class: middle
   - H<sub>0</sub> (null hypothesis): the expression level of gene A is the same in both conditions.
   - <font color="blue">H<sub>A</sub> (alternative hypothesis): the expression level of gene A is different.</font>
 ---
+class: middle
+
+## Notation
+
 <big>
 
-> **Statistical hypothesis**: 
-<br>
-H<sub>0</sub>: the expression of gene A is the same in both conditions.
+### Random variables and estimates (we can observe)
 
-### <center><font color="red">  Is there **enough** evidence in the data to reject H<sub>0</sub>? </font>
+$Y_i$ : expression of gene A in the WT sample $i$
+
+$Z_i$: expression of gene A in NrlKO sample $i$
+
+$Y_1, Y_2,..., Y_{n_Y}$ : a <font color="red">random sample</font> of size $n_Y$
+
+$\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}$: sample mean of gene A expressions from WT mice
+
+### Population parameters (unknown)
+
+$\mu_Y = E[Y]$ : the (population) expected expression of gene A in WT mice
+> <small> note the different meanings of the word "sample"
+---
+
+<big>
+
+### <font color="red">  Is there **enough** evidence in the data to reject H<sub>0</sub>? </font>
+
+> H<sub>0</sub>: $\mu_Y = \mu_Z$
 
 ```{r echo=FALSE, fig.height=3.5, dev='svg'}
 irsDat <- filter(miniDat, gene == "Irs4")
@@ -151,77 +171,15 @@ options(repr.plot.width=8, repr.plot.height=5)
 grid.arrange(irsLim, nrlLim, ncol = 1)
 ```
 
----
-class: center, middle
-**The true underlying distribution is unknown**
-**Empirical distributions are based on DATA**
-```{r echo=FALSE, fig.height=2.5, dev='svg'}
-irsDens <- ggplot(irsDat, aes(x = gExp)) + 
-             geom_density(aes(fill = gType, alpha = I(0.5))) +
-             labs(title = "Irs4 gene") +
-             theme(legend.position = "none") + 
-             ylim(0, 3)
-
-nrlDens <- ggplot(nrlDat, aes(x = gExp)) + 
-             geom_density(aes(fill = gType, alpha = I(0.5))) +
-             labs(title = "Nrl gene") +
-             theme(legend.position = "none") + 
-             ylim(0, 3)
-
-# Combine plots together
-options(repr.plot.width=8, repr.plot.height=5)
-
-grid.arrange(irsDens, nrlDens, nrow = 1)
-```
-
-
-```{r echo=FALSE, fig.height=3, dev='svg'}
-irsDat <- filter(miniDat, gene == "Irs4")
-nrlDat <- filter(miniDat, gene == "Nrl")
-
-irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
-             geom_point(alpha = 0.5) +
-             labs(title = "Irs4 gene") +
-             theme(legend.position = "none") +
-             xlim(5, 15)
-
-nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
-             geom_point(alpha = 0.5) +
-             labs(title = "Nrl gene") +
-             theme(legend.position = "none") +
-             xlim(5, 15)
-
-options(repr.plot.width=8, repr.plot.height=5)
-
-grid.arrange(irsLim, nrlLim, ncol = 1)
-```
-
+### **Statistical Inference**: random samples are used to learn about the population 
 ---
 class: middle
 
-# <center> Notation
-
-<big>
-
-- ### Random variables and estimates (we can observe)
-
-$Y_i$ : expression of gene A in the WT sample $i$
-
-$Z_i$: expression of gene A in NrlKO sample $i$
-
-$Y_1, Y_2,..., Y_{n_Y}$ : a <font color="red">random sample</font> of size $n_Y$
-
-$\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}$: sample mean of gene A expressions from WT mice
-
-- ### Population parameters (unknown)
-
-$\mu_Y = E[Y]$ : the (population) expected expression of gene A in WT mice
-> <small> note the different meanings of the word "sample"
----
-class: middle
-
-### We observe... the difference between the **sample averages**!
+### We observe... the difference between the **sample averages**: $\bar{Y}$ vs $\bar{Z}$
 ``` {r echo=FALSE, fig.height=2.25, dev='svg'}
+#####
+#GCF: THESE PLOTS NEED TO BE SCATTER PLOTS WITH MEAN AS IN ORIGINAL LECTURE
+#####
 irsBox <- ggplot(irsDat, aes(y = gExp, x = gType)) + 
              geom_boxplot(aes(fill = gType, alpha = 0.5)) +
              labs(title = "Irs4 gene") +
@@ -254,38 +212,16 @@ theDiff <- theAvgs["NrlKO", ] - theAvgs["wt", ]
 ```{r, echo=FALSE}
 round(theDiff, 3)
 ```
----
-class: middle
-
-### Is this convincing evidence that the population parameters $\mu_Y \neq \mu_Z$?
-
-``` {r echo=FALSE,fig.height=3, dev='svg'}
-irsBox <- ggplot(irsDat, aes(y = gExp, x = gType)) + 
-             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Irs4 gene") +
-             theme(legend.position = "none") +
-             coord_flip()
-
-nrlBox <- ggplot(nrlDat, aes(y = gExp, x = gType)) + 
-             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Nrl gene") +
-             theme(legend.position = "none") +
-             coord_flip()
-
-# Combine plots together
-options(repr.plot.width=8, repr.plot.height = 3)
-
-grid.arrange(irsBox, nrlBox, nrow = 1)
-```
-
-### **Statistical Inference**: random samples are used to learn about the population 
 
 ---
 class: middle
 
-## Is this convincing evidence that $\mu_Y \neq \mu_Z$?
+### Is the difference between $\bar{Y}$ and $\bar{Z}$ informative to reject H<sub>0</sub>?
 
 ``` {r echo=FALSE,fig.height=3, dev='svg'}
+#####
+#GCF: THESE PLOTS NEED TO BE SCATTER PLOTS WITH MEAN AS IN ORIGINAL LECTURE
+#####
 artDat <- data.frame("gExp" = c(rnorm(50, mean = 23, sd = 1), rnorm(50, mean = 28, sd = 1)), "gType" = c(rep("NrlKO", times = 50),rep("wt" , times = 50)))
 
 artBox <- ggplot(artDat, aes(y = gExp, x = gType)) + 
@@ -307,7 +243,7 @@ grid.arrange(artBox, nrlBox, nrow = 1)
 ```
 
 <big>
-- The sample means by themselves are not enough to make conclusions about the population
+- The sample means, $\bar{Y}$ vs $\bar{Z}$, by themselves are not enough to make conclusions about the population
 
 - What is a "large" difference? "large" relative to what?
 ---
@@ -315,6 +251,9 @@ class: center, middle
 
 
 ``` {r echo=FALSE,fig.height=3, dev='svg'}
+#####
+#GCF: THESE PLOTS NEED TO BE SCATTER PLOTS WITH MEAN AS IN ORIGINAL LECTURE
+#####
 # Combine plots together
 options(repr.plot.width=8, repr.plot.height = 3)
 
@@ -323,14 +262,14 @@ grid.arrange(artBox, nrlBox, nrow = 1)
 
 
 .pull-left[
-### What can we use to help us interpret the size of the mean difference?
+### What can we use to interpret the size of the mean difference?
 ]
 .pull-right[
 ### $$\frac{\bar{Y}-\bar{Z}}{??}$$
 ]
 ---
 class: center, middle
-## What can we use to help us interpret the size of the mean difference?
+### What can we use to interpret the size of the mean difference?
 
 .pull-left[
 ### "large" relative to the observed variation
@@ -340,6 +279,9 @@ class: center, middle
 ]
 
 ``` {r echo=FALSE,fig.height=3, dev='svg'}
+#####
+#GCF: THESE BOXPLOTS are OK
+#####
 # Combine plots together
 options(repr.plot.width=8, repr.plot.height = 3)
 
@@ -363,6 +305,9 @@ class: middle
 
 ### ...using the sample variances (combined, somehow)!
 ```{r echo=FALSE, fig.height=3.5, dev='svg'}
+#####
+#GCF: CHANGE TO BOXPLOTS HERE
+#####
 irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
              labs(title = "Irs4 gene") +
@@ -391,12 +336,12 @@ round(theVars, 3)
 ```
 ]
 .pull-right[
-<small> $$\text{e.g., } S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2=1.224$$
+<small> $$\text{e.g., for Nrl: } S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2=1.224$$
 ]
 ---
 class: middle
 
-## Plug these sample variances into your chosen formula for the variance of the difference of sample means
+### Plug these sample variances into your chosen formula for the variance of the difference of sample means
 
 
 Assuming <b>equal</b> variance of Y's and Z's
@@ -452,8 +397,8 @@ by(miniDat, miniDat$gene, function(theDat) {
   t.test(gExp ~ gType, theDat, var.equal = TRUE)
 })
 ```
----
-class: middle
+
+
 ## <center> The Test Statistic:  <small> $t=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}$</small>
 
 Assuming equal variances:
@@ -477,7 +422,7 @@ The difference is about half a standard deviation for Irs4 and ~16 standard devi
 ---
 class: middle
 
-## The test statistic *t* &nbsp; is a <font color=red>random variable</font> because it's based on our <font color=red>random sample</font>.
+### The test statistic *t* &nbsp; is a <font color=red>random variable</font> because it's based on our <font color=red>random sample</font>.
 
 ### We need a measure of its uncertainty to determine how big *t* is:
 > ### If we were to repeat the experiment many times, what's the probability of observing a value of *t* **as extreme** as the one we observed?
@@ -487,7 +432,7 @@ class: middle
 ---
 class: middle
 
-## Theory now tells us specific **null distributions** for this test statistic, depending on your assumptions.
+### Theory now tells us specific **null distributions** for this test statistic, depending on your assumptions.
 
 > ### Willing to assume that F and G are normal distributions?
 
@@ -517,19 +462,35 @@ class: middle
 where df = degrees of freedom.
 ---
 class: middle
+# <center> Hypothesis testing
 
-## Assuming that H<sub>0</sub> is true:
+### 1. Define a **test statistic**: 2-sample *t*-test
+### 2. Compute the <font color=red>observed value</font> for the test statistic
+
 ```{r}
 tstStat <- theDiff / sqrt(s2Diff)
 ```
 ```{r, echo=FALSE}
 round(tstStat, 3)
 ```
-<center><img src="L5_TwoGroupComp_files/nDist.png" width=400 ></center>
 
-We see that probability of seeing a test statistic as extreme that observed (T = -0.53) is pretty high.
+### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
 
-### <center><font color=red>Thus, we don't have *enough*&nbsp; evidence to reject H<sub>0</sub>!
+[COMPUTE p-val and ADD CODE HERE]
+---
+class: middle
+
+### 4. Make a decision about significance of results, based on a pre-specified value (alpha, significance level)
+
+.pull-left[
+### Assuming that H<sub>0</sub> is true: 
+for Irs4, the probability of seeing a test statistic as extreme that observed (*t* = -0.53) is pretty high (*p*=0.6).
+]
+.pull-right[
+<img src="L5_TwoGroupComp_files/nDist.png" width=400 >
+]
+
+Thus, we don't have <font color=red>*enough*&nbsp; evidence </font> to claim that Irs4 has a differential expression in WT compared to Nrl models. We do not reject H<sub>0</sub>!
 
 ---
 class: center
@@ -538,21 +499,11 @@ class: center
 ---
 class: middle
 
-# Hypothesis testing
-
-### 1. Define a **test statistic** (*T*&nbsp;).
-### 2. Compute the observed value for the test statistic based on our random sample.
-### 3. Compute p-value for the observed statistic under its **null sampling distribution**. 
-### 4. Make a decision about significance of results, based on a pre-specified value (alpha, significance level)
-
----
-class: middle
-
-# What is a p-value?
+## What is a p-value?
 
 > Likelihood of obtaining a test statistic at least <font color=green> as extreme as the one observed</font>, given that the null hypothesis is true (we are making a conditional p-value statement)
 
-# What is a p-value <font color=red>NOT</font>?
+## What is a p-value <font color=red>NOT</font>?
 
 - Not the probability that the <font color=red>null hypothesis is true</font>
 
@@ -566,7 +517,7 @@ class: middle
 ---
 <big>
 ## "Genome-wide" testing of differential expression
-- In genomics, we often perform thousands of statistical tests (e.g., a **t-test** per gene)
+- In genomics, we often perform thousands of statistical tests (e.g., a *t*-test per gene)
 
 - The distribution of p-values across all tests provide good diagnostics/insights.
 
@@ -592,7 +543,7 @@ class: middle
 <big>
 What if you don't wish to assume the underlying data is normally distributed AND you aren't sure your samples are large enough to invoke CLT?
 </big>
-# What are alternatives to the t test?
+## What are alternatives to the t test?
 
 <big>
 First, one could use the t test statistic but use a **bootstrap approach** to obtain statistical significance. We will cover this later on.
@@ -613,7 +564,7 @@ Rank all data, ignoring the **grouping** variable
 
 **Test statistic** = sum of the ranks for one group (optionally, subtract the minimum possible which is $\frac{n_Y(n_Y+1)}{2}$)
 
-(Alternative but equivalent formulation based on the number of y<sub>i</sub>, z<sub>i</sub> pairs for which y<sub>i</sub> >= z<sub>i</sub>)
+(Alternative but equivalent formulation based on the number of $y_i, z_i$ pairs for which $y_i \geq z_i$)
 
 Null distribution of such statistics can be worked out or approximated.
 
@@ -658,7 +609,7 @@ class: middle
 
 What if you are unsure whether your sample size is large enough? Outliers with small samples could be problematic
 
-Which test result should one report ... the two sample t-test, the Wilcoxon, or the KS?
+Which test result should one report ... the 2-sample *t*-test, the Wilcoxon, or the KS?
 
 Treat p-values as one type of evidence that you should incorporate with others. 
 
