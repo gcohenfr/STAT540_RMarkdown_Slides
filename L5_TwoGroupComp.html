@@ -236,7 +236,7 @@ class: middle
 
 
 
-## &lt;center&gt; The Test Statistic:  &lt;small&gt; `\(t=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}\)`&lt;/small&gt;
+## &lt;center&gt; The Test Statistic:  &lt;small&gt; `\(T=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}\)`&lt;/small&gt;
 
 Assuming equal variances:
 
@@ -265,10 +265,10 @@ The difference is about half a standard deviation for Irs4 and ~16 standard devi
 ---
 class: middle
 
-### The test statistic *t* &amp;nbsp; is a &lt;font color=red&gt;random variable&lt;/font&gt; because it's based on our &lt;font color=red&gt;random sample&lt;/font&gt;.
+### The test statistic T is a &lt;font color=red&gt;random variable&lt;/font&gt; because it's based on our &lt;font color=red&gt;random sample&lt;/font&gt;.
 
-### We need a measure of its uncertainty to determine how big *t* is:
-&gt; ### If we were to repeat the experiment many times, what's the probability of observing a value of *t* **as extreme** as the one we observed?
+### We need a measure of its uncertainty to determine how big T is:
+&gt; ### If we were to repeat the experiment many times, what's the probability of observing a value of T **as extreme** as the one we observed?
 
 ### We need to have a probability distribution!
 ### However, this is unknown to us so we need to **make more assumptions**.
@@ -297,8 +297,8 @@ Then the t-distributions above or even a normal distribution are decent approxim
 ---
 class: middle
 
-## Student's t-distribution
-### Recall that *t*&amp;nbsp; is a **random variable**. Under certain assumptions, we can prove that *t*&amp;nbsp; follows a **t-distribution**.
+## Student's *t*-distribution
+### Recall that T is a **random variable**. Under certain assumptions, we can prove that T follows a *t*-distribution.
 
 &lt;center&gt;&lt;img src="L5_TwoGroupComp_files/stuTDist.png" width="400"&gt;
 
@@ -389,7 +389,7 @@ class: middle
 &lt;big&gt;
 What if you don't wish to assume the underlying data is normally distributed AND you aren't sure your samples are large enough to invoke CLT?
 &lt;/big&gt;
-## What are alternatives to the t test?
+## What are alternatives to the *t*-test?
 
 &lt;big&gt;
 First, one could use the t test statistic but use a **bootstrap approach** to obtain statistical significance. We will cover this later on.

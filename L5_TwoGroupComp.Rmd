@@ -280,7 +280,7 @@ class: center, middle
 
 ``` {r echo=FALSE,fig.height=3, dev='svg'}
 #####
-#GCF: THESE BOXPLOTS are OK
+#GCF: change to scatter PLOTS 
 #####
 # Combine plots together
 options(repr.plot.width=8, repr.plot.height = 3)
@@ -306,7 +306,7 @@ class: middle
 ### ...using the sample variances (combined, somehow)!
 ```{r echo=FALSE, fig.height=3.5, dev='svg'}
 #####
-#GCF: CHANGE TO BOXPLOTS HERE
+#GCF: CHANGE TO Scatter PLOTS HERE
 #####
 irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
@@ -399,7 +399,7 @@ by(miniDat, miniDat$gene, function(theDat) {
 ```
 
 
-## <center> The Test Statistic:  <small> $t=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}$</small>
+## <center> The Test Statistic:  <small> $T=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}$</small>
 
 Assuming equal variances:
 ```{r}
@@ -422,10 +422,10 @@ The difference is about half a standard deviation for Irs4 and ~16 standard devi
 ---
 class: middle
 
-### The test statistic *t* &nbsp; is a <font color=red>random variable</font> because it's based on our <font color=red>random sample</font>.
+### The test statistic T is a <font color=red>random variable</font> because it's based on our <font color=red>random sample</font>.
 
-### We need a measure of its uncertainty to determine how big *t* is:
-> ### If we were to repeat the experiment many times, what's the probability of observing a value of *t* **as extreme** as the one we observed?
+### We need a measure of its uncertainty to determine how big T is:
+> ### If we were to repeat the experiment many times, what's the probability of observing a value of T **as extreme** as the one we observed?
 
 ### We need to have a probability distribution!
 ### However, this is unknown to us so we need to **make more assumptions**.
@@ -454,8 +454,8 @@ Then the t-distributions above or even a normal distribution are decent approxim
 ---
 class: middle
 
-## Student's t-distribution
-### Recall that *t*&nbsp; is a **random variable**. Under certain assumptions, we can prove that *t*&nbsp; follows a **t-distribution**.
+## Student's *t*-distribution
+### Recall that T is a **random variable**. Under certain assumptions, we can prove that T follows a *t*-distribution.
 
 <center><img src="L5_TwoGroupComp_files/stuTDist.png" width="400">
 
@@ -543,7 +543,7 @@ class: middle
 <big>
 What if you don't wish to assume the underlying data is normally distributed AND you aren't sure your samples are large enough to invoke CLT?
 </big>
-## What are alternatives to the t test?
+## What are alternatives to the *t*-test?
 
 <big>
 First, one could use the t test statistic but use a **bootstrap approach** to obtain statistical significance. We will cover this later on.
