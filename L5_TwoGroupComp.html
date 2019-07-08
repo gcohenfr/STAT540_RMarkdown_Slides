@@ -126,6 +126,7 @@ theAvgs &lt;- with(miniDat,
                  tapply(gExp, list(gType, gene), mean))
 ```
 
+
 ```
 ##        Irs4    Nrl
 ## wt    7.766 11.244
@@ -319,10 +320,47 @@ tstStat &lt;- theDiff / sqrt(s2Diff)
 ##    Irs4     Nrl 
 ##  -0.529 -16.795
 ```
-
 ### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
 
-[COMPUTE p-val and ADD CODE HERE]
+
+```r
+by(miniDat, miniDat$gene, function(theDat) {
+  theDat$gType &lt;- factor(theDat$gType, rev(levels(theDat$gType)))
+  t.test(gExp ~ gType, theDat, var.equal = TRUE)
+})
+```
+---
+class: middle
+
+
+```
+## miniDat$gene: Irs4
+## 
+## 	Two Sample t-test
+## 
+## data:  gExp by gType
+## t = -0.52865, df = 37, p-value = 0.6002
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.12597002  0.07383844
+## sample estimates:
+## mean in group NrlKO    mean in group wt 
+##            7.739684            7.765750 
+## 
+## -------------------------------------------------------- 
+## miniDat$gene: Nrl
+## 
+## 	Two Sample t-test
+## 
+## data:  gExp by gType
+## t = -16.795, df = 37, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -5.776439 -4.532698
+## sample estimates:
+## mean in group NrlKO    mean in group wt 
+##            6.089632           11.244200
+```
 ---
 class: middle
 
@@ -418,7 +456,7 @@ Null distribution of such statistics can be worked out or approximated.
 class: middle, center
 ![](L5_TwoGroupComp_files/slide32.png)
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-22-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 

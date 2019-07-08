@@ -90,21 +90,24 @@ str(miniDat)
 irsDat <- filter(miniDat, gene == "Irs4")
 nrlDat <- filter(miniDat, gene == "Nrl")
 
-irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
+irsLim <- ggplot(irsDat, aes(y = gExp, x = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
              labs(title = "Irs4 gene") +
+             theme_bw() +
              theme(legend.position = "none") +
-             xlim(5, 15)
+             coord_flip()
+             
 
-nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
+nrlLim <- ggplot(nrlDat, aes(y = gExp, x = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
              labs(title = "Nrl gene") +
+             theme_bw() +
              theme(legend.position = "none") +
-             xlim(5, 15)
+             coord_flip()
 
 options(repr.plot.width=8, repr.plot.height=5)
 
-grid.arrange(irsLim, nrlLim, ncol = 1)
+grid.arrange(irsLim + ylim(5, 13), nrlLim + ylim(5, 13), ncol = 1)
 ```
 
 ---
@@ -150,25 +153,41 @@ $\mu_Y = E[Y]$ : the (population) expected expression of gene A in WT mice
 
 > H<sub>0</sub>: $\mu_Y = \mu_Z$
 
-```{r echo=FALSE, fig.height=3.5, dev='svg'}
-irsDat <- filter(miniDat, gene == "Irs4")
-nrlDat <- filter(miniDat, gene == "Nrl")
+```{r echo=FALSE, fig.height=3.5, dev='svg', warning = FALSE}
 
-irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
-             geom_point(alpha = 0.5) +
-             labs(title = "Irs4 gene") +
-             theme(legend.position = "none") +
-             xlim(5, 15)
+irsMean <-   irsLim +
+             stat_summary(geom = 'point',
+                          fun.y = 'mean',
+                          color = 'purple',
+                          fill = 'purple',
+                          shape = 17,
+                          size = 2) +
+             stat_summary(aes(label=paste("mean = ",round(..y..,2))), 
+                          fun.y = mean, 
+                          geom="text",
+                          color = 'purple',
+                          size=3, 
+                          vjust = -1)
 
-nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
-             geom_point(alpha = 0.5) +
-             labs(title = "Nrl gene") +
-             theme(legend.position = "none") +
-             xlim(5, 15)
+nrlMean <-   nrlLim +
+             stat_summary(geom = 'point',
+                          fun.y = 'mean',
+                          color = 'purple',
+                          fill = 'purple',
+                          shape = 17,
+                          size = 2) +
+             stat_summary(aes(label=paste("mean = ",round(..y..,2))),
+                          fun.y = mean, 
+                          geom="text",
+                          color = 'purple',
+                          size=3, 
+                          vjust = -1)
 
-options(repr.plot.width=8, repr.plot.height=5)
+# Combine plots together
+options(repr.plot.width=8, repr.plot.height = 3)
 
-grid.arrange(irsLim, nrlLim, ncol = 1)
+grid.arrange(irsMean + ylim(5, 13), nrlMean + ylim(5, 13), ncol = 1)
+
 ```
 
 ### **Statistical Inference**: random samples are used to learn about the population 
@@ -177,31 +196,16 @@ class: middle
 
 ### We observe... the difference between the **sample averages**: $\bar{Y}$ vs $\bar{Z}$
 ``` {r echo=FALSE, fig.height=2.25, dev='svg'}
-#####
-#GCF: THESE PLOTS NEED TO BE SCATTER PLOTS WITH MEAN AS IN ORIGINAL LECTURE
-#####
-irsBox <- ggplot(irsDat, aes(y = gExp, x = gType)) + 
-             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Irs4 gene") +
-             theme(legend.position = "none") +
-             coord_flip()
 
-nrlBox <- ggplot(nrlDat, aes(y = gExp, x = gType)) + 
-             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Nrl gene") +
-             theme(legend.position = "none") +
-             coord_flip()
+grid.arrange(irsMean, nrlMean, nrow = 1)
 
-# Combine plots together
-options(repr.plot.width=8, repr.plot.height = 3)
-
-grid.arrange(irsBox, nrlBox, nrow = 1)
 ```
 
 ```{r}
 theAvgs <- with(miniDat,
                  tapply(gExp, list(gType, gene), mean))
 ```
+
 ```{r, echo=FALSE}
 round(theAvgs, 3)
 ```
@@ -219,27 +223,9 @@ class: middle
 ### Is the difference between $\bar{Y}$ and $\bar{Z}$ informative to reject H<sub>0</sub>?
 
 ``` {r echo=FALSE,fig.height=3, dev='svg'}
-#####
-#GCF: THESE PLOTS NEED TO BE SCATTER PLOTS WITH MEAN AS IN ORIGINAL LECTURE
-#####
-artDat <- data.frame("gExp" = c(rnorm(50, mean = 23, sd = 1), rnorm(50, mean = 28, sd = 1)), "gType" = c(rep("NrlKO", times = 50),rep("wt" , times = 50)))
 
-artBox <- ggplot(artDat, aes(y = gExp, x = gType)) + 
-             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Artificial gene") +
-             theme(legend.position = "none") +
-             coord_flip()
+grid.arrange(irsMean, nrlMean, nrow = 1)
 
-nrlBox <- ggplot(nrlDat, aes(y = gExp, x = gType)) + 
-             geom_boxplot(aes(fill = gType, alpha = 0.5)) +
-             labs(title = "Nrl gene") +
-             theme(legend.position = "none") +
-             coord_flip()
-
-# Combine plots together
-options(repr.plot.width=8, repr.plot.height = 3)
-
-grid.arrange(artBox, nrlBox, nrow = 1)
 ```
 
 <big>
@@ -251,13 +237,31 @@ class: center, middle
 
 
 ``` {r echo=FALSE,fig.height=3, dev='svg'}
-#####
-#GCF: THESE PLOTS NEED TO BE SCATTER PLOTS WITH MEAN AS IN ORIGINAL LECTURE
-#####
-# Combine plots together
-options(repr.plot.width=8, repr.plot.height = 3)
 
-grid.arrange(artBox, nrlBox, nrow = 1)
+artDat <- data.frame("gExp" = c(rnorm(50, mean = 23, sd = 1), rnorm(50, mean = 28, sd = 1)), "gType" = c(rep("NrlKO", times = 50),rep("wt" , times = 50)))
+
+artMean <- ggplot(artDat, aes(y = gExp, x = gType, colour = gType)) + 
+             geom_point(alpha = 0.5) +
+             labs(title = "Artificial gene") +
+             theme_bw() +
+             theme(legend.position = "none") +
+             coord_flip() +
+             stat_summary(geom = 'point',
+                          fun.y = 'mean',
+                          color = 'purple',
+                          fill = 'purple',
+                          shape = 17,
+                          size = 2) +
+             stat_summary(aes(label=paste("mean = ",round(..y..,2))),
+                          fun.y = mean, 
+                          geom="text",
+                          color = 'purple',
+                          size=3, 
+                          vjust = -1)
+
+# Combine plots together
+
+grid.arrange(artMean, nrlMean, nrow = 1)
 ```
 
 
@@ -279,13 +283,8 @@ class: center, middle
 ]
 
 ``` {r echo=FALSE,fig.height=3, dev='svg'}
-#####
-#GCF: change to scatter PLOTS 
-#####
 # Combine plots together
-options(repr.plot.width=8, repr.plot.height = 3)
-
-grid.arrange(artBox, nrlBox, nrow = 1)
+grid.arrange(artMean, nrlMean, nrow = 1)
 ```
 ---
 class: middle
@@ -305,24 +304,7 @@ class: middle
 
 ### ...using the sample variances (combined, somehow)!
 ```{r echo=FALSE, fig.height=3.5, dev='svg'}
-#####
-#GCF: CHANGE TO Scatter PLOTS HERE
-#####
-irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
-             geom_point(alpha = 0.5) +
-             labs(title = "Irs4 gene") +
-             theme(legend.position = "none") +
-             xlim(5, 15)
-
-nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
-             geom_point(alpha = 0.5) +
-             labs(title = "Nrl gene") +
-             theme(legend.position = "none") +
-             xlim(5, 15)
-
-options(repr.plot.width=8, repr.plot.height=5)
-
-grid.arrange(irsLim, nrlLim, ncol = 1)
+grid.arrange(irsMean  + ylim(5, 13), nrlMean + ylim(5, 13), ncol = 1)
 ```
 
 ``` {r}
@@ -473,10 +455,23 @@ tstStat <- theDiff / sqrt(s2Diff)
 ```{r, echo=FALSE}
 round(tstStat, 3)
 ```
-
 ### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
 
-[COMPUTE p-val and ADD CODE HERE]
+``` {r, echo = TRUE, results = 'hide'}
+by(miniDat, miniDat$gene, function(theDat) {
+  theDat$gType <- factor(theDat$gType, rev(levels(theDat$gType)))
+  t.test(gExp ~ gType, theDat, var.equal = TRUE)
+})
+```
+---
+class: middle
+
+``` {r, echo=FALSE}
+by(miniDat, miniDat$gene, function(theDat) {
+  theDat$gType <- factor(theDat$gType, rev(levels(theDat$gType)))
+  t.test(gExp ~ gType, theDat, var.equal = TRUE)
+})
+```
 ---
 class: middle
 

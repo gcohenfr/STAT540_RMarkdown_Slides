@@ -69,31 +69,8 @@ grid.arrange(irsLim, nrlLim, ncol = 1)
 ```
 
 ---
-class: center
-
-.pull-left[
-## **Population** (unknown)
-<br>
-$$Y\sim F$$
-$$Z\sim G$$
-<br> <br>
-$$E[Y] = \mu_Y$$
-<br>
-$$E[Z] = \mu_Z$$
-<br> <br>
-$$H_0 : \mu_Y = \mu_Z$$
-$$H_A : \mu_Y \neq \mu_Z$$
-]
-.pull-right[
-## **Sample** (observed with randomness)
-$$Y_1, Y_2, ... Y_{n_Y}$$
-$$Z_1, Z_2, ... Z_{n_Z}$$
-<br>
-$$\hat{\mu}_Y = \bar{Y} = \frac{\sum^{n_Y}_{i=1} Y_i}{n_Y}$$
-$$\hat{\mu}_Z = \bar{Z} = \frac{\sum^{n_Z}_{i=1} Z_i}{n_Z}$$
-<br> <br>
-$$T = \frac{\bar{Y}-\bar{Z}}{\sqrt{V(\bar{Y} - \bar{Z})}}$$
-]
+class: middle
+![](L6_ANOVA_files/slide3.png)
 ---
 
 class: middle
