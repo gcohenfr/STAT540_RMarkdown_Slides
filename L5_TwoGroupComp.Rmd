@@ -64,12 +64,10 @@ library(ggplot2)
 library(ggthemes)
 library(grid)
 library(gridExtra)
-library(lattice)
-library(latticeExtra)
 
-jCols <- c(x = "blue", y = "orange")
-trellis.par.set(superpose.symbol = list(col = jCols),
-                superpose.line = list(col = jCols))
+# jCols <- c(x = "blue", y = "orange")
+# trellis.par.set(superpose.symbol = list(col = jCols),
+#                 superpose.line = list(col = jCols))
 jCex <- 3 
 
 prDes <- readRDS("data/GSE4051_design.rds")
@@ -541,13 +539,13 @@ What if you don't wish to assume the underlying data is normally distributed AND
 ## What are alternatives to the *t*-test?
 
 <big>
-First, one could use the t test statistic but use a **bootstrap approach** to obtain statistical significance. We will cover this later on.
+First, one could use the t test statistic but use a **bootstrap approach** to compute its p-value. We will cover this later on.
 
 Alternatively, there are *non-parametric* tests that are available here:
 
-- **Wilcoxon rank sum test**, aka Mann Whitney, uses ranks
+- **Wilcoxon rank sum test**, aka Mann Whitney, uses ranks to test differences in population means.
 
-- **Kolmogorov-Smirnov test** uses the empirical CDF
+- **Kolmogorov-Smirnov test** uses the empirical CDF to test differences in population cumulative distributions.
 
 ---
 class: middle
