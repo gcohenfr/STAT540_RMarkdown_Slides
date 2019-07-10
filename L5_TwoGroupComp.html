@@ -276,9 +276,9 @@ class: middle
 ---
 class: middle
 
-### Theory now tells us specific **null distributions** for this test statistic, depending on your assumptions.
+### Theory now tells us specific **null distributions** for these test statistics, depending on your assumptions.
 
-&gt; ### Willing to assume that F and G are normal distributions?
+### --&gt;  Willing to assume that F and G are normal distributions?
 
 .pull-left[
 ### &lt;center&gt; 2-sample *t*-test: 
@@ -291,7 +291,7 @@ class: middle
 `$$T\sim t_{&lt;something\,ugly&gt;}$$`
 ]
 
-&gt; ### Unwilling to assume that F and G are normal distributions? But you feel that n&lt;sub&gt;Y&lt;/sub&gt; and n&lt;sub&gt;Z&lt;/sub&gt; are large enough?
+### --&gt; Unwilling to assume that F and G are normal distributions? But you feel that n&lt;sub&gt;Y&lt;/sub&gt; and n&lt;sub&gt;Z&lt;/sub&gt; are large enough?
 
 Then the t-distributions above or even a normal distribution are decent approximations.
 
@@ -320,51 +320,20 @@ tstStat &lt;- theDiff / sqrt(s2Diff)
 ##    Irs4     Nrl 
 ##  -0.529 -16.795
 ```
-### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
 
-
-```r
-by(miniDat, miniDat$gene, function(theDat) {
-  theDat$gType &lt;- factor(theDat$gType, rev(levels(theDat$gType)))
-  t.test(gExp ~ gType, theDat, var.equal = TRUE)
-})
-```
 ---
 class: middle
+### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
+
 
 
 ```
 ## miniDat$gene: Irs4
-## 
-## 	Two Sample t-test
-## 
-## data:  gExp by gType
-## t = -0.52865, df = 37, p-value = 0.6002
-## alternative hypothesis: true difference in means is not equal to 0
-## 95 percent confidence interval:
-##  -0.12597002  0.07383844
-## sample estimates:
-## mean in group NrlKO    mean in group wt 
-##            7.739684            7.765750 
-## 
+## [1] 0.6002058
 ## -------------------------------------------------------- 
 ## miniDat$gene: Nrl
-## 
-## 	Two Sample t-test
-## 
-## data:  gExp by gType
-## t = -16.795, df = 37, p-value &lt; 2.2e-16
-## alternative hypothesis: true difference in means is not equal to 0
-## 95 percent confidence interval:
-##  -5.776439 -4.532698
-## sample estimates:
-## mean in group NrlKO    mean in group wt 
-##            6.089632           11.244200
+## [1] 6.764663e-19
 ```
----
-class: middle
-
-### 4. Make a decision about significance of results, based on a pre-specified value (alpha, significance level)
 
 .pull-left[
 ### Assuming that H&lt;sub&gt;0&lt;/sub&gt; is true: 
@@ -374,7 +343,17 @@ for Irs4, the probability of seeing a test statistic as extreme that observed (*
 &lt;img src="L5_TwoGroupComp_files/nDist.png" width=400 &gt;
 ]
 
-Thus, we don't have &lt;font color=red&gt;*enough*&amp;nbsp; evidence &lt;/font&gt; to claim that Irs4 has a differential expression in WT compared to Nrl models. We do not reject H&lt;sub&gt;0&lt;/sub&gt;!
+---
+class: middle
+
+### 4. Make a decision about significance of results, based on a pre-specified value (alpha, significance level)
+
+
+The significance level `\(\alpha\)` is usually set at 0.05. However, this value is arbitrary and usually depends on the study.
+
+Using `\(\alpha=0.05\)`, since the p-value for the Irs4 test is greater than 0.05, we conclude that there is not &lt;font color=red&gt;*enough*&amp;nbsp; evidence &lt;/font&gt; in the data to claim that Irs4 has a differential expression in WT compared to Nrl models. 
+
+We do not reject H&lt;sub&gt;0&lt;/sub&gt;!
 
 ---
 class: center
@@ -430,13 +409,13 @@ What if you don't wish to assume the underlying data is normally distributed AND
 ## What are alternatives to the *t*-test?
 
 &lt;big&gt;
-First, one could use the t test statistic but use a **bootstrap approach** to obtain statistical significance. We will cover this later on.
+First, one could use the t test statistic but use a **bootstrap approach** to compute its p-value. We will cover this later on.
 
 Alternatively, there are *non-parametric* tests that are available here:
 
-- **Wilcoxon rank sum test**, aka Mann Whitney, uses ranks
+- **Wilcoxon rank sum test**, aka Mann Whitney, uses ranks to test differences in population means.
 
-- **Kolmogorov-Smirnov test** uses the empirical CDF
+- **Kolmogorov-Smirnov test** uses the empirical CDF to test differences in population cumulative distributions.
 
 ---
 class: middle
@@ -456,7 +435,7 @@ Null distribution of such statistics can be worked out or approximated.
 class: middle, center
 ![](L5_TwoGroupComp_files/slide32.png)
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-23-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 

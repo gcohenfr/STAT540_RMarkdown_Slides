@@ -412,9 +412,9 @@ class: middle
 ---
 class: middle
 
-### Theory now tells us specific **null distributions** for this test statistic, depending on your assumptions.
+### Theory now tells us specific **null distributions** for these test statistics, depending on your assumptions.
 
-> ### Willing to assume that F and G are normal distributions?
+### -->  Willing to assume that F and G are normal distributions?
 
 .pull-left[
 ### <center> 2-sample *t*-test: 
@@ -427,7 +427,7 @@ $$T\sim t_{n_Y+n_Z-2}$$
 $$T\sim t_{<something\,ugly>}$$
 ]
 
-> ### Unwilling to assume that F and G are normal distributions? But you feel that n<sub>Y</sub> and n<sub>Z</sub> are large enough?
+### --> Unwilling to assume that F and G are normal distributions? But you feel that n<sub>Y</sub> and n<sub>Z</sub> are large enough?
 
 Then the t-distributions above or even a normal distribution are decent approximations.
 
@@ -453,27 +453,17 @@ tstStat <- theDiff / sqrt(s2Diff)
 ```{r, echo=FALSE}
 round(tstStat, 3)
 ```
-### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
 
-``` {r, echo = TRUE, results = 'hide'}
-by(miniDat, miniDat$gene, function(theDat) {
-  theDat$gType <- factor(theDat$gType, rev(levels(theDat$gType)))
-  t.test(gExp ~ gType, theDat, var.equal = TRUE)
-})
-```
 ---
 class: middle
+### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
+
 
 ``` {r, echo=FALSE}
 by(miniDat, miniDat$gene, function(theDat) {
   theDat$gType <- factor(theDat$gType, rev(levels(theDat$gType)))
-  t.test(gExp ~ gType, theDat, var.equal = TRUE)
-})
+  t.test(gExp ~ gType, theDat, var.equal = TRUE)$p.value})
 ```
----
-class: middle
-
-### 4. Make a decision about significance of results, based on a pre-specified value (alpha, significance level)
 
 .pull-left[
 ### Assuming that H<sub>0</sub> is true: 
@@ -483,7 +473,17 @@ for Irs4, the probability of seeing a test statistic as extreme that observed (*
 <img src="L5_TwoGroupComp_files/nDist.png" width=400 >
 ]
 
-Thus, we don't have <font color=red>*enough*&nbsp; evidence </font> to claim that Irs4 has a differential expression in WT compared to Nrl models. We do not reject H<sub>0</sub>!
+---
+class: middle
+
+### 4. Make a decision about significance of results, based on a pre-specified value (alpha, significance level)
+
+
+The significance level $\alpha$ is usually set at 0.05. However, this value is arbitrary and usually depends on the study.
+
+Using $\alpha=0.05$, since the p-value for the Irs4 test is greater than 0.05, we conclude that there is not <font color=red>*enough*&nbsp; evidence </font> in the data to claim that Irs4 has a differential expression in WT compared to Nrl models. 
+
+We do not reject H<sub>0</sub>!
 
 ---
 class: center
