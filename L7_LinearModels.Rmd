@@ -15,11 +15,11 @@ class: middle
 # Book and online resources
 > ## Linear Models with R by Julian Faraway, Chapman & Hall/CRC Texts in Statistical Science, 2004
 
-### www.biostat.jhsph.edu/~iruczins/teaching/jf/faraway.html
+* http://www.biostat.jhsph.edu/~iruczins/teaching/jf/faraway.html
 
-### https://sites.google.com/a/cs.washington.edu/genome560-spr18/CourseMaterials
+* https://sites.google.com/a/cs.washington.edu/genome560-spr18/CourseMaterials
 
-### http://genomicsclass.github.io/book/
+* http://genomicsclass.github.io/book/
 
 ---
 class: middle
@@ -27,6 +27,11 @@ class: middle
 
 ```{r, include=FALSE}
 library(lattice)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+library(grid)
+library(gridExtra)
 
 prDes <- readRDS("data/GSE4051_design.rds")
 
@@ -75,3 +80,117 @@ grid.arrange(boreLim, hitLim, nrow = 1)
 
 ---
 class: middle
+
+## From <i>t</i>-test to linear regression
+
+### 2-sample <i>t</i>-test
+.pull-left[
+$$Y \sim G; \;\;\;\;\;\;\;\; E[Y] = \mu_Y$$
+$$Z \sim G; \;\;\;\;\;\;\;\; E[Z] = \mu_Z$$
+]
+.pull-right[
+<br>
+$$ H_0: \mu_Y = \mu_Z$$
+]
+<br>
+
+###Linear regression <big>
+$$Y = X\alpha + \varepsilon \;\;\;\;\;\;\;\; H_0:\alpha_j = 0 $$
+<br>
+## <center> How? and Why?
+---
+class: center
+
+![](L7_LinearModels_files/slide5.png)
+---
+class: center
+
+![](L7_LinearModels_files/slide6.png)
+---
+class: center
+
+![](L7_LinearModels_files/slide7.png)
+---
+class: middle
+### Different ways of writing this (design matrix, parameter vector) pair correspond to different parametrizations of the model.
+# $$Y = [X\alpha] + \varepsilon$$
+<br> <big>
+ Understanding these concepts makes it easier ...
+- to interpret fitted models with confidence
+- to fit models such that comparisons you care most about are directly addressed in the inferential "report"
+
+---
+class: center
+
+![](L7_LinearModels_files/slide9.png)
+---
+class: center
+
+![](L7_LinearModels_files/slide10.png)
+---
+class: center
+
+![](L7_LinearModels_files/slide11.png)
+---
+class: center
+
+![](L7_LinearModels_files/slide12.png)
+---
+class: center
+
+![](L7_LinearModels_files/slide13.png)
+---
+class: center
+
+![](L7_LinearModels_files/slide14.png)
+---
+class: middle
+## **How** do we test the **overall** association between the response and a factor?
+<big>
+Is it easier to use an additive model?
+- Additive models are easier and smaller (fewer parameters)
+- But in some applications, we need to test the interaction term.
+- And it does not always test the overall association between a factor and a response.
+
+![](L7_LinearModels_files/slide15.png)
+
+---
+class: middle
+## **How** do we test the **overall** association between the response and a factor?
+
+![](L7_LinearModels_files/slide16.png)
+---
+class: middle
+## **How** do we test the **overall** association between the response and a factor?
+
+![](L7_LinearModels_files/slide17.png)
+---
+Slide 18
+
+---
+Slide 19
+
+---
+Slide 20
+
+---
+class: middle
+## Summary so far
+<big>
+- *t*-tests can be used to test the equality of **2** population means.
+
+- ANOVA can be used to test the equality of **more than 2** population means.
+
+- **Linear regression** provides a general framework for modelling the relationship between response variable and different type of explanatory variables.
+
+- ***t*-tests** can be used to test the significance of *individual* coefficients.
+
+- **F-tests** can be used to test the *simultaneous significance of multiple coefficients*. We need it to test the association between a response and categorical variable.
+---
+class: center
+
+![](L7_LinearModels_files/slide22.png)
+---
+class: center
+
+

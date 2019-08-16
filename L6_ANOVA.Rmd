@@ -316,25 +316,6 @@ with(miniDat,
 ```
 <center>
 ```{r, echo=FALSE, fig.height= 3, dev='svg'}
-boreLim <- ggplot(boreDat, aes(x = devStage, y = gExp)) + 
-             geom_jitter(width = 0.2, alpha = 0.5) +
-             labs(title = "theBore") +
-             theme_bw() +           
-             theme(legend.position = "none") +
-             ylim(5, 10) +
-             xlab("") +
-             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
-
-hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
-             geom_jitter(width = 0.2, alpha = 0.5) +
-             labs(title = "theHit") +
-             theme_bw() +
-             theme(legend.position = "none") +
-             ylim(5, 10) +
-             ylab("") +
-             xlab("") +
-             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
-
 grid.arrange(boreLim, hitLim, nrow = 1)
 ```
 ---
@@ -343,43 +324,19 @@ class: middle
 ---
 class: middle
 ```{r, echo=FALSE, fig.height= 3, dev='svg'}
-(hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
-             geom_jitter(width = 0.2, alpha = 0.5) +
-             labs(title = "theHit") +
-             theme_bw() +
-             theme(legend.position = "none") +
-             ylim(5, 10) +
-             ylab("") +
-             xlab("")) +
-             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
+hitLim
 ```
 ![](L6_ANOVA_files/slide26.png)
 ---
 class: middle
 ```{r, echo=FALSE, fig.height= 3, dev='svg'}
-(hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
-             geom_jitter(width = 0.2, alpha = 0.5) +
-             labs(title = "theHit") +
-             theme_bw() +
-             theme(legend.position = "none") +
-             ylim(5, 10) +
-             ylab("") +
-             xlab("")) +
-             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
+hitLim
 ```
 ![](L6_ANOVA_files/slide27.png)
 ---
 class: middle
 ```{r, echo=FALSE, fig.height= 3, dev='svg'}
-(hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
-             geom_jitter(width = 0.2, alpha = 0.5) +
-             labs(title = "theHit") +
-             theme_bw() +
-             theme(legend.position = "none") +
-             ylim(5, 10) +
-             ylab("") +
-             xlab("")) +
-             stat_summary(aes(group=1), fun.y=mean, geom="line", colour="red")
+hitLim
 ```
 ![](L6_ANOVA_files/slide28.png)
 ---
