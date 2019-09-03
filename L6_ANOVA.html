@@ -19,7 +19,7 @@ class: center, middle, inverse, title-slide
 class: middle, center
 ### &lt;font color="red"&gt; Are these genes truly different in NrlKO compared to WT?&lt;/font&gt;
 
-### H&lt;sub&gt;0&lt;/sub&gt;: the expression level of gene A is the same.
+### H&lt;sub&gt;0&lt;/sub&gt;: the expression level of gene A is the same in both conditions.
 
 ### Is there **enough** evidence in the data to reject H&lt;sub&gt;0&lt;/sub&gt;?
 
@@ -28,94 +28,147 @@ class: middle, center
 
 ---
 class: middle
+### **Statistics**: use a random sample to learn about the population
 ![](L6_ANOVA_files/slide3.png)
 ---
-
 class: middle
+
+# Last class: hypothesis testing
+
+### 1. Define a **test statistic** to test `\(H_0\)`
+- 2-sample *t*-test
+- Welch *t*-test
+- Wilcoxon rank-sum test
+- Kolmogorov-Smirnov test
+
+### 2. Compute the &lt;font color=red&gt;observed value&lt;/font&gt; for the test statistic
+### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
+### 4. Make a decision about the significance of the results, based on a pre-specified value (alpha, significance level)
+---
+class: middle
+## We can run these tests in R. 
+### Example: use the `t.test` function to test `\(H_0\)` using a classical 2-sample *t*-test.
+
+
+```r
+miniDat %&gt;% subset(gene=="Irs4")%&gt;% t.test(gExp ~ gType, data=., var.equal = TRUE)
+```
+
+```
+## 
+## 	Two Sample t-test
+## 
+## data:  gExp by gType
+## t = -0.52865, df = 37, p-value = 0.6002
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.12597002  0.07383844
+## sample estimates:
+## mean in group NrlKO    mean in group wt 
+##            7.739684            7.765750
+```
+---
+class: middle
+# Today...
+
+### - review other methods to test statistical hypothesis
+
+### - extend tests to more than 2-groups comparisons
+
+### - methods to analyze the effect of multiple factors on a response
+---
+class: middle
+
 ![](L6_ANOVA_files/slide4.png)
 ---
 class: middle
+It seems that we can use any of these methods to test `\(H_0\)`
+
 ![](L6_ANOVA_files/slide5.png)
-
 ---
-
 class: middle
+## *t*-test *vs* linear regression: &lt;font color = "red"&gt;why the same results?&lt;/font&gt;
 
-# Today: beyond 2-groups comparisons
+
+```r
+irs4Dat &lt;- subset(miniDat,gene=="Irs4")
+ttest.irs4&lt;-t.test(gExp ~ gType, irs4Dat, var.equal = TRUE)
+list("t value"=ttest.irs4$stat,"p-value"=ttest.irs4$p.value)
+```
+
+```
+## $`t value`
+##          t 
+## -0.5286494 
+## 
+## $`p-value`
+## [1] 0.6002058
+```
 
 
-## &lt;font color = "red"&gt;t-test&lt;/font&gt; 
-&gt; Special case of **ANOVA**, where the only difference is that with ANOVA you can compare more than two groups.
 
-&lt;br&gt;
+```r
+lm.irs4 &lt;- summary(lm(gExp ~ gType, irs4Dat))
+list("t value"=lm.irs4$coeff[2,3],"p-value"=lm.irs4$coeff[2,4])
+```
 
-## &lt;font color = "red"&gt;ANOVA&lt;/font&gt; 
-&gt; Special case of **linear regression/model**, where the only difference is with linear models you can consider quantitative and categorical variables. 
+```
+## $`t value`
+## [1] 0.5286494
+## 
+## $`p-value`
+## [1] 0.6002058
+```
 
 ---
-class: center, middle
-# From t-test to linear regression
-Change of notation to be consistent with conventions used in linear regression
+class: middle
+## *t*-test *vs* linear regression: &lt;font color = "red"&gt;where's the line?&lt;/font&gt;
+
+![](L6_ANOVA_files/figure-html/unnamed-chunk-6-1.svg)&lt;!-- --&gt;
+
+---
+class: middle
+# From *t*-test to linear regression
+Let's make a change of notation to be consistent with conventions used in linear regression
 &lt;br&gt; &lt;br&gt;
-`$$Y \sim F; \; E[Y] = \mu_Y$$`
-**↓**
-`$$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim F; \; E[\varepsilon_Y] = 0$$`
-**↓**
-`$$Y_j = \mu_j + \varepsilon_j; \; \varepsilon_j \sim F_j; \; E[\varepsilon_j] = 0; \; j = \textrm{\{wt, NrlKO}\} \rightarrow \textrm{\{1, 2}\}$$`
+`$$Y \sim G; \; E[Y] = \mu_Y$$`
+ **&lt;center&gt;↓&lt;/center&gt;**
+
+`$$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim G; \; E[\varepsilon_Y] = 0$$`
 &lt;br&gt;
-where `\(Y_j\)` is the **response variable**. For `\(\varepsilon_j \sim F_j\)`, we may even assume a common distribution `\(F\)` for all groups, equal variances, etc.
+And we can use a subindex `\(j\)` to distinguish the groups, i.e., 
+
+`$$Y_j = \mu_j + \varepsilon_j; \; \varepsilon_j \sim G_j; \; E[\varepsilon_j] = 0$$`
+
+where `\(j = \textrm{\{wt, NrlKO}\}\)` or `\(j=\textrm{\{1, 2}\}\)`.
+&lt;br&gt;
+
+ &gt; Note that for each group: `\(E[Y_j] = \mu_j\)`
+ 
 ---
 class: middle
 
-## Let's map this notation to our working example
 .pull-left[
 ### &lt;center&gt; Group 1 (WT)
-`$$Y_1 = \mu_1 + \varepsilon_1; \varepsilon_1 \sim F_1; E[\varepsilon_1] = 0;$$`
+`$$Y_1 = \mu_1 + \varepsilon_1;\; \;  \varepsilon_1 \sim G_1;\; \;  E[\varepsilon_1] = 0;$$`
 ]
 .pull-right[
 ### &lt;center&gt; Group 2 (NrlKO)
-`$$Y_2 = \mu_2 + \varepsilon_2; \varepsilon_2 \sim F_2; E[\varepsilon_2] = 0;$$`
+`$$Y_2 = \mu_2 + \varepsilon_2; \; \; \varepsilon_2 \sim G_2; \; \; E[\varepsilon_2] = 0;$$`
 ]
+&gt; We may assume a common distribution `\(G\)` for all groups
+ 
 &lt;br&gt;
-- Note that for each group: `\(E[Y_j] = \mu_j\)`
-- `\(H_0 : \mu_1 = \mu_2\)`
-- But we may actually have many groups, not just 2! **(ANOVA)**
-- To test our hypothesis, we take a random sample:
-`$$Y_{ij}: \textrm{gene expression of gene A in condition j for the ith observation}$$`
----
-class: middle
-.pull-left[
-&lt;big&gt; `$$H_0 : \mu_1 = \mu_2$$`
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-3-1.svg)&lt;!-- --&gt;
-]
+### or equivalently,
 
-.pull-right[
-&lt;br&gt;
-```
-data: gExp by gType
-t = 0.5286, df = 37, p=value = 0.6002
-&lt;snip, snip&gt;
-sample estimates:
-  mean in group wt mean in group NrlKO
-          7.765750        7.739684
-```
-]
+`$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+&gt; for `\(i={1 \ldots n}; \; \; j={1,2}\)`
+&gt; `\(Y_{ij}: \textrm{gene expression of gene A for the ith observation in condition j}\)`
 
 
+### The goal is to test `$$H_0 : \mu_1 = \mu_2$$`
 
-### **Where's the line?**
-```
-summary(lm(gExp ~ gType, miniDat,
-           subset = gene == "Irs4"))
-&lt;snip, snip&gt;
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)
-(Intercept) 7.76575     0.03441 225.650   &lt;2e-16 ***
-gTypeNrlKO -0.02607     0.04931  -0.529      0.6
-&lt;snip, snip&gt;
-F-statistic: 0.2795 on 1 and 37 DF, p-value: 0.6002
-```
 ---
 class: middle, center
 ![](L6_ANOVA_files/slide10.png)
@@ -142,6 +195,22 @@ class: middle
 &lt;font color = red&gt; `\(\varepsilon:\)` &lt;/font&gt; a column vector of the errors
 &lt;br&gt;
 ### Generic linear model, using conventional matrix formulation
+
+class: middle
+
+# Beyond 2-groups comparisons
+
+
+## &lt;font color = "red"&gt;t-test&lt;/font&gt; 
+&gt; Special case of &lt;font color = "red"&gt;ANOVA&lt;/font&gt;, but with ANOVA you can compare **more than two groups** and **more than one factor**.
+
+&lt;br&gt;
+
+## &lt;font color = "red"&gt;ANOVA&lt;/font&gt; 
+&gt; Special case of &lt;font color = "red"&gt;linear regression&lt;/font&gt;, but with linear regression you can model **many quantitative and qualitative variables**. 
+
+---
+
 ---
 class: middle
 
@@ -202,7 +271,7 @@ class: middle
 &lt;center&gt;
 
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-5-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-8-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 
@@ -220,21 +289,21 @@ with(miniDat,
 ## 4_weeks 7.559000 9.173375
 ```
 &lt;center&gt;
-![](L6_ANOVA_files/figure-html/unnamed-chunk-7-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-10-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 ![](L6_ANOVA_files/slide25.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-8-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-11-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide26.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-9-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-12-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide27.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-10-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide28.png)
 ---
 class: middle

@@ -14,7 +14,7 @@ output:
 class: middle, center
 ### <font color="red"> Are these genes truly different in NrlKO compared to WT?</font>
 
-### H<sub>0</sub>: the expression level of gene A is the same.
+### H<sub>0</sub>: the expression level of gene A is the same in both conditions.
 
 ### Is there **enough** evidence in the data to reject H<sub>0</sub>?
 ```{r, include=FALSE}
@@ -42,6 +42,7 @@ miniDat <- as.vector(t(prDat[c("1422248_at", "1450946_at"), ]))
 miniDat <- data.frame(gene = rep(c("Irs4", "Nrl"), each = nrow(prDes)),
                       gExp = miniDat)
 miniDat <- data.frame(prDes, miniDat) # ignore the warning about row names
+miniDat$gType <- factor(miniDat$gType, rev(levels(miniDat$gType)))
 str(miniDat)
 ```
 
@@ -70,64 +71,67 @@ grid.arrange(irsLim, nrlLim, ncol = 1)
 
 ---
 class: middle
+### **Statistics**: use a random sample to learn about the population
 ![](L6_ANOVA_files/slide3.png)
 ---
-
 class: middle
+
+# Last class: hypothesis testing
+
+### 1. Define a **test statistic** to test $H_0$
+- 2-sample *t*-test
+- Welch *t*-test
+- Wilcoxon rank-sum test
+- Kolmogorov-Smirnov test
+
+### 2. Compute the <font color=red>observed value</font> for the test statistic
+### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
+### 4. Make a decision about the significance of the results, based on a pre-specified value (alpha, significance level)
+---
+class: middle
+## We can run these tests in R. 
+### Example: use the `t.test` function to test $H_0$ using a classical 2-sample *t*-test.
+
+``` {r}
+miniDat %>% subset(gene=="Irs4")%>% t.test(gExp ~ gType, data=., var.equal = TRUE)
+```
+---
+class: middle
+# Today...
+
+### - review other methods to test statistical hypothesis
+
+### - extend tests to more than 2-groups comparisons
+
+### - methods to analyze the effect of multiple factors on a response
+---
+class: middle
+
 ![](L6_ANOVA_files/slide4.png)
 ---
 class: middle
+It seems that we can use any of these methods to test $H_0$
+
 ![](L6_ANOVA_files/slide5.png)
-
----
-
-class: middle
-
-# Today: beyond 2-groups comparisons
-
-
-## <font color = "red">t-test</font> 
-> Special case of **ANOVA**, where the only difference is that with ANOVA you can compare more than two groups.
-
-<br>
-
-## <font color = "red">ANOVA</font> 
-> Special case of **linear regression/model**, where the only difference is with linear models you can consider quantitative and categorical variables. 
-
----
-class: center, middle
-# From t-test to linear regression
-Change of notation to be consistent with conventions used in linear regression
-<br> <br>
-$$Y \sim F; \; E[Y] = \mu_Y$$
-**↓**
-$$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim F; \; E[\varepsilon_Y] = 0$$
-**↓**
-$$Y_j = \mu_j + \varepsilon_j; \; \varepsilon_j \sim F_j; \; E[\varepsilon_j] = 0; \; j = \textrm{\{wt, NrlKO}\} \rightarrow \textrm{\{1, 2}\}$$
-<br>
-where $Y_j$ is the **response variable**. For $\varepsilon_j \sim F_j$, we may even assume a common distribution $F$ for all groups, equal variances, etc.
 ---
 class: middle
+## *t*-test *vs* linear regression: <font color = "red">why the same results?</font>
 
-## Let's map this notation to our working example
-.pull-left[
-### <center> Group 1 (WT)
-$$Y_1 = \mu_1 + \varepsilon_1; \varepsilon_1 \sim F_1; E[\varepsilon_1] = 0;$$
-]
-.pull-right[
-### <center> Group 2 (NrlKO)
-$$Y_2 = \mu_2 + \varepsilon_2; \varepsilon_2 \sim F_2; E[\varepsilon_2] = 0;$$
-]
-<br>
-- Note that for each group: $E[Y_j] = \mu_j$
-- $H_0 : \mu_1 = \mu_2$
-- But we may actually have many groups, not just 2! **(ANOVA)**
-- To test our hypothesis, we take a random sample:
-$$Y_{ij}: \textrm{gene expression of gene A in condition j for the ith observation}$$
+``` {r}
+irs4Dat <- subset(miniDat,gene=="Irs4")
+ttest.irs4<-t.test(gExp ~ gType, irs4Dat, var.equal = TRUE)
+list("t value"=ttest.irs4$stat,"p-value"=ttest.irs4$p.value)
+```
+
+
+```{r}
+lm.irs4 <- summary(lm(gExp ~ gType, irs4Dat))
+list("t value"=lm.irs4$coeff[2,3],"p-value"=lm.irs4$coeff[2,4])
+```
+
 ---
 class: middle
-.pull-left[
-<big> $$H_0 : \mu_1 = \mu_2$$
+## *t*-test *vs* linear regression: <font color = "red">where's the line?</font>
 
 ```{r echo=FALSE, fig.width=5, fig.height= 3, dev='svg'}
 irsDat <- filter(miniDat, gene == "Irs4")
@@ -149,34 +153,50 @@ nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) +
 
 grid.arrange(irsLim, nrlLim, ncol = 1)
 ```
-]
 
-.pull-right[
+---
+class: middle
+# From *t*-test to linear regression
+Let's make a change of notation to be consistent with conventions used in linear regression
+<br> <br>
+$$Y \sim G; \; E[Y] = \mu_Y$$
+ **<center>↓</center>**
+
+$$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim G; \; E[\varepsilon_Y] = 0$$
 <br>
-```
-data: gExp by gType
-t = 0.5286, df = 37, p=value = 0.6002
-<snip, snip>
-sample estimates:
-  mean in group wt mean in group NrlKO
-          7.765750        7.739684
-```
+And we can use a subindex $j$ to distinguish the groups, i.e., 
+
+$$Y_j = \mu_j + \varepsilon_j; \; \varepsilon_j \sim G_j; \; E[\varepsilon_j] = 0$$
+
+where $j = \textrm{\{wt, NrlKO}\}$ or $j=\textrm{\{1, 2}\}$.
+<br>
+
+ > Note that for each group: $E[Y_j] = \mu_j$
+ 
+---
+class: middle
+
+.pull-left[
+### <center> Group 1 (WT)
+$$Y_1 = \mu_1 + \varepsilon_1;\; \;  \varepsilon_1 \sim G_1;\; \;  E[\varepsilon_1] = 0;$$
 ]
+.pull-right[
+### <center> Group 2 (NrlKO)
+$$Y_2 = \mu_2 + \varepsilon_2; \; \; \varepsilon_2 \sim G_2; \; \; E[\varepsilon_2] = 0;$$
+]
+> We may assume a common distribution $G$ for all groups
+ 
+<br>
+
+### or equivalently,
+
+$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
+> for $i={1 \ldots n}; \; \; j={1,2}$
+> $Y_{ij}: \textrm{gene expression of gene A for the ith observation in condition j}$
 
 
+### The goal is to test $$H_0 : \mu_1 = \mu_2$$
 
-### **Where's the line?**
-```
-summary(lm(gExp ~ gType, miniDat,
-           subset = gene == "Irs4"))
-<snip, snip>
-Coefficients:
-            Estimate Std. Error t value Pr(>|t|)
-(Intercept) 7.76575     0.03441 225.650   <2e-16 ***
-gTypeNrlKO -0.02607     0.04931  -0.529      0.6
-<snip, snip>
-F-statistic: 0.2795 on 1 and 37 DF, p-value: 0.6002
-```
 ---
 class: middle, center
 ![](L6_ANOVA_files/slide10.png)
@@ -203,6 +223,22 @@ class: middle
 <font color = red> $\varepsilon:$ </font> a column vector of the errors
 <br>
 ### Generic linear model, using conventional matrix formulation
+
+class: middle
+
+# Beyond 2-groups comparisons
+
+
+## <font color = "red">t-test</font> 
+> Special case of <font color = "red">ANOVA</font>, but with ANOVA you can compare **more than two groups** and **more than one factor**.
+
+<br>
+
+## <font color = "red">ANOVA</font> 
+> Special case of <font color = "red">linear regression</font>, but with linear regression you can model **many quantitative and qualitative variables**. 
+
+---
+
 ---
 class: middle
 
