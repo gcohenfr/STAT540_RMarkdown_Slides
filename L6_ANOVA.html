@@ -129,59 +129,143 @@ class: middle
 ---
 class: middle
 # From *t*-test to linear regression
-Let's make a change of notation to be consistent with conventions used in linear regression
+Let's change the notation to present the problem as a regression
 &lt;br&gt; &lt;br&gt;
 `$$Y \sim G; \; E[Y] = \mu_Y$$`
  **&lt;center&gt;↓&lt;/center&gt;**
 
 `$$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim G; \; E[\varepsilon_Y] = 0$$`
 &lt;br&gt;
-And we can use a subindex `\(j\)` to distinguish the groups, i.e., 
+We can use a subindeces to distinguish observations from each group, i.e., 
 
-`$$Y_j = \mu_j + \varepsilon_j; \; \varepsilon_j \sim G_j; \; E[\varepsilon_j] = 0$$`
-
-where `\(j = \textrm{\{wt, NrlKO}\}\)` or `\(j=\textrm{\{1, 2}\}\)`.
+`$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G_j; \; \;E[\varepsilon_{ij}] = 0;$$`
+&lt;br&gt;
+where `\(j = \textrm{\{wt, NrlKO}\}\)` or `\(j=\textrm{\{1, 2}\}\)`; and `\(i=1, \ldots, n_j\)`.
 &lt;br&gt;
 
- &gt; Note that for each group: `\(E[Y_j] = \mu_j\)`
+ &gt; For example: `\(Y_{11}\)` is the first observation in group 1 or wt
  
 ---
 class: middle
 
-.pull-left[
-### &lt;center&gt; Group 1 (WT)
-`$$Y_1 = \mu_1 + \varepsilon_1;\; \;  \varepsilon_1 \sim G_1;\; \;  E[\varepsilon_1] = 0;$$`
-]
-.pull-right[
-### &lt;center&gt; Group 2 (NrlKO)
-`$$Y_2 = \mu_2 + \varepsilon_2; \; \; \varepsilon_2 \sim G_2; \; \; E[\varepsilon_2] = 0;$$`
-]
-&gt; We may assume a common distribution `\(G\)` for all groups
- 
+## The goal is to test 
+
+### `$$H_0 : \mu_1 = \mu_2$$`
+
+### using data from the model
+
+### `$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+&lt;br&gt;
+where `\(j = \textrm{\{wt, NrlKO}\}\)` or `\(j=\textrm{\{1, 2}\}\)`; and `\(i=1, \ldots, n_j\)`.
 &lt;br&gt;
 
-### or equivalently,
+&gt; For simplicity, we assume a common distribution `\(G\)` for all groups
 
-`$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
-&gt; for `\(i={1 \ldots n}; \; \; j={1,2}\)`
-&gt; `\(Y_{ij}: \textrm{gene expression of gene A for the ith observation in condition j}\)`
-
-
-### The goal is to test `$$H_0 : \mu_1 = \mu_2$$`
-
----
-class: middle, center
-![](L6_ANOVA_files/slide10.png)
 ---
 class: middle
-![](L6_ANOVA_files/slide11.png)
---
-For example:
-`$$Y_{11} = 1 \ast \mu_1 + 0 \ast \mu_2 + \varepsilon_{11} = \mu_1 + \varepsilon_{11}$$`
-`$$Y_{n_22} = 0 \ast \mu_1 + 1 \ast \mu_2 + \varepsilon_{n_22} = \mu_2 + \varepsilon_{n_22}$$`
+
+### Note that for each group, the population mean is given by 
+### `$$E[Y_{ij}] = \mu_j,$$` 
+
+###A natural **estimator** of the population mean is the &lt;font color = "red"&gt;**sample mean**&lt;/font&gt;
+
+### By default, the `t.test` function uses the group sample means as estimators.  
+
+
+```r
+ttest.irs4$estimate
+```
+
+```
+## mean in group NrlKO    mean in group wt 
+##            7.739684            7.765750
+```
 ---
 class: middle
-![](L6_ANOVA_files/slide12.png)
+### However, the `lm` function reports other estimates, &lt;font color = "red"&gt;why?&lt;/font&gt;  
+
+
+```r
+lm.irs4$coefficients[,1]
+```
+
+```
+## (Intercept)     gTypewt 
+##  7.73968421  0.02606579
+```
+`\(\hspace{3em}\)` **↓**
+&lt;font color = "red"&gt;sample mean of NrlKO group&lt;/font&gt; 
+
+
+### But the second coefficient is &lt;font color = "red"&gt;**not**&lt;/font&gt; the sample mean of the WT group
+
+
+```r
+ttest.irs4$estimate
+```
+
+```
+## mean in group NrlKO    mean in group wt 
+##            7.739684            7.765750
+```
+---
+class: middle
+### By default, the `lm` function assumes a different *parametrization*:
+
+### `$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+###**&lt;center&gt;↓&lt;/center&gt;**
+### `$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+
+### Note that for each group, the population mean is given by 
+### `$$E[Y_{ij}] = \theta+\tau_j=\mu_j,$$` 
+
+###The first model uses a &lt;font color = "red"&gt;*cell-means* parametrization&lt;/font&gt;
+###The second model uses a &lt;font color = "red"&gt;*reference-treatment effect* parametrization&lt;/font&gt;
+---
+class: middle
+## Relation between parametrizations
+
+![](L6_ANOVA_files/slide16.png)
+
+---
+class: middle
+### By default, R uses the &lt;font color = "red"&gt;*reference-treatment effect* parametrization&lt;/font&gt; 
+
+`$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+
+This is the sample mean of the *reference* group (wt in this case): `\(\hat\theta\)`
+
+```r
+lm.irs4$coefficients[1,1]
+```
+
+```
+## [1] 7.739684
+```
+ 
+and this is the *treatment effect*, i.e., the difference between the sample means of both groups: `\(\hat\tau_2\)`
+ 
+
+```r
+lm.irs4$coefficients[2,1]
+```
+
+```
+## [1] 0.02606579
+```
+
+```r
+means.irs4&lt;-irs4Dat %&gt;% group_by(gType) %&gt;% summarize(meanGroups=mean(gExp,digits=6)) 
+diff(means.irs4$meanGroups)
+```
+
+```
+## [1] 0.02606579
+```
+---
+class: middle
+### Beyond 2-groups comparisons:
+![](L6_ANOVA_files/slide17.png)
 ---
 class: middle
 &lt;big&gt;
@@ -196,6 +280,7 @@ class: middle
 &lt;br&gt;
 ### Generic linear model, using conventional matrix formulation
 
+---
 class: middle
 
 # Beyond 2-groups comparisons
@@ -211,23 +296,6 @@ class: middle
 
 ---
 
----
-class: middle
-
-![](L6_ANOVA_files/slide14.png)
----
-class: middle
-![](L6_ANOVA_files/slide15.png)
---
-![](L6_ANOVA_files/slide15-1.png)
----
-class: middle
-![](L6_ANOVA_files/slide16.png)
---
-![](L6_ANOVA_files/slide16-1.png)
----
-class: middle
-![](L6_ANOVA_files/slide17.png)
 ---
 class: middle
 ![](L6_ANOVA_files/slide18.png)
@@ -271,7 +339,7 @@ class: middle
 &lt;center&gt;
 
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-8-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 
@@ -289,21 +357,21 @@ with(miniDat,
 ## 4_weeks 7.559000 9.173375
 ```
 &lt;center&gt;
-![](L6_ANOVA_files/figure-html/unnamed-chunk-10-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-15-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 ![](L6_ANOVA_files/slide25.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-11-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-16-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide26.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-12-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-17-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide27.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-18-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide28.png)
 ---
 class: middle
@@ -446,7 +514,24 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();</script>
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
 (function() {
