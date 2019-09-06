@@ -35,15 +35,15 @@ class: middle
 
 # Last class: hypothesis testing
 
-### 1. Define a **test statistic** to test `\(H_0\)`
+### 1. Define a &lt;font color = "red"&gt;test statistic&lt;/font&gt; to test `\(H_0\)`
 - 2-sample *t*-test
 - Welch *t*-test
 - Wilcoxon rank-sum test
 - Kolmogorov-Smirnov test
 
 ### 2. Compute the &lt;font color=red&gt;observed value&lt;/font&gt; for the test statistic
-### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
-### 4. Make a decision about the significance of the results, based on a pre-specified value (alpha, significance level)
+### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the &lt;font color = "red"&gt;null sampling distribution&lt;/font&gt; (p-value) 
+### 4. Make a decision about the &lt;font color = "red"&gt;significance&lt;/font&gt; of the results, based on a pre-specified value (alpha, significance level)
 ---
 class: middle
 ## We can run these tests in R. 
@@ -75,7 +75,7 @@ class: middle
 
 ### - extend tests to more than 2-groups comparisons
 
-### - methods to analyze the effect of multiple factors on a response
+### - methods to analyze the association of multiple variables with the response
 ---
 class: middle
 
@@ -129,16 +129,16 @@ class: middle
 ---
 class: middle
 # From *t*-test to linear regression
-Let's change the notation to present the problem as a regression
+Let's change the notation to give a common framework to all methods
 &lt;br&gt; &lt;br&gt;
-`$$Y \sim G; \; E[Y] = \mu_Y$$`
+&lt;font size=5&gt; `$$Y \sim G; \; E[Y] = \mu_Y$$` &lt;/font&gt;
  **&lt;center&gt;↓&lt;/center&gt;**
 
-`$$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim G; \; E[\varepsilon_Y] = 0$$`
+&lt;font size=5&gt; `$$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim G; \; E[\varepsilon_Y] = 0$$` &lt;/font&gt;
 &lt;br&gt;
 We can use a subindeces to distinguish observations from each group, i.e., 
 
-`$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G_j; \; \;E[\varepsilon_{ij}] = 0;$$`
+&lt;font size=5&gt; `$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G_j; \; \;E[\varepsilon_{ij}] = 0;$$` &lt;/font&gt;
 &lt;br&gt;
 where `\(j = \textrm{\{wt, NrlKO}\}\)` or `\(j=\textrm{\{1, 2}\}\)`; and `\(i=1, \ldots, n_j\)`.
 &lt;br&gt;
@@ -154,13 +154,14 @@ class: middle
 
 ### using data from the model
 
-### `$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+&lt;font size=5&gt; `$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`&lt;/font&gt;
 &lt;br&gt;
 where `\(j = \textrm{\{wt, NrlKO}\}\)` or `\(j=\textrm{\{1, 2}\}\)`; and `\(i=1, \ldots, n_j\)`.
 &lt;br&gt;
 
 &gt; For simplicity, we assume a common distribution `\(G\)` for all groups
 
+### the model is written with a &lt;font color = "red"&gt;cell-means&lt;/font&gt; - `\(\mu_j\)` - parametrization
 ---
 class: middle
 
@@ -169,7 +170,9 @@ class: middle
 
 ###A natural **estimator** of the population mean is the &lt;font color = "red"&gt;**sample mean**&lt;/font&gt;
 
-### By default, the `t.test` function uses the group sample means as estimators.  
+### Classical methods for *t*-test, ANOVA, and linear regression use the group sample means as estimators.
+
+See, for example, the `t.test` function in R:
 
 
 ```r
@@ -186,6 +189,17 @@ class: middle
 
 
 ```r
+(means.irs4&lt;-as.data.frame(irs4Dat %&gt;% group_by(gType) %&gt;% summarize(meanGroups=mean(gExp,digits=6))))
+```
+
+```
+##   gType meanGroups
+## 1 NrlKO   7.739684
+## 2    wt   7.765750
+```
+
+
+```r
 lm.irs4$coefficients[,1]
 ```
 
@@ -198,29 +212,18 @@ lm.irs4$coefficients[,1]
 
 
 ### But the second coefficient is &lt;font color = "red"&gt;**not**&lt;/font&gt; the sample mean of the WT group
-
-
-```r
-ttest.irs4$estimate
-```
-
-```
-## mean in group NrlKO    mean in group wt 
-##            7.739684            7.765750
-```
 ---
 class: middle
-### By default, the `lm` function assumes a different *parametrization*:
 
-### `$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
-###**&lt;center&gt;↓&lt;/center&gt;**
-### `$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+### By default, the `lm` function uses a different &lt;font color=red&gt;parametrization&lt;/font&gt; since the goal is to *compare* the means, not to study each in isolation
+
+&lt;font size=5&gt; From &lt;font color=red&gt;**cell-means**&lt;/font&gt; - `\(\mu_j\)`:  `$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+**&lt;center&gt;↓&lt;/center&gt;**
+to &lt;font color = "red"&gt;**reference-treatment effect**&lt;/font&gt; - `\((\theta,\tau_j)\)`: `$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
 
 ### Note that for each group, the population mean is given by 
-### `$$E[Y_{ij}] = \theta+\tau_j=\mu_j,$$` 
-
-###The first model uses a &lt;font color = "red"&gt;*cell-means* parametrization&lt;/font&gt;
-###The second model uses a &lt;font color = "red"&gt;*reference-treatment effect* parametrization&lt;/font&gt;
+&lt;font size=5&gt; `$$E[Y_{ij}] = \theta+\tau_j=\mu_j, \; \text{and}$$`
+`$$\tau_2=\mu_2-\mu_1$$` 
 ---
 class: middle
 ## Relation between parametrizations
@@ -229,57 +232,91 @@ class: middle
 
 ---
 class: middle
-### By default, R uses the &lt;font color = "red"&gt;*reference-treatment effect* parametrization&lt;/font&gt; 
 
-`$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+### `lm` reports the sample mean of the &lt;font color = "red"&gt;reference&lt;/font&gt; group (WT): `\(\hat\theta\)`
 
-This is the sample mean of the *reference* group (wt in this case): `\(\hat\theta\)`
-
-```r
-lm.irs4$coefficients[1,1]
-```
-
-```
-## [1] 7.739684
-```
- 
-and this is the *treatment effect*, i.e., the difference between the sample means of both groups: `\(\hat\tau_2\)`
+### and the &lt;font color = "red"&gt;treatment effect&lt;/font&gt;, i.e., difference between the sample means of both groups: `\(\hat\tau_2\)`
  
 
 ```r
-lm.irs4$coefficients[2,1]
+lm.irs4$coefficients[,1]
 ```
 
 ```
-## [1] 0.02606579
+## (Intercept)     gTypewt 
+##  7.73968421  0.02606579
 ```
 
 ```r
-means.irs4&lt;-irs4Dat %&gt;% group_by(gType) %&gt;% summarize(meanGroups=mean(gExp,digits=6)) 
-diff(means.irs4$meanGroups)
+data.frame(meanWT=means.irs4[1,2],meanDiff=diff(means.irs4$meanGroups))
 ```
 
 ```
-## [1] 0.02606579
+##     meanWT   meanDiff
+## 1 7.739684 0.02606579
 ```
 ---
 class: middle
-### Beyond 2-groups comparisons:
+### The &lt;font color = "red"&gt;reference-treatment effect &lt;/font&gt; parametrization is also used by other methods
+
+### Note that the 2-sample *t*-test presented last class equals
+
+&lt;font size=5&gt;$$t=\frac{\hat \tau_2}{\sqrt{V(\hat \tau_2})},$$&lt;/font&gt;
+
+&gt; `\(\hat \tau_2=\bar{Y_2}-\bar{Y_1}\)` is the difference of sample means
+
+
+
+
+```r
+diff(means.irs4$meanGroups)/sqrt(s2Diff.irs)
+```
+
+```
+##      Irs4 
+## 0.5288651
+```
+
+```r
+ttest.irs4$statistic
+```
+
+```
+##          t 
+## -0.5286494
+```
+---
+class: middle
+
+### Similarly, `aov` uses `\(\hat \tau_2\)` to build the *F*-statistic
+
+
+
+```r
+summary(aov(gExp ~gType, irs4Dat))
+```
+
+```
+##             Df Sum Sq Mean Sq F value Pr(&gt;F)
+## gType        1 0.0066 0.00662   0.279    0.6
+## Residuals   37 0.8764 0.02369
+```
+### It can be proved mathematically that 
+### `$$F=t^2$$` 
+Here numerically,
+
+
+```r
+as.numeric(ttest.irs4$statistic^2)
+```
+
+```
+## [1] 0.2794701
+```
+---
+class: middle
+### What if there are more than 2 groups?
 ![](L6_ANOVA_files/slide17.png)
----
-class: middle
-&lt;big&gt;
-&lt;font size = 12&gt; `$$Y = X\alpha + \varepsilon$$` &lt;/font&gt;
-&lt;font color = red&gt; `\(Y:\)` &lt;/font&gt; The column vector of the responses, one element per experimental unit
-
-&lt;font color = red&gt; `\(X:\)` &lt;/font&gt; a (design) matrix that represents covariate info, one row per experimental unit
-
-&lt;font color = red&gt; `\(\alpha:\)` &lt;/font&gt; a column vector of parameters in the linear model
-
-&lt;font color = red&gt; `\(\varepsilon:\)` &lt;/font&gt; a column vector of the errors
-&lt;br&gt;
-### Generic linear model, using conventional matrix formulation
-
 ---
 class: middle
 
@@ -295,16 +332,66 @@ class: middle
 &gt; Special case of &lt;font color = "red"&gt;linear regression&lt;/font&gt;, but with linear regression you can model **many quantitative and qualitative variables**. 
 
 ---
+class: middle
+
+# But where's the line??
+![](L6_ANOVA_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+---
+class: middle
+### Using a special matrix `\(X\)`, we can write our model in matrix notation:
+
+![](L6_ANOVA_files/model_matrix.png)
+### and "a line" seems to appear!!
+---
+class: middle
+
+&lt;img src="L6_ANOVA_files/slide18.png" height="350px" /&gt;
+
+&gt; Note that `\(Y_{i1}= 1 \times \theta + 0 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i1}=\theta + \varepsilon_{i1}\)`
+
+&gt; Note that `\(Y_{i2}= 1 \times \theta + 1 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i2}=\theta + \tau_2+\varepsilon_{i2}\)`
+
+&gt; Note that `\(Y_{i3}= 1 \times \theta + 0 \times \tau_2 + 1 \times \tau_3 + \varepsilon_{i3}=\theta + \tau_3+\varepsilon_{i3}\)`
+
+&lt;br&gt;
+
+&lt;font size=5&gt; Which is the same as `\(\; \rightarrow \; Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0\)`
+---
+class: middle
+
+## Difference of means: the "treatment effect"
+&lt;font size=5&gt; `\(Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0, \; E[\varepsilon_{ij}]=0\)`
+&gt; Note that `\(E[Y_{i1}] = \theta + \tau_j\)`
+
+&lt;br&gt;
+--
+
+In particular, 
+`$$E[Y_{i1}]=\theta$$`
+&lt;br&gt;
+--
+`$$E[Y_{i2}]=\theta+\tau_2 \; \rightarrow \tau_2=E[Y_{i2}]-E[Y_{i1}]=\mu_2-\mu_1$$`
+&lt;br&gt;
+--
+`$$E[Y_{i3}]=\theta+\tau_3 \; \rightarrow \tau_3=E[Y_{i3}]-E[Y_{i1}]=\mu_3-\mu_1$$`
+
 
 ---
 class: middle
-![](L6_ANOVA_files/slide18.png)
----
-class: middle
-![](L6_ANOVA_files/slide19.png)
----
-class: middle
-![](L6_ANOVA_files/slide20.png)
+# Linear regression model:
+
+&lt;big&gt;
+&lt;font size = 12&gt; `$$Y = X\alpha + \varepsilon$$` &lt;/font&gt;
+&lt;font color = red&gt; `\(Y:\)` &lt;/font&gt; a column vector containing the responses, one element per experimental unit
+
+&lt;font color = red&gt; `\(X:\)` &lt;/font&gt; a (design) matrix that represents covariate info, one row per experimental unit
+
+&lt;font color = red&gt; `\(\alpha:\)` &lt;/font&gt; a column vector of parameters in the linear model
+
+&lt;font color = red&gt; `\(\varepsilon:\)` &lt;/font&gt; a column vector of the errors
+&lt;br&gt;
+
+
 ---
 class: middle, center
 
@@ -328,9 +415,7 @@ lm(y ~ x, data = jDat)
 &lt;br&gt;
 ### By default, R uses a ref-tx parametrization but you can control that!(called "contr.treatment"; see?contrasts)
 ---
-class: middle
-![](L6_ANOVA_files/slide22.png)
----
+
 class: middle
 ## Back to our example!
 ### &lt;font color="red"&gt; Is the gene expression of gene A different at different developmental stages?&lt;/font&gt;
@@ -339,7 +424,7 @@ class: middle
 &lt;center&gt;
 
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-18-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 
@@ -357,21 +442,21 @@ with(miniDat,
 ## 4_weeks 7.559000 9.173375
 ```
 &lt;center&gt;
-![](L6_ANOVA_files/figure-html/unnamed-chunk-15-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-20-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 ![](L6_ANOVA_files/slide25.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-16-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-21-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide26.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-17-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-22-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide27.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-18-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-23-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide28.png)
 ---
 class: middle

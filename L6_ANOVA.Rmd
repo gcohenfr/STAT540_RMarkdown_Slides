@@ -78,15 +78,15 @@ class: middle
 
 # Last class: hypothesis testing
 
-### 1. Define a **test statistic** to test $H_0$
+### 1. Define a <font color = "red">test statistic</font> to test $H_0$
 - 2-sample *t*-test
 - Welch *t*-test
 - Wilcoxon rank-sum test
 - Kolmogorov-Smirnov test
 
 ### 2. Compute the <font color=red>observed value</font> for the test statistic
-### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
-### 4. Make a decision about the significance of the results, based on a pre-specified value (alpha, significance level)
+### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the <font color = "red">null sampling distribution</font> (p-value) 
+### 4. Make a decision about the <font color = "red">significance</font> of the results, based on a pre-specified value (alpha, significance level)
 ---
 class: middle
 ## We can run these tests in R. 
@@ -103,7 +103,7 @@ class: middle
 
 ### - extend tests to more than 2-groups comparisons
 
-### - methods to analyze the effect of multiple factors on a response
+### - methods to analyze the association of multiple variables with the response
 ---
 class: middle
 
@@ -157,16 +157,16 @@ grid.arrange(irsLim, nrlLim, ncol = 1)
 ---
 class: middle
 # From *t*-test to linear regression
-Let's change the notation to present the problem as a regression
+Let's change the notation to give a common framework to all methods
 <br> <br>
-$$Y \sim G; \; E[Y] = \mu_Y$$
+<font size=5> $$Y \sim G; \; E[Y] = \mu_Y$$ </font>
  **<center>↓</center>**
 
-$$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim G; \; E[\varepsilon_Y] = 0$$
+<font size=5> $$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim G; \; E[\varepsilon_Y] = 0$$ </font>
 <br>
 We can use a subindeces to distinguish observations from each group, i.e., 
 
-$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G_j; \; \;E[\varepsilon_{ij}] = 0;$$
+<font size=5> $$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G_j; \; \;E[\varepsilon_{ij}] = 0;$$ </font>
 <br>
 where $j = \textrm{\{wt, NrlKO}\}$ or $j=\textrm{\{1, 2}\}$; and $i=1, \ldots, n_j$.
 <br>
@@ -182,13 +182,14 @@ class: middle
 
 ### using data from the model
 
-### $$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
+<font size=5> $$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$</font>
 <br>
 where $j = \textrm{\{wt, NrlKO}\}$ or $j=\textrm{\{1, 2}\}$; and $i=1, \ldots, n_j$.
 <br>
 
 > For simplicity, we assume a common distribution $G$ for all groups
 
+### the model is written with a <font color = "red">cell-means</font> - $\mu_j$ - parametrization
 ---
 class: middle
 
@@ -197,7 +198,9 @@ class: middle
 
 ###A natural **estimator** of the population mean is the <font color = "red">**sample mean**</font>
 
-### By default, the `t.test` function uses the group sample means as estimators.  
+### Classical methods for *t*-test, ANOVA, and linear regression use the group sample means as estimators.
+
+See, for example, the `t.test` function in R:
 
 ```{r}
 ttest.irs4$estimate
@@ -207,6 +210,10 @@ class: middle
 ### However, the `lm` function reports other estimates, <font color = "red">why?</font>  
 
 ```{r}
+(means.irs4<-as.data.frame(irs4Dat %>% group_by(gType) %>% summarize(meanGroups=mean(gExp,digits=6))))
+```
+
+```{r}
 lm.irs4$coefficients[,1]
 ```
 $\hspace{3em}$ **↓**
@@ -214,23 +221,18 @@ $\hspace{3em}$ **↓**
 
 
 ### But the second coefficient is <font color = "red">**not**</font> the sample mean of the WT group
-
-```{r}
-ttest.irs4$estimate
-```
 ---
 class: middle
-### By default, the `lm` function assumes a different *parametrization*:
 
-### $$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
-###**<center>↓</center>**
-### $$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
+### By default, the `lm` function uses a different <font color=red>parametrization</font> since the goal is to *compare* the means, not to study each in isolation
+
+<font size=5> From <font color=red>**cell-means**</font> - $\mu_j$:  $$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
+**<center>↓</center>**
+to <font color = "red">**reference-treatment effect**</font> - $(\theta,\tau_j)$: $$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
 
 ### Note that for each group, the population mean is given by 
-### $$E[Y_{ij}] = \theta+\tau_j=\mu_j,$$ 
-
-###The first model uses a <font color = "red">*cell-means* parametrization</font>
-###The second model uses a <font color = "red">*reference-treatment effect* parametrization</font>
+<font size=5> $$E[Y_{ij}] = \theta+\tau_j=\mu_j, \; \text{and}$$
+$$\tau_2=\mu_2-\mu_1$$ 
 ---
 class: middle
 ## Relation between parametrizations
@@ -239,40 +241,63 @@ class: middle
 
 ---
 class: middle
-### By default, R uses the <font color = "red">*reference-treatment effect* parametrization</font> 
 
-$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
+### `lm` reports the sample mean of the <font color = "red">reference</font> group (WT): $\hat\theta$
 
-This is the sample mean of the *reference* group (wt in this case): $\hat\theta$
-```{r}
-lm.irs4$coefficients[1,1]
-```
- 
-and this is the *treatment effect*, i.e., the difference between the sample means of both groups: $\hat\tau_2$
+### and the <font color = "red">treatment effect</font>, i.e., difference between the sample means of both groups: $\hat\tau_2$
  
 ```{r}
-lm.irs4$coefficients[2,1]
-means.irs4<-irs4Dat %>% group_by(gType) %>% summarize(meanGroups=mean(gExp,digits=6)) 
-diff(means.irs4$meanGroups)
+lm.irs4$coefficients[,1]
+data.frame(meanWT=means.irs4[1,2],meanDiff=diff(means.irs4$meanGroups))
 ```
 ---
 class: middle
-### Beyond 2-groups comparisons:
+### The <font color = "red">reference-treatment effect </font> parametrization is also used by other methods
+
+### Note that the 2-sample *t*-test presented last class equals
+
+<font size=5>$$t=\frac{\hat \tau_2}{\sqrt{V(\hat \tau_2})},$$</font>
+
+> $\hat \tau_2=\bar{Y_2}-\bar{Y_1}$ is the difference of sample means
+
+```{r,include=FALSE}
+theVars <- with(miniDat,
+                 tapply(gExp, list(gType, gene), var))
+## compute estimated variance of zbar - ybar
+(nY <- with(miniDat, sum(gType == "wt" & gene == "Irs4")))
+(nZ <- with(miniDat, sum(gType == "NrlKO" & gene == "Irs4")))
+
+## assuming equal true variance
+(s2Pooled <- colSums(theVars * c((nY - 1) / (nY + nZ - 2),
+                                 (nZ - 1) / (nY + nZ - 2))))
+
+(s2Diff.irs <- s2Pooled[1] * (1/nY + 1/nZ))
+```
+
+```{r}
+diff(means.irs4$meanGroups)/sqrt(s2Diff.irs)
+ttest.irs4$statistic
+```
+---
+class: middle
+
+### Similarly, `aov` uses $\hat \tau_2$ to build the *F*-statistic
+
+
+```{r}
+summary(aov(gExp ~gType, irs4Dat))
+```
+### It can be proved mathematically that 
+### $$F=t^2$$ 
+Here numerically,
+
+```{r}
+as.numeric(ttest.irs4$statistic^2)
+```
+---
+class: middle
+### What if there are more than 2 groups?
 ![](L6_ANOVA_files/slide17.png)
----
-class: middle
-<big>
-<font size = 12> $$Y = X\alpha + \varepsilon$$ </font>
-<font color = red> $Y:$ </font> The column vector of the responses, one element per experimental unit
-
-<font color = red> $X:$ </font> a (design) matrix that represents covariate info, one row per experimental unit
-
-<font color = red> $\alpha:$ </font> a column vector of parameters in the linear model
-
-<font color = red> $\varepsilon:$ </font> a column vector of the errors
-<br>
-### Generic linear model, using conventional matrix formulation
-
 ---
 class: middle
 
@@ -288,16 +313,70 @@ class: middle
 > Special case of <font color = "red">linear regression</font>, but with linear regression you can model **many quantitative and qualitative variables**. 
 
 ---
+class: middle
+
+# But where's the line??
+```{r,echo=FALSE}
+grid.arrange(irsLim, nrlLim, ncol = 1)
+```
+---
+class: middle
+### Using a special matrix $X$, we can write our model in matrix notation:
+
+![](L6_ANOVA_files/model_matrix.png)
+### and "a line" seems to appear!!
+---
+class: middle
+
+```{r,echo=FALSE,out.height="350px"}
+knitr::include_graphics("L6_ANOVA_files/slide18.png")
+```
+
+> Note that $Y_{i1}= 1 \times \theta + 0 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i1}=\theta + \varepsilon_{i1}$
+
+> Note that $Y_{i2}= 1 \times \theta + 1 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i2}=\theta + \tau_2+\varepsilon_{i2}$
+
+> Note that $Y_{i3}= 1 \times \theta + 0 \times \tau_2 + 1 \times \tau_3 + \varepsilon_{i3}=\theta + \tau_3+\varepsilon_{i3}$
+
+<br>
+
+<font size=5> Which is the same as $\; \rightarrow \; Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0$
+---
+class: middle
+
+## Difference of means: the "treatment effect"
+<font size=5> $Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0, \; E[\varepsilon_{ij}]=0$
+> Note that $E[Y_{i1}] = \theta + \tau_j$
+
+<br>
+--
+
+In particular, 
+$$E[Y_{i1}]=\theta$$
+<br>
+--
+$$E[Y_{i2}]=\theta+\tau_2 \; \rightarrow \tau_2=E[Y_{i2}]-E[Y_{i1}]=\mu_2-\mu_1$$
+<br>
+--
+$$E[Y_{i3}]=\theta+\tau_3 \; \rightarrow \tau_3=E[Y_{i3}]-E[Y_{i1}]=\mu_3-\mu_1$$
+
 
 ---
 class: middle
-![](L6_ANOVA_files/slide18.png)
----
-class: middle
-![](L6_ANOVA_files/slide19.png)
----
-class: middle
-![](L6_ANOVA_files/slide20.png)
+# Linear regression model:
+
+<big>
+<font size = 12> $$Y = X\alpha + \varepsilon$$ </font>
+<font color = red> $Y:$ </font> a column vector containing the responses, one element per experimental unit
+
+<font color = red> $X:$ </font> a (design) matrix that represents covariate info, one row per experimental unit
+
+<font color = red> $\alpha:$ </font> a column vector of parameters in the linear model
+
+<font color = red> $\varepsilon:$ </font> a column vector of the errors
+<br>
+
+
 ---
 class: middle, center
 
@@ -321,9 +400,7 @@ lm(y ~ x, data = jDat)
 <br>
 ### By default, R uses a ref-tx parametrization but you can control that!(called "contr.treatment"; see?contrasts)
 ---
-class: middle
-![](L6_ANOVA_files/slide22.png)
----
+
 class: middle
 ## Back to our example!
 ### <font color="red"> Is the gene expression of gene A different at different developmental stages?</font>
