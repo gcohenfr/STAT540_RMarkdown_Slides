@@ -329,53 +329,49 @@ class: middle
 class: middle
 
 ```{r,echo=FALSE,out.height="350px"}
+knitr::include_graphics("L6_ANOVA_files/model_matrix_s.png")
+```
+
+> <font color = "red">Note that $Y_{i1}= 1 \times \theta + 0 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i1}=\theta + \varepsilon_{i1}$
+
+> <font color = "blue">Note that $Y_{i2}= 1 \times \theta + 1 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i2}=\theta + \tau_2+\varepsilon_{i2}$
+
+> <font color = "green">Note that $Y_{i3}= 1 \times \theta + 0 \times \tau_2 + 1 \times \tau_3 + \varepsilon_{i3}=\theta + \tau_3+\varepsilon_{i3}$
+
+<br>
+
+<font size=5 color="black"> 
+Which is the same as $\; \rightarrow \; Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0$
+---
+class: middle
+### Difference of means: the "treatment effect"
+```{r,echo=FALSE,out.height="320px"}
 knitr::include_graphics("L6_ANOVA_files/slide18.png")
 ```
 
-> Note that $Y_{i1}= 1 \times \theta + 0 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i1}=\theta + \varepsilon_{i1}$
+> Note that $E[Y_{ij}] = \theta + \tau_j + E[\varepsilon_{ij}]=\theta +\tau_{j}$
 
-> Note that $Y_{i2}= 1 \times \theta + 1 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i2}=\theta + \tau_2+\varepsilon_{i2}$
-
-> Note that $Y_{i3}= 1 \times \theta + 0 \times \tau_2 + 1 \times \tau_3 + \varepsilon_{i3}=\theta + \tau_3+\varepsilon_{i3}$
-
+$E[Y_{i1}]=\theta$
 <br>
 
-<font size=5> Which is the same as $\; \rightarrow \; Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0$
----
-class: middle
-
-## Difference of means: the "treatment effect"
-<font size=5> $Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0, \; E[\varepsilon_{ij}]=0$
-> Note that $E[Y_{i1}] = \theta + \tau_j$
-
+$E[Y_{i2}]=\theta+\tau_2 \; \rightarrow \tau_2=E[Y_{i2}]-E[Y_{i1}]=\mu_2-\mu_1$
 <br>
---
 
-In particular, 
-$$E[Y_{i1}]=\theta$$
-<br>
---
-$$E[Y_{i2}]=\theta+\tau_2 \; \rightarrow \tau_2=E[Y_{i2}]-E[Y_{i1}]=\mu_2-\mu_1$$
-<br>
---
-$$E[Y_{i3}]=\theta+\tau_3 \; \rightarrow \tau_3=E[Y_{i3}]-E[Y_{i1}]=\mu_3-\mu_1$$
-
+$E[Y_{i3}]=\theta+\tau_3 \; \rightarrow \tau_3=E[Y_{i3}]-E[Y_{i1}]=\mu_3-\mu_1$
 
 ---
 class: middle
-# Linear regression model:
+![](L6_ANOVA_files/linear_form.png)
+---
+class: middle
 
-<big>
-<font size = 12> $$Y = X\alpha + \varepsilon$$ </font>
-<font color = red> $Y:$ </font> a column vector containing the responses, one element per experimental unit
+### <font color = "red">Linear regression</font> can include **quantitative & qualitative covariates**. 
 
-<font color = red> $X:$ </font> a (design) matrix that represents covariate info, one row per experimental unit
-
-<font color = red> $\alpha:$ </font> a column vector of parameters in the linear model
-
-<font color = red> $\varepsilon:$ </font> a column vector of the errors
-<br>
-
+<center>
+```{r,echo=FALSE,out.height="470px"}
+knitr::include_graphics("L6_ANOVA_files/LM_vbles.png")
+```
+> Linear in the parameters $\alpha$: $X$ can contain $x^2$, $log(x)$, etc.
 
 ---
 class: middle, center
@@ -384,26 +380,29 @@ class: middle, center
 
 <big>
 
-<font size = 5> $$Y = X\alpha + \varepsilon$$ **↓**
+## $$Y = X\alpha + \varepsilon$$ 
+**↓**
 <br>
+
 ```
-lm(y ~ x, data = jDat)
+lm(y ~ x, data = yourData)
 ```
 </font>
 .pull-left[
-<font color = red> y ~ x: </font> formula, y numeric, x factor
+<font color = red> y ~ x: </font> formula, y numeric, x numeric and/or factor
 ]
 
 .pull-right[
-<font color = red> jDat: </font> optional data.frame in which x and y are to be found (I recommend this style)
+<font color = red> yourData: </font> data.frame in which x and y are to be found (we recommend this style)
 ]
 <br>
-### By default, R uses a ref-tx parametrization but you can control that!(called "contr.treatment"; see?contrasts)
+### By default, R uses a ref-tx parametrization but you can control that!
 ---
-
+---
 class: middle
-## Back to our example!
-### <font color="red"> Is the gene expression of gene A different at different developmental stages?</font>
+## Beyond 2-group comparisons in our case study:
+
+### <font color="red"> Is the expression of gene A the same at all developmental stages?</font>
 
 $$H_0 : \mu_{E16} = \mu_{P2} = \mu_{P6} = \mu_{P10} = \mu_{4weeks}$$
 <center>
@@ -464,8 +463,14 @@ with(miniDat,
 ```{r, echo=FALSE, fig.height= 3, dev='svg'}
 grid.arrange(boreLim, hitLim, nrow = 1)
 ```
+
 ---
 class: middle
+``` {r}
+means.dev <- as.data.frame(miniDat %>% group_by(devStage) %>% summarize(cellMeans=mean(gExp)))
+means.dev
+data.frame(cellMeans=means.dev[1,2],txEffects=diff(means.dev$cellMeans))
+```
 ![](L6_ANOVA_files/slide25.png)
 ---
 class: middle

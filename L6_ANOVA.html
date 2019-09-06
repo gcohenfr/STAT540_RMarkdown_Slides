@@ -345,52 +345,44 @@ class: middle
 ---
 class: middle
 
-&lt;img src="L6_ANOVA_files/slide18.png" height="350px" /&gt;
+&lt;img src="L6_ANOVA_files/model_matrix_s.png" height="350px" /&gt;
 
-&gt; Note that `\(Y_{i1}= 1 \times \theta + 0 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i1}=\theta + \varepsilon_{i1}\)`
+&gt; &lt;font color = "red"&gt;Note that `\(Y_{i1}= 1 \times \theta + 0 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i1}=\theta + \varepsilon_{i1}\)`
 
-&gt; Note that `\(Y_{i2}= 1 \times \theta + 1 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i2}=\theta + \tau_2+\varepsilon_{i2}\)`
+&gt; &lt;font color = "blue"&gt;Note that `\(Y_{i2}= 1 \times \theta + 1 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i2}=\theta + \tau_2+\varepsilon_{i2}\)`
 
-&gt; Note that `\(Y_{i3}= 1 \times \theta + 0 \times \tau_2 + 1 \times \tau_3 + \varepsilon_{i3}=\theta + \tau_3+\varepsilon_{i3}\)`
+&gt; &lt;font color = "green"&gt;Note that `\(Y_{i3}= 1 \times \theta + 0 \times \tau_2 + 1 \times \tau_3 + \varepsilon_{i3}=\theta + \tau_3+\varepsilon_{i3}\)`
 
 &lt;br&gt;
 
-&lt;font size=5&gt; Which is the same as `\(\; \rightarrow \; Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0\)`
+&lt;font size=5 color="black"&gt; 
+Which is the same as `\(\; \rightarrow \; Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0\)`
 ---
 class: middle
+### Difference of means: the "treatment effect"
+&lt;img src="L6_ANOVA_files/slide18.png" height="320px" /&gt;
 
-## Difference of means: the "treatment effect"
-&lt;font size=5&gt; `\(Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0, \; E[\varepsilon_{ij}]=0\)`
-&gt; Note that `\(E[Y_{i1}] = \theta + \tau_j\)`
+&gt; Note that `\(E[Y_{ij}] = \theta + \tau_j + E[\varepsilon_{ij}]=\theta +\tau_{j}\)`
 
+`\(E[Y_{i1}]=\theta\)`
 &lt;br&gt;
---
 
-In particular, 
-`$$E[Y_{i1}]=\theta$$`
+`\(E[Y_{i2}]=\theta+\tau_2 \; \rightarrow \tau_2=E[Y_{i2}]-E[Y_{i1}]=\mu_2-\mu_1\)`
 &lt;br&gt;
---
-`$$E[Y_{i2}]=\theta+\tau_2 \; \rightarrow \tau_2=E[Y_{i2}]-E[Y_{i1}]=\mu_2-\mu_1$$`
-&lt;br&gt;
---
-`$$E[Y_{i3}]=\theta+\tau_3 \; \rightarrow \tau_3=E[Y_{i3}]-E[Y_{i1}]=\mu_3-\mu_1$$`
 
+`\(E[Y_{i3}]=\theta+\tau_3 \; \rightarrow \tau_3=E[Y_{i3}]-E[Y_{i1}]=\mu_3-\mu_1\)`
 
 ---
 class: middle
-# Linear regression model:
+![](L6_ANOVA_files/linear_form.png)
+---
+class: middle
 
-&lt;big&gt;
-&lt;font size = 12&gt; `$$Y = X\alpha + \varepsilon$$` &lt;/font&gt;
-&lt;font color = red&gt; `\(Y:\)` &lt;/font&gt; a column vector containing the responses, one element per experimental unit
+### &lt;font color = "red"&gt;Linear regression&lt;/font&gt; can include **quantitative &amp; qualitative covariates**. 
 
-&lt;font color = red&gt; `\(X:\)` &lt;/font&gt; a (design) matrix that represents covariate info, one row per experimental unit
-
-&lt;font color = red&gt; `\(\alpha:\)` &lt;/font&gt; a column vector of parameters in the linear model
-
-&lt;font color = red&gt; `\(\varepsilon:\)` &lt;/font&gt; a column vector of the errors
-&lt;br&gt;
-
+&lt;center&gt;
+&lt;img src="L6_ANOVA_files/LM_vbles.png" height="470px" /&gt;
+&gt; Linear in the parameters `\(\alpha\)`: `\(X\)` can contain `\(x^2\)`, `\(log(x)\)`, etc.
 
 ---
 class: middle, center
@@ -399,32 +391,35 @@ class: middle, center
 
 &lt;big&gt;
 
-&lt;font size = 5&gt; `$$Y = X\alpha + \varepsilon$$` **↓**
+## `$$Y = X\alpha + \varepsilon$$` 
+**↓**
 &lt;br&gt;
+
 ```
-lm(y ~ x, data = jDat)
+lm(y ~ x, data = yourData)
 ```
 &lt;/font&gt;
 .pull-left[
-&lt;font color = red&gt; y ~ x: &lt;/font&gt; formula, y numeric, x factor
+&lt;font color = red&gt; y ~ x: &lt;/font&gt; formula, y numeric, x numeric and/or factor
 ]
 
 .pull-right[
-&lt;font color = red&gt; jDat: &lt;/font&gt; optional data.frame in which x and y are to be found (I recommend this style)
+&lt;font color = red&gt; yourData: &lt;/font&gt; data.frame in which x and y are to be found (we recommend this style)
 ]
 &lt;br&gt;
-### By default, R uses a ref-tx parametrization but you can control that!(called "contr.treatment"; see?contrasts)
+### By default, R uses a ref-tx parametrization but you can control that!
 ---
-
+---
 class: middle
-## Back to our example!
-### &lt;font color="red"&gt; Is the gene expression of gene A different at different developmental stages?&lt;/font&gt;
+## Beyond 2-group comparisons in our case study:
+
+### &lt;font color="red"&gt; Is the expression of gene A the same at all developmental stages?&lt;/font&gt;
 
 `$$H_0 : \mu_{E16} = \mu_{P2} = \mu_{P6} = \mu_{P10} = \mu_{4weeks}$$`
 &lt;center&gt;
 
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-18-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-20-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 
@@ -442,21 +437,48 @@ with(miniDat,
 ## 4_weeks 7.559000 9.173375
 ```
 &lt;center&gt;
-![](L6_ANOVA_files/figure-html/unnamed-chunk-20-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-22-1.svg)&lt;!-- --&gt;
+
 ---
 class: middle
+
+```r
+means.dev &lt;- as.data.frame(miniDat %&gt;% group_by(devStage) %&gt;% summarize(cellMeans=mean(gExp)))
+means.dev
+```
+
+```
+##   devStage cellMeans
+## 1      E16  6.542500
+## 2       P2  6.714187
+## 3       P6  6.669125
+## 4      P10  6.973063
+## 5  4_weeks  8.366188
+```
+
+```r
+data.frame(cellMeans=means.dev[1,2],txEffects=diff(means.dev$cellMeans))
+```
+
+```
+##   cellMeans  txEffects
+## 1    6.5425  0.1716875
+## 2    6.5425 -0.0450625
+## 3    6.5425  0.3039375
+## 4    6.5425  1.3931250
+```
 ![](L6_ANOVA_files/slide25.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-21-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide26.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-22-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-25-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide27.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-23-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-26-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide28.png)
 ---
 class: middle
@@ -599,24 +621,7 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();
-// adds .remark-code-has-line-highlighted class to <pre> parent elements
-// of code chunks containing highlighted lines with class .remark-code-line-highlighted
-(function(d) {
-  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
-  const preParents = [];
-  const findPreParent = function(line, p = 0) {
-    if (p > 1) return null; // traverse up no further than grandparent
-    const el = line.parentElement;
-    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
-  };
-
-  for (let line of hlines) {
-    let pre = findPreParent(line);
-    if (pre && !preParents.includes(pre)) preParents.push(pre);
-  }
-  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
-})(document);</script>
+})();</script>
 
 <script>
 (function() {
