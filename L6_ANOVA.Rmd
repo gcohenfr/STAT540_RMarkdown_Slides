@@ -139,14 +139,14 @@ nrlDat <- filter(miniDat, gene == "Nrl")
 
 irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
-             labs(title = "Irs4 Gene Expression") +
+             labs(title = "Irs4") +
              theme_bw() +           
              theme(legend.position = "none") +
              xlim(5, 15)
 
 nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
-             labs(title = "Nrl Gene Expression") +
+             labs(title = "Nrl") +
              theme_bw() +
              theme(legend.position = "none") +
              xlim(5, 15)
@@ -242,7 +242,7 @@ class: middle
 ---
 class: middle
 
-### `lm` reports the sample mean of the <font color = "red">reference</font> group (WT): $\hat\theta$
+### `lm` reports the sample mean of the <font color = "red">reference</font> group (NrlKO): $\hat\theta$
 
 ### and the <font color = "red">treatment effect</font>, i.e., difference between the sample means of both groups: $\hat\tau_2$
  
@@ -371,6 +371,7 @@ class: middle
 ```{r,echo=FALSE,out.height="470px"}
 knitr::include_graphics("L6_ANOVA_files/LM_vbles.png")
 ```
+</center>
 > Linear in the parameters $\alpha$: $X$ can contain $x^2$, $log(x)$, etc.
 
 ---
@@ -389,15 +390,29 @@ lm(y ~ x, data = yourData)
 ```
 </font>
 .pull-left[
-<font color = red> y ~ x: </font> formula, y numeric, x numeric and/or factor
+<font color = red> y ~ x: </font> formula, 
+<br><font color = red>y</font> numeric, 
+<br><font color = red>x</font> numeric and/or factor
 ]
 
 .pull-right[
-<font color = red> yourData: </font> data.frame in which x and y are to be found (we recommend this style)
+<font color = red> yourData: </font> data.frame in which x and y are to be found (optional but recommended)
 ]
 <br>
 ### By default, R uses a ref-tx parametrization but you can control that!
 ---
+class: middle
+### $X$: **categorical** variables
+
+<font size=5> 
+- $X$ is a numeric matrix
+- Categorical variables (e.g., `gType`) need to be set as factors 
+- Under the hood, R creates appropriate set of (numeric) dummy variables for $X$
+
+```{r}
+str(miniDat$gType)
+head(data.frame(X=model.matrix(gExp ~ gType, irs4Dat),gType=irs4Dat$gType),12)
+```
 ---
 class: middle
 ## Beyond 2-group comparisons in our case study:
@@ -422,13 +437,12 @@ theBore <- which(rownames(prDat) == "1443184_at") # 18898
 keepers <- data.frame(row = c(theBore, theHit),
                        probesetID = I(rownames(prDat)[c(theBore, theHit)]))
 
-miniDat <- as.vector(t(prDat[keepers$probesetID, ]))
-miniDat <- data.frame(gene = rep(c("theBore", "theHit"), each = nrow(prDes)),
-                      gExp = miniDat)
-miniDat <- data.frame(prDes, miniDat)
+devDat <- as.vector(t(prDat[keepers$probesetID, ]))
+devDat <- data.frame(gene = rep(c("theBore", "theHit"), each = nrow(prDes)),gExp = devDat)
+devDat <- data.frame(prDes, devDat)
 
-boreDat <- filter(miniDat, gene == "theBore")
-hitDat <- filter(miniDat, gene == "theHit")
+boreDat <- filter(devDat, gene == "theBore")
+hitDat <- filter(devDat, gene == "theHit")
 ```
 
 ```{r, echo=FALSE, fig.height= 3, dev='svg'}
@@ -456,7 +470,7 @@ grid.arrange(boreLim, hitLim, nrow = 1)
 ---
 class: middle
 ``` {r}
-with(miniDat,
+with(devDat,
      tapply(gExp, list(devStage, gene), mean))
 ```
 <center>
@@ -466,12 +480,26 @@ grid.arrange(boreLim, hitLim, nrow = 1)
 
 ---
 class: middle
-``` {r}
-means.dev <- as.data.frame(miniDat %>% group_by(devStage) %>% summarize(cellMeans=mean(gExp)))
-means.dev
-data.frame(cellMeans=means.dev[1,2],txEffects=diff(means.dev$cellMeans))
+``` {r,eval=FALSE}
+means.dev <- as.data.frame(devDat %>% subset(gene=="theHit") %>% group_by(devStage) %>% summarize(cellMeans=mean(gExp)))
+means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
 ![](L6_ANOVA_files/slide25.png)
+---
+```{r,highlight.output = c(2)}
+summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+
+means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
+```
+.pull-left[
+### Estimate: $\hat\theta$
+### $H_0: \theta=0$
+]
+
+.pull-right[
+![](L6_ANOVA_files/slide25_s.png)
+]
+---
 ---
 class: middle
 ```{r, echo=FALSE, fig.height= 3, dev='svg'}
@@ -491,12 +519,13 @@ hitLim
 ```
 ![](L6_ANOVA_files/slide28.png)
 ---
+---
 class: middle
 <big>
 <font size = 5>$$Y = X \alpha + \varepsilon$$</font>
 $$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4weeks})$$
 
-### in the context of this model, we generally test null hypothesis of two types:
+### We generally test two types of null hypotheses:
 .pull-left[
 <center>
 $$H_0: \tau_j = 0$$
@@ -530,24 +559,80 @@ $$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$
 ---
 class: middle
 ### Increasing the complexity of our linear regression model ...
-What if you have two categorical variables: genotype and time
-(we will simplify the example by only considering two time points E16 and 4weeks)
+What if you have two categorical variables: `gType` and `devStage`
+(for simplicity, let's consider only two time points E16 and 4weeks)
 
 > ### Is the assocation between gene expression and genotype different at different developmental stages?
 
 ![](L6_ANOVA_files/slide32.png)
 ---
+---
+class: middle
+```{r,echo=FALSE, include=FALSE}
+##########################################################
+## simplying devStage to first and last timepoints
+##########################################################
+prDes <- 
+  droplevels(subset(prDes,
+                    subset = devStage %in%
+                      levels(devStage)[c(1, nlevels(devStage))]))
+str(prDes) # 15 obs. of  4 variables
+prDat <- subset(prDat, select = prDes$sidChar)
+
+# Gene selected for illustration
+(luckyGene <- which(rownames(prDat) == "1455695_at")) # 26861
+twoDat <- data.frame(gExp = unlist(prDat[luckyGene, ]))
+twoDat <- data.frame(prDes, twoDat)
+twoDat$grp <- with(twoDat, interaction(gType, devStage))
+str(twoDat)
+with(twoDat, table(gType, devStage))
+table(twoDat$grp)
+```
+
+## Two-way ANOVA or regression with interaction 
+
+### What parameters are we estimating? 
+
+### What hypotheses are we testing?
+
+```{r}
+twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
+summary(twoFactFit)$coeff
+```
+---
 class: middle
 ![](L6_ANOVA_files/slide33.png)
+
+```{r,echo=F,highlight.output = c(2)}
+twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
+summary(twoFactFit)$coeff
+```
 ---
 class: middle
 ![](L6_ANOVA_files/slide34.png)
+
+```{r,echo=F,highlight.output = c(3)}
+twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
+summary(twoFactFit)$coeff
+```
 ---
 class: middle
 ![](L6_ANOVA_files/slide35.png)
+
+```{r,echo=F,highlight.output = c(4)}
+twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
+summary(twoFactFit)$coeff
+```
+
 ---
 class: middle
 ![](L6_ANOVA_files/slide36.png)
+
+```{r,echo=F,highlight.output = c(5)}
+twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
+summary(twoFactFit)$coeff
+```
+
 ---
 class: middle
 ![](L6_ANOVA_files/slide37.png)

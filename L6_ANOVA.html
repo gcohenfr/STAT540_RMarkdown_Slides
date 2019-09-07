@@ -233,7 +233,7 @@ class: middle
 ---
 class: middle
 
-### `lm` reports the sample mean of the &lt;font color = "red"&gt;reference&lt;/font&gt; group (WT): `\(\hat\theta\)`
+### `lm` reports the sample mean of the &lt;font color = "red"&gt;reference&lt;/font&gt; group (NrlKO): `\(\hat\theta\)`
 
 ### and the &lt;font color = "red"&gt;treatment effect&lt;/font&gt;, i.e., difference between the sample means of both groups: `\(\hat\tau_2\)`
  
@@ -382,6 +382,7 @@ class: middle
 
 &lt;center&gt;
 &lt;img src="L6_ANOVA_files/LM_vbles.png" height="470px" /&gt;
+&lt;/center&gt;
 &gt; Linear in the parameters `\(\alpha\)`: `\(X\)` can contain `\(x^2\)`, `\(log(x)\)`, etc.
 
 ---
@@ -400,15 +401,53 @@ lm(y ~ x, data = yourData)
 ```
 &lt;/font&gt;
 .pull-left[
-&lt;font color = red&gt; y ~ x: &lt;/font&gt; formula, y numeric, x numeric and/or factor
+&lt;font color = red&gt; y ~ x: &lt;/font&gt; formula, 
+&lt;br&gt;&lt;font color = red&gt;y&lt;/font&gt; numeric, 
+&lt;br&gt;&lt;font color = red&gt;x&lt;/font&gt; numeric and/or factor
 ]
 
 .pull-right[
-&lt;font color = red&gt; yourData: &lt;/font&gt; data.frame in which x and y are to be found (we recommend this style)
+&lt;font color = red&gt; yourData: &lt;/font&gt; data.frame in which x and y are to be found (optional but recommended)
 ]
 &lt;br&gt;
 ### By default, R uses a ref-tx parametrization but you can control that!
 ---
+class: middle
+### `\(X\)`: **categorical** variables
+
+&lt;font size=5&gt; 
+- `\(X\)` is a numeric matrix
+- Categorical variables (e.g., `gType`) need to be set as factors 
+- Under the hood, R creates appropriate set of (numeric) dummy variables for `\(X\)`
+
+
+```r
+str(miniDat$gType)
+```
+
+```
+##  Factor w/ 2 levels "NrlKO","wt": 2 2 2 2 1 1 1 2 2 2 ...
+```
+
+```r
+head(data.frame(X=model.matrix(gExp ~ gType, irs4Dat),gType=irs4Dat$gType),12)
+```
+
+```
+##    X..Intercept. X.gTypewt gType
+## 1              1         1    wt
+## 2              1         1    wt
+## 3              1         1    wt
+## 4              1         1    wt
+## 5              1         0 NrlKO
+## 6              1         0 NrlKO
+## 7              1         0 NrlKO
+## 8              1         1    wt
+## 9              1         1    wt
+## 10             1         1    wt
+## 11             1         1    wt
+## 12             1         0 NrlKO
+```
 ---
 class: middle
 ## Beyond 2-group comparisons in our case study:
@@ -419,12 +458,12 @@ class: middle
 &lt;center&gt;
 
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-20-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-21-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 
 ```r
-with(miniDat,
+with(devDat,
      tapply(gExp, list(devStage, gene), mean))
 ```
 
@@ -437,56 +476,72 @@ with(miniDat,
 ## 4_weeks 7.559000 9.173375
 ```
 &lt;center&gt;
-![](L6_ANOVA_files/figure-html/unnamed-chunk-22-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-23-1.svg)&lt;!-- --&gt;
 
 ---
 class: middle
 
 ```r
-means.dev &lt;- as.data.frame(miniDat %&gt;% group_by(devStage) %&gt;% summarize(cellMeans=mean(gExp)))
-means.dev
-```
-
-```
-##   devStage cellMeans
-## 1      E16  6.542500
-## 2       P2  6.714187
-## 3       P6  6.669125
-## 4      P10  6.973063
-## 5  4_weeks  8.366188
-```
-
-```r
-data.frame(cellMeans=means.dev[1,2],txEffects=diff(means.dev$cellMeans))
-```
-
-```
-##   cellMeans  txEffects
-## 1    6.5425  0.1716875
-## 2    6.5425 -0.0450625
-## 3    6.5425  0.3039375
-## 4    6.5425  1.3931250
+means.dev &lt;- as.data.frame(devDat %&gt;% subset(gene=="theHit") %&gt;% group_by(devStage) %&gt;% summarize(cellMeans=mean(gExp)))
+means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 ```
 ![](L6_ANOVA_files/slide25.png)
 ---
-class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
-![](L6_ANOVA_files/slide26.png)
+
+```r
+summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+```
+
+```
+##                  Estimate Std. Error   t value     Pr(&gt;|t|)
+*## (Intercept)     5.5408571  0.1021381 54.248698 1.307554e-34
+## devStageP2      0.3040179  0.1398583  2.173756 3.678022e-02
+## devStageP6      0.2433929  0.1398583  1.740282 9.085489e-02
+## devStageP10     0.8342679  0.1398583  5.965093 9.559065e-07
+## devStage4_weeks 3.6325179  0.1398583 25.972843 5.266481e-24
+```
+
+```r
+means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
+```
+
+```
+##   devStage cellMeans txEffects
+*## 1      E16  5.540857 0.0000000
+## 2       P2  5.844875 0.3040179
+## 3       P6  5.784250 0.2433929
+## 4      P10  6.375125 0.8342679
+## 5  4_weeks  9.173375 3.6325179
+```
+.pull-left[
+### Estimate: `\(\hat\theta\)`
+### `\(H_0: \theta=0\)`
+]
+
+.pull-right[
+![](L6_ANOVA_files/slide25_s.png)
+]
 ---
-class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-25-1.svg)&lt;!-- --&gt;
-![](L6_ANOVA_files/slide27.png)
 ---
 class: middle
 ![](L6_ANOVA_files/figure-html/unnamed-chunk-26-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/slide26.png)
+---
+class: middle
+![](L6_ANOVA_files/figure-html/unnamed-chunk-27-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/slide27.png)
+---
+class: middle
+![](L6_ANOVA_files/figure-html/unnamed-chunk-28-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide28.png)
+---
 ---
 class: middle
 &lt;big&gt;
 &lt;font size = 5&gt;$$Y = X \alpha + \varepsilon$$&lt;/font&gt;
 `$$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4weeks})$$`
 
-### in the context of this model, we generally test null hypothesis of two types:
+### We generally test two types of null hypotheses:
 .pull-left[
 &lt;center&gt;
 `$$H_0: \tau_j = 0$$`
@@ -520,24 +575,86 @@ class: middle
 ---
 class: middle
 ### Increasing the complexity of our linear regression model ...
-What if you have two categorical variables: genotype and time
-(we will simplify the example by only considering two time points E16 and 4weeks)
+What if you have two categorical variables: `gType` and `devStage`
+(for simplicity, let's consider only two time points E16 and 4weeks)
 
 &gt; ### Is the assocation between gene expression and genotype different at different developmental stages?
 
 ![](L6_ANOVA_files/slide32.png)
 ---
+---
+class: middle
+
+
+## Two-way ANOVA or regression with interaction 
+
+### What parameters are we estimating? 
+
+### What hypotheses are we testing?
+
+
+```r
+twoFactFit &lt;- lm(gExp ~ gType * devStage, twoDat)
+summary(twoFactFit)$coeff
+```
+
+```
+##                              Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
+## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
+## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
+## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+```
+---
 class: middle
 ![](L6_ANOVA_files/slide33.png)
+
+
+```
+##                              Estimate Std. Error   t value     Pr(&gt;|t|)
+*## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
+## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
+## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
+## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+```
 ---
 class: middle
 ![](L6_ANOVA_files/slide34.png)
+
+
+```
+##                              Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
+*## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
+## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
+## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+```
 ---
 class: middle
 ![](L6_ANOVA_files/slide35.png)
+
+
+```
+##                              Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
+## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
+*## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
+## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+```
+
 ---
 class: middle
 ![](L6_ANOVA_files/slide36.png)
+
+
+```
+##                              Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
+## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
+## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
+*## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+```
+
 ---
 class: middle
 ![](L6_ANOVA_files/slide37.png)
