@@ -477,16 +477,14 @@ with(devDat,
 ```
 &lt;center&gt;
 ![](L6_ANOVA_files/figure-html/unnamed-chunk-23-1.svg)&lt;!-- --&gt;
+---
 
+class: middle
+
+![](L6_ANOVA_files/slide25.png)
 ---
 class: middle
 
-```r
-means.dev &lt;- as.data.frame(devDat %&gt;% subset(gene=="theHit") %&gt;% group_by(devStage) %&gt;% summarize(cellMeans=mean(gExp)))
-means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
-```
-![](L6_ANOVA_files/slide25.png)
----
 
 ```r
 summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
@@ -513,28 +511,56 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 ## 4      P10  6.375125 0.8342679
 ## 5  4_weeks  9.173375 3.6325179
 ```
-.pull-left[
-### Estimate: `\(\hat\theta\)`
-### `\(H_0: \theta=0\)`
-]
 
-.pull-right[
-![](L6_ANOVA_files/slide25_s.png)
-]
----
+&lt;center&gt;
+&lt;img src="L6_ANOVA_files/dev_theta.png" height="150px" /&gt;
+&lt;/center&gt;
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-26-1.svg)&lt;!-- --&gt;
+
+
+```r
+summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+```
+
+```
+##                  Estimate Std. Error   t value     Pr(&gt;|t|)
+*## (Intercept)     5.5408571  0.1021381 54.248698 1.307554e-34
+## devStageP2      0.3040179  0.1398583  2.173756 3.678022e-02
+## devStageP6      0.2433929  0.1398583  1.740282 9.085489e-02
+## devStageP10     0.8342679  0.1398583  5.965093 9.559065e-07
+## devStage4_weeks 3.6325179  0.1398583 25.972843 5.266481e-24
+```
+
+```r
+means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
+```
+
+```
+##   devStage cellMeans txEffects
+*## 1      E16  5.540857 0.0000000
+## 2       P2  5.844875 0.3040179
+## 3       P6  5.784250 0.2433929
+## 4      P10  6.375125 0.8342679
+## 5  4_weeks  9.173375 3.6325179
+```
+
+&lt;center&gt;
+&lt;img src="L6_ANOVA_files/dev_tau2.png" height="150px" /&gt;
+&lt;/center&gt;
+---
+class: middle
+![](L6_ANOVA_files/figure-html/unnamed-chunk-29-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide26.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-27-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-30-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide27.png)
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-28-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-31-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide28.png)
----
+
 ---
 class: middle
 &lt;big&gt;
@@ -581,7 +607,6 @@ What if you have two categorical variables: `gType` and `devStage`
 &gt; ### Is the assocation between gene expression and genotype different at different developmental stages?
 
 ![](L6_ANOVA_files/slide32.png)
----
 ---
 class: middle
 
@@ -738,7 +763,24 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();</script>
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
 (function() {

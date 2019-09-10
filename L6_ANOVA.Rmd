@@ -477,29 +477,42 @@ with(devDat,
 ```{r, echo=FALSE, fig.height= 3, dev='svg'}
 grid.arrange(boreLim, hitLim, nrow = 1)
 ```
-
 ---
+
 class: middle
-``` {r,eval=FALSE}
+``` {r,echo=FALSE,results="hide"}
 means.dev <- as.data.frame(devDat %>% subset(gene=="theHit") %>% group_by(devStage) %>% summarize(cellMeans=mean(gExp)))
 means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
 ![](L6_ANOVA_files/slide25.png)
 ---
+class: middle
+
 ```{r,highlight.output = c(2)}
 summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
 
 means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
-.pull-left[
-### Estimate: $\hat\theta$
-### $H_0: \theta=0$
-]
 
-.pull-right[
-![](L6_ANOVA_files/slide25_s.png)
-]
+<center>
+```{r,echo=FALSE, out.height="150px"}
+knitr::include_graphics("L6_ANOVA_files/dev_theta.png")
+```
+</center>
 ---
+class: middle
+
+```{r,highlight.output = c(2)}
+summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+
+means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
+```
+
+<center>
+```{r,echo=FALSE, out.height="150px"}
+knitr::include_graphics("L6_ANOVA_files/dev_tau2.png")
+```
+</center>
 ---
 class: middle
 ```{r, echo=FALSE, fig.height= 3, dev='svg'}
@@ -518,7 +531,7 @@ class: middle
 hitLim
 ```
 ![](L6_ANOVA_files/slide28.png)
----
+
 ---
 class: middle
 <big>
@@ -565,7 +578,6 @@ What if you have two categorical variables: `gType` and `devStage`
 > ### Is the assocation between gene expression and genotype different at different developmental stages?
 
 ![](L6_ANOVA_files/slide32.png)
----
 ---
 class: middle
 ```{r,echo=FALSE, include=FALSE}
