@@ -27,6 +27,8 @@ library(gridExtra)
 library(lattice)
 library(latticeExtra)
 
+knitr::opts_chunk$set(width = 60)
+
 jCols <- c(x = "blue", y = "orange")
 trellis.par.set(superpose.symbol = list(col = jCols),
                 superpose.line = list(col = jCols))
@@ -93,7 +95,7 @@ class: middle
 ## We can run these tests in R. 
 ### Example: use the `t.test` function to test $H_0$ using a classical 2-sample *t*-test.
 
-``` {r,tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+``` {r}
 miniDat %>% subset(gene=="Irs4")%>% t.test(gExp ~ gType, data=., var.equal = TRUE)
 ```
 ---
@@ -210,7 +212,7 @@ ttest.irs4$estimate
 class: middle
 ### However, the `lm` function reports other estimates, <font color = "red">why?</font>  
 
-```{r,tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+```{r}
 (means.irs4<-as.data.frame(irs4Dat %>% group_by(gType) %>% summarize(meanGroups=mean(gExp,digits=6))))
 ```
 
@@ -418,7 +420,7 @@ class: middle
 
 ### Under the hood, R creates appropriate set of (numeric) dummy variables for $X$
 
-```{r,tidy=TRUE, tidy.opts=list(width.cutoff=40)}
+```{r,tidy=TRUE, tidy.opts=list(width.cutoff=45)}
 data.frame(X=model.matrix(gExp ~ gType, irs4Dat),
                 gType=irs4Dat$gType) %>% head(10)
 ```

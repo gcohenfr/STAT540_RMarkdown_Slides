@@ -240,7 +240,7 @@ class: middle
  
 
 ```r
-lm.irs4$coefficients[,1]
+lm.irs4$coefficients[, 1]
 ```
 
 ```
@@ -249,8 +249,8 @@ lm.irs4$coefficients[,1]
 ```
 
 ```r
-data.frame(meanWT=means.irs4[1,2],
-        meanDiff=diff(means.irs4$meanGroups))
+data.frame(meanWT = means.irs4[1, 2], 
+    meanDiff = diff(means.irs4$meanGroups))
 ```
 
 ```
@@ -436,8 +436,8 @@ class: middle
 
 
 ```r
-data.frame(X=model.matrix(gExp ~ gType, irs4Dat),
-                gType=irs4Dat$gType) %&gt;% head(10)
+data.frame(X = model.matrix(gExp ~ gType, irs4Dat), 
+    gType = irs4Dat$gType) %&gt;% head(10)
 ```
 
 ```
