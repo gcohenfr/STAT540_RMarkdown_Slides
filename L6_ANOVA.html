@@ -480,40 +480,11 @@ with(devDat,
 ---
 
 class: middle
+## "theHit": time ("treatment") effect
 
-![](L6_ANOVA_files/slide25.png)
----
-class: middle
-
-
-```r
-summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
-```
-
-```
-##                  Estimate Std. Error   t value     Pr(&gt;|t|)
-*## (Intercept)     5.5408571  0.1021381 54.248698 1.307554e-34
-## devStageP2      0.3040179  0.1398583  2.173756 3.678022e-02
-## devStageP6      0.2433929  0.1398583  1.740282 9.085489e-02
-## devStageP10     0.8342679  0.1398583  5.965093 9.559065e-07
-## devStage4_weeks 3.6325179  0.1398583 25.972843 5.266481e-24
-```
-
-```r
-means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
-```
-
-```
-##   devStage cellMeans txEffects
-*## 1      E16  5.540857 0.0000000
-## 2       P2  5.844875 0.3040179
-## 3       P6  5.784250 0.2433929
-## 4      P10  6.375125 0.8342679
-## 5  4_weeks  9.173375 3.6325179
-```
 
 &lt;center&gt;
-&lt;img src="L6_ANOVA_files/dev_theta.png" height="150px" /&gt;
+&lt;img src="L6_ANOVA_files/devStg.png" width="850px" height="500px" /&gt;
 &lt;/center&gt;
 ---
 class: middle
@@ -545,20 +516,100 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 ## 5  4_weeks  9.173375 3.6325179
 ```
 
-&lt;center&gt;
-&lt;img src="L6_ANOVA_files/dev_tau2.png" height="150px" /&gt;
-&lt;/center&gt;
+.pull-left[
+###**Estimate**: `\(\hat\theta\)`
+
+### `\(H_0: \theta=0\)`
+]
+
+.pull-right[
+&lt;br&gt;
+
+&gt; we are not usually interested in testing this hypothesis
+]
+---
+---
+class: middle
+
+
+```r
+summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+```
+
+```
+##                  Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)     5.5408571  0.1021381 54.248698 1.307554e-34
+*## devStageP2      0.3040179  0.1398583  2.173756 3.678022e-02
+## devStageP6      0.2433929  0.1398583  1.740282 9.085489e-02
+## devStageP10     0.8342679  0.1398583  5.965093 9.559065e-07
+## devStage4_weeks 3.6325179  0.1398583 25.972843 5.266481e-24
+```
+
+```r
+means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
+```
+
+```
+##   devStage cellMeans txEffects
+## 1      E16  5.540857 0.0000000
+*## 2       P2  5.844875 0.3040179
+## 3       P6  5.784250 0.2433929
+## 4      P10  6.375125 0.8342679
+## 5  4_weeks  9.173375 3.6325179
+```
+
+.pull-left[
+&lt;font size=5&gt;
+**Estimate**: `\(\hat\tau_{P2}=\hat\mu_{P2}-\hat\mu_{E16}\)`
+
+`\(H_0: \tau_{P2}=\mu_{P2}-\mu_{E16}\)`
+]
+.pull-right[
+&gt; we *are* usually interested in testing this hypothesis: first 2 days after birth
+]
+---
+class: middle
+
+
+```r
+summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+```
+
+```
+##                  Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)     5.5408571  0.1021381 54.248698 1.307554e-34
+## devStageP2      0.3040179  0.1398583  2.173756 3.678022e-02
+## devStageP6      0.2433929  0.1398583  1.740282 9.085489e-02
+## devStageP10     0.8342679  0.1398583  5.965093 9.559065e-07
+*## devStage4_weeks 3.6325179  0.1398583 25.972843 5.266481e-24
+```
+
+```r
+means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
+```
+
+```
+##   devStage cellMeans txEffects
+## 1      E16  5.540857 0.0000000
+## 2       P2  5.844875 0.3040179
+## 3       P6  5.784250 0.2433929
+## 4      P10  6.375125 0.8342679
+*## 5  4_weeks  9.173375 3.6325179
+```
+
+.pull-left[
+&lt;font size=5&gt;
+**Estimate**: `\(\hat\tau_{4weeks}=\hat\mu_{4weeks}-\hat\mu_{E16}\)`
+
+`\(H_0: \tau_{4weeks}=\mu_{4weeks}-\mu_{E16}\)`
+]
+
+.pull-right[
+&gt; we *are* usually interested in testing this hypothesis: 4 weeks after birth
+]
 ---
 class: middle
 ![](L6_ANOVA_files/figure-html/unnamed-chunk-29-1.svg)&lt;!-- --&gt;
-![](L6_ANOVA_files/slide26.png)
----
-class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-30-1.svg)&lt;!-- --&gt;
-![](L6_ANOVA_files/slide27.png)
----
-class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-31-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide28.png)
 
 ---
@@ -607,6 +658,7 @@ What if you have two categorical variables: `gType` and `devStage`
 &gt; ### Is the assocation between gene expression and genotype different at different developmental stages?
 
 ![](L6_ANOVA_files/slide32.png)
+---
 ---
 class: middle
 
@@ -763,24 +815,7 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();
-// adds .remark-code-has-line-highlighted class to <pre> parent elements
-// of code chunks containing highlighted lines with class .remark-code-line-highlighted
-(function(d) {
-  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
-  const preParents = [];
-  const findPreParent = function(line, p = 0) {
-    if (p > 1) return null; // traverse up no further than grandparent
-    const el = line.parentElement;
-    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
-  };
-
-  for (let line of hlines) {
-    let pre = findPreParent(line);
-    if (pre && !preParents.includes(pre)) preParents.push(pre);
-  }
-  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
-})(document);</script>
+})();</script>
 
 <script>
 (function() {

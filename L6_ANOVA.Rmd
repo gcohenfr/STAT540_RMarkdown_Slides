@@ -480,23 +480,15 @@ grid.arrange(boreLim, hitLim, nrow = 1)
 ---
 
 class: middle
+## "theHit": time ("treatment") effect
+
 ``` {r,echo=FALSE,results="hide"}
 means.dev <- as.data.frame(devDat %>% subset(gene=="theHit") %>% group_by(devStage) %>% summarize(cellMeans=mean(gExp)))
 means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
-![](L6_ANOVA_files/slide25.png)
----
-class: middle
-
-```{r,highlight.output = c(2)}
-summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
-
-means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
-```
-
 <center>
-```{r,echo=FALSE, out.height="150px"}
-knitr::include_graphics("L6_ANOVA_files/dev_theta.png")
+```{r,echo=FALSE, out.height="500px",out.width="850px"}
+knitr::include_graphics("L6_ANOVA_files/devStg.png")
 ```
 </center>
 ---
@@ -508,23 +500,55 @@ summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
 means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
 
-<center>
-```{r,echo=FALSE, out.height="150px"}
-knitr::include_graphics("L6_ANOVA_files/dev_tau2.png")
-```
-</center>
+.pull-left[
+###**Estimate**: $\hat\theta$
+
+### $H_0: \theta=0$
+]
+
+.pull-right[
+<br>
+
+> we are not usually interested in testing this hypothesis
+]
+---
 ---
 class: middle
-```{r, echo=FALSE, fig.height= 3, dev='svg'}
-hitLim
+
+```{r,highlight.output = c(3)}
+summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+
+means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
-![](L6_ANOVA_files/slide26.png)
+
+.pull-left[
+<font size=5>
+**Estimate**: $\hat\tau_{P2}=\hat\mu_{P2}-\hat\mu_{E16}$
+
+$H_0: \tau_{P2}=\mu_{P2}-\mu_{E16}$
+]
+.pull-right[
+> we *are* usually interested in testing this hypothesis: first 2 days after birth
+]
 ---
 class: middle
-```{r, echo=FALSE, fig.height= 3, dev='svg'}
-hitLim
+
+```{r,highlight.output = c(6)}
+summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+
+means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
-![](L6_ANOVA_files/slide27.png)
+
+.pull-left[
+<font size=5>
+**Estimate**: $\hat\tau_{4weeks}=\hat\mu_{4weeks}-\hat\mu_{E16}$
+
+$H_0: \tau_{4weeks}=\mu_{4weeks}-\mu_{E16}$
+]
+
+.pull-right[
+> we *are* usually interested in testing this hypothesis: 4 weeks after birth
+]
 ---
 class: middle
 ```{r, echo=FALSE, fig.height= 3, dev='svg'}
@@ -578,6 +602,7 @@ What if you have two categorical variables: `gType` and `devStage`
 > ### Is the assocation between gene expression and genotype different at different developmental stages?
 
 ![](L6_ANOVA_files/slide32.png)
+---
 ---
 class: middle
 ```{r,echo=FALSE, include=FALSE}
