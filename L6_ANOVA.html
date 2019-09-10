@@ -47,7 +47,7 @@ class: middle
 ### 4. Make a decision about the &lt;font color = "red"&gt;significance&lt;/font&gt; of the results, based on a pre-specified value (alpha, significance level)
 ---
 class: middle
-## We can run these tests in R. 
+## We can run these tests in R 
 ### Example: use the `t.test` function to test `\(H_0\)` using a classical 2-sample *t*-test.
 
 
@@ -163,7 +163,7 @@ where `\(j = \textrm{\{wt, NrlKO}\}\)` or `\(j=\textrm{\{1, 2}\}\)`; and `\(i=1,
 
 &gt; For simplicity, we assume a common distribution `\(G\)` for all groups
 
-### the model is written with a &lt;font color = "red"&gt;cell-means&lt;/font&gt; - `\(\mu_j\)` - parametrization
+### Note that the population means are given by `\(E[Y_{ij}] = \mu_j\)`, i.e., the model is written with a &lt;font color = "red"&gt;cell-means&lt;/font&gt; - `\(\mu_j\)` - parametrization
 ---
 class: middle
 
@@ -342,7 +342,7 @@ class: middle
 ![](L6_ANOVA_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 ---
 class: middle
-### Using a special matrix `\(X\)`, we can write our model in matrix notation:
+### With a special matrix `\(X\)`, we can write our model in matrix notation:
 
 ![](L6_ANOVA_files/model_matrix.png)
 ### and "a line" seems to appear!!
@@ -438,9 +438,8 @@ class: middle
 
 
 ```r
-data.frame(X = model.matrix(gExp ~ gType, 
-    irs4Dat), gType = irs4Dat$gType) %&gt;% 
-    head(10)
+data.frame(X = model.matrix(gExp ~ gType, irs4Dat), 
+    gType = irs4Dat$gType) %&gt;% head(10)
 ```
 
 ```
@@ -456,7 +455,7 @@ data.frame(X = model.matrix(gExp ~ gType,
 ## 9              1         1    wt
 ## 10             1         1    wt
 ```
----
+
 ---
 class: middle
 ## Beyond 2-group comparisons in our case study:
@@ -825,7 +824,24 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();</script>
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
 (function() {

@@ -90,7 +90,7 @@ class: middle
 ### 4. Make a decision about the <font color = "red">significance</font> of the results, based on a pre-specified value (alpha, significance level)
 ---
 class: middle
-## We can run these tests in R. 
+## We can run these tests in R 
 ### Example: use the `t.test` function to test $H_0$ using a classical 2-sample *t*-test.
 
 ``` {r,tidy=TRUE, tidy.opts=list(width.cutoff=60)}
@@ -190,7 +190,7 @@ where $j = \textrm{\{wt, NrlKO}\}$ or $j=\textrm{\{1, 2}\}$; and $i=1, \ldots, n
 
 > For simplicity, we assume a common distribution $G$ for all groups
 
-### the model is written with a <font color = "red">cell-means</font> - $\mu_j$ - parametrization
+### Note that the population means are given by $E[Y_{ij}] = \mu_j$, i.e., the model is written with a <font color = "red">cell-means</font> - $\mu_j$ - parametrization
 ---
 class: middle
 
@@ -323,7 +323,7 @@ grid.arrange(irsLim, nrlLim, ncol = 1)
 ```
 ---
 class: middle
-### Using a special matrix $X$, we can write our model in matrix notation:
+### With a special matrix $X$, we can write our model in matrix notation:
 
 ![](L6_ANOVA_files/model_matrix.png)
 ### and "a line" seems to appear!!
@@ -418,11 +418,11 @@ class: middle
 
 ### Under the hood, R creates appropriate set of (numeric) dummy variables for $X$
 
-```{r,tidy=TRUE, tidy.opts=list(width.cutoff=40)}
+```{r,tidy=TRUE, tidy.opts=list(width.cutoff=45)}
 data.frame(X=model.matrix(gExp ~ gType, irs4Dat),
                 gType=irs4Dat$gType) %>% head(10)
 ```
----
+
 ---
 class: middle
 ## Beyond 2-group comparisons in our case study:
