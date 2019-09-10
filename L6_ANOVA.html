@@ -52,8 +52,7 @@ class: middle
 
 
 ```r
-miniDat %&gt;% subset(gene == "Irs4") %&gt;% t.test(gExp ~ gType, data = ., 
-    var.equal = TRUE)
+miniDat %&gt;% subset(gene=="Irs4")%&gt;% t.test(gExp ~ gType, data=., var.equal = TRUE)
 ```
 
 ```
@@ -191,8 +190,7 @@ class: middle
 
 
 ```r
-(means.irs4 &lt;- as.data.frame(irs4Dat %&gt;% group_by(gType) %&gt;% 
-    summarize(meanGroups = mean(gExp, digits = 6))))
+(means.irs4&lt;-as.data.frame(irs4Dat %&gt;% group_by(gType) %&gt;% summarize(meanGroups=mean(gExp,digits=6))))
 ```
 
 ```
@@ -226,7 +224,7 @@ to &lt;font color = "red"&gt;**reference-treatment effect**&lt;/font&gt; - `\((\
 
 ### Note that for each group, the population mean is given by 
 &lt;font size=5&gt; `$$E[Y_{ij}] = \theta+\tau_j=\mu_j, \; \text{and}$$`
-`$$\tau_2=\mu_2-\mu_1$$` 
+`$$\tau_2=\mu_2-\mu_1=E[Y_{i2}] -E[Y_{i1}]$$` 
 ---
 class: middle
 ## Relation between parametrizations
@@ -242,7 +240,7 @@ class: middle
  
 
 ```r
-lm.irs4$coefficients[, 1]
+lm.irs4$coefficients[,1]
 ```
 
 ```
@@ -251,8 +249,8 @@ lm.irs4$coefficients[, 1]
 ```
 
 ```r
-data.frame(meanWT = means.irs4[1, 2], 
-    meanDiff = diff(means.irs4$meanGroups))
+data.frame(meanWT=means.irs4[1,2],
+        meanDiff=diff(means.irs4$meanGroups))
 ```
 
 ```
@@ -438,9 +436,8 @@ class: middle
 
 
 ```r
-data.frame(X = model.matrix(gExp ~ gType, 
-    irs4Dat), gType = irs4Dat$gType) %&gt;% 
-    head(10)
+data.frame(X=model.matrix(gExp ~ gType, irs4Dat),
+                gType=irs4Dat$gType) %&gt;% head(10)
 ```
 
 ```
@@ -536,7 +533,7 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 
 &gt; we are not usually interested in testing this hypothesis
 ]
----
+
 ---
 class: middle
 
@@ -667,7 +664,7 @@ What if you have two categorical variables: `gType` and `devStage`
 &gt; ### Is the assocation between gene expression and genotype different at different developmental stages?
 
 ![](L6_ANOVA_files/slide32.png)
----
+
 ---
 class: middle
 
@@ -762,6 +759,7 @@ We have three parameters we'd like to interpret:
 &lt;br&gt;
 ![](L6_ANOVA_files/slide39.png)
 ]
+
 ---
 class: middle
 ![](L6_ANOVA_files/slide40.png)
@@ -824,7 +822,24 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();</script>
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
 (function() {

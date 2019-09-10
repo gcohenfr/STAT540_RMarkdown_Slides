@@ -233,7 +233,7 @@ to <font color = "red">**reference-treatment effect**</font> - $(\theta,\tau_j)$
 
 ### Note that for each group, the population mean is given by 
 <font size=5> $$E[Y_{ij}] = \theta+\tau_j=\mu_j, \; \text{and}$$
-$$\tau_2=\mu_2-\mu_1$$ 
+$$\tau_2=\mu_2-\mu_1=E[Y_{i2}] -E[Y_{i1}]$$ 
 ---
 class: middle
 ## Relation between parametrizations
@@ -521,7 +521,7 @@ means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 
 > we are not usually interested in testing this hypothesis
 ]
----
+
 ---
 class: middle
 
@@ -612,7 +612,7 @@ What if you have two categorical variables: `gType` and `devStage`
 > ### Is the assocation between gene expression and genotype different at different developmental stages?
 
 ![](L6_ANOVA_files/slide32.png)
----
+
 ---
 class: middle
 ```{r,echo=FALSE, include=FALSE}
@@ -701,6 +701,7 @@ We have three parameters we'd like to interpret:
 <br>
 ![](L6_ANOVA_files/slide39.png)
 ]
+
 ---
 class: middle
 ![](L6_ANOVA_files/slide40.png)
