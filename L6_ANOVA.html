@@ -24,6 +24,7 @@ class: middle, center
 ### Is there **enough** evidence in the data to reject H&lt;sub&gt;0&lt;/sub&gt;?
 
 
+
 ![](L6_ANOVA_files/figure-html/unnamed-chunk-2-1.svg)&lt;!-- --&gt;
 
 ---
@@ -51,7 +52,8 @@ class: middle
 
 
 ```r
-miniDat %&gt;% subset(gene=="Irs4")%&gt;% t.test(gExp ~ gType, data=., var.equal = TRUE)
+miniDat %&gt;% subset(gene == "Irs4") %&gt;% t.test(gExp ~ gType, data = ., 
+    var.equal = TRUE)
 ```
 
 ```
@@ -189,7 +191,8 @@ class: middle
 
 
 ```r
-(means.irs4&lt;-as.data.frame(irs4Dat %&gt;% group_by(gType) %&gt;% summarize(meanGroups=mean(gExp,digits=6))))
+(means.irs4 &lt;- as.data.frame(irs4Dat %&gt;% group_by(gType) %&gt;% 
+    summarize(meanGroups = mean(gExp, digits = 6))))
 ```
 
 ```
@@ -239,7 +242,7 @@ class: middle
  
 
 ```r
-lm.irs4$coefficients[,1]
+lm.irs4$coefficients[, 1]
 ```
 
 ```
@@ -248,7 +251,8 @@ lm.irs4$coefficients[,1]
 ```
 
 ```r
-data.frame(meanWT=means.irs4[1,2],meanDiff=diff(means.irs4$meanGroups))
+data.frame(meanWT = means.irs4[1, 2], 
+    meanDiff = diff(means.irs4$meanGroups))
 ```
 
 ```
@@ -413,24 +417,30 @@ lm(y ~ x, data = yourData)
 ### By default, R uses a ref-tx parametrization but you can control that!
 ---
 class: middle
-### `\(X\)`: **categorical** variables
+## `\(X\)` with **categorical** variables
 
-&lt;font size=5&gt; 
-- `\(X\)` is a numeric matrix
-- Categorical variables (e.g., `gType`) need to be set as factors 
-- Under the hood, R creates appropriate set of (numeric) dummy variables for `\(X\)`
+- ### `\(X\)` is a numeric matrix
+- ### If your data contains categorical variables (e.g., `gType`), you need to set them as **factors**
 
 
 ```r
-str(miniDat$gType)
+str(irs4Dat$gType)
 ```
 
 ```
 ##  Factor w/ 2 levels "NrlKO","wt": 2 2 2 2 1 1 1 2 2 2 ...
 ```
+---
+class: middle
+## `\(X\)` with **categorical** variables (cont.)
+
+### Under the hood, R creates appropriate set of (numeric) dummy variables for `\(X\)`
+
 
 ```r
-head(data.frame(X=model.matrix(gExp ~ gType, irs4Dat),gType=irs4Dat$gType),12)
+data.frame(X = model.matrix(gExp ~ gType, 
+    irs4Dat), gType = irs4Dat$gType) %&gt;% 
+    head(10)
 ```
 
 ```
@@ -445,9 +455,8 @@ head(data.frame(X=model.matrix(gExp ~ gType, irs4Dat),gType=irs4Dat$gType),12)
 ## 8              1         1    wt
 ## 9              1         1    wt
 ## 10             1         1    wt
-## 11             1         1    wt
-## 12             1         0 NrlKO
 ```
+---
 ---
 class: middle
 ## Beyond 2-group comparisons in our case study:
@@ -458,7 +467,7 @@ class: middle
 &lt;center&gt;
 
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-21-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-22-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 
@@ -476,7 +485,7 @@ with(devDat,
 ## 4_weeks 7.559000 9.173375
 ```
 &lt;center&gt;
-![](L6_ANOVA_files/figure-html/unnamed-chunk-23-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
 ---
 
 class: middle
@@ -609,7 +618,7 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 ]
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-29-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-30-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide28.png)
 
 ---

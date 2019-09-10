@@ -17,6 +17,7 @@ class: middle, center
 ### H<sub>0</sub>: the expression level of gene A is the same in both conditions.
 
 ### Is there **enough** evidence in the data to reject H<sub>0</sub>?
+
 ```{r, include=FALSE}
 library(dplyr)
 library(ggplot2)
@@ -92,7 +93,7 @@ class: middle
 ## We can run these tests in R. 
 ### Example: use the `t.test` function to test $H_0$ using a classical 2-sample *t*-test.
 
-``` {r}
+``` {r,tidy=TRUE, tidy.opts=list(width.cutoff=60)}
 miniDat %>% subset(gene=="Irs4")%>% t.test(gExp ~ gType, data=., var.equal = TRUE)
 ```
 ---
@@ -209,7 +210,7 @@ ttest.irs4$estimate
 class: middle
 ### However, the `lm` function reports other estimates, <font color = "red">why?</font>  
 
-```{r}
+```{r,tidy=TRUE, tidy.opts=list(width.cutoff=60)}
 (means.irs4<-as.data.frame(irs4Dat %>% group_by(gType) %>% summarize(meanGroups=mean(gExp,digits=6))))
 ```
 
@@ -246,9 +247,10 @@ class: middle
 
 ### and the <font color = "red">treatment effect</font>, i.e., difference between the sample means of both groups: $\hat\tau_2$
  
-```{r}
+```{r,tidy=TRUE, tidy.opts=list(width.cutoff=35)}
 lm.irs4$coefficients[,1]
-data.frame(meanWT=means.irs4[1,2],meanDiff=diff(means.irs4$meanGroups))
+data.frame(meanWT=means.irs4[1,2],
+        meanDiff=diff(means.irs4$meanGroups))
 ```
 ---
 class: middle
@@ -402,17 +404,25 @@ lm(y ~ x, data = yourData)
 ### By default, R uses a ref-tx parametrization but you can control that!
 ---
 class: middle
-### $X$: **categorical** variables
+## $X$ with **categorical** variables
 
-<font size=5> 
-- $X$ is a numeric matrix
-- Categorical variables (e.g., `gType`) need to be set as factors 
-- Under the hood, R creates appropriate set of (numeric) dummy variables for $X$
+- ### $X$ is a numeric matrix
+- ### If your data contains categorical variables (e.g., `gType`), you need to set them as **factors**
 
 ```{r}
-str(miniDat$gType)
-head(data.frame(X=model.matrix(gExp ~ gType, irs4Dat),gType=irs4Dat$gType),12)
+str(irs4Dat$gType)
 ```
+---
+class: middle
+## $X$ with **categorical** variables (cont.)
+
+### Under the hood, R creates appropriate set of (numeric) dummy variables for $X$
+
+```{r,tidy=TRUE, tidy.opts=list(width.cutoff=40)}
+data.frame(X=model.matrix(gExp ~ gType, irs4Dat),
+                gType=irs4Dat$gType) %>% head(10)
+```
+---
 ---
 class: middle
 ## Beyond 2-group comparisons in our case study:
