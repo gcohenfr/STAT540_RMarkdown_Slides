@@ -47,12 +47,13 @@ class: middle
 ### 4. Make a decision about the &lt;font color = "red"&gt;significance&lt;/font&gt; of the results, based on a pre-specified value (alpha, significance level)
 ---
 class: middle
-## We can run these tests in R. 
+## We can run these tests in R 
 ### Example: use the `t.test` function to test `\(H_0\)` using a classical 2-sample *t*-test.
 
 
 ```r
-miniDat %&gt;% subset(gene=="Irs4")%&gt;% t.test(gExp ~ gType, data=., var.equal = TRUE)
+miniDat %&gt;% subset(gene == "Irs4") %&gt;% t.test(gExp ~ gType, data = ., 
+    var.equal = TRUE)
 ```
 
 ```
@@ -162,7 +163,7 @@ where `\(j = \textrm{\{wt, NrlKO}\}\)` or `\(j=\textrm{\{1, 2}\}\)`; and `\(i=1,
 
 &gt; For simplicity, we assume a common distribution `\(G\)` for all groups
 
-### the model is written with a &lt;font color = "red"&gt;cell-means&lt;/font&gt; - `\(\mu_j\)` - parametrization
+### Note that the population means are given by `\(E[Y_{ij}] = \mu_j\)`, i.e., the model is written with a &lt;font color = "red"&gt;cell-means&lt;/font&gt; - `\(\mu_j\)` - parametrization
 ---
 class: middle
 
@@ -190,7 +191,8 @@ class: middle
 
 
 ```r
-(means.irs4&lt;-as.data.frame(irs4Dat %&gt;% group_by(gType) %&gt;% summarize(meanGroups=mean(gExp,digits=6))))
+(means.irs4 &lt;- as.data.frame(irs4Dat %&gt;% group_by(gType) %&gt;% 
+    summarize(meanGroups = mean(gExp, digits = 6))))
 ```
 
 ```
@@ -340,7 +342,7 @@ class: middle
 ![](L6_ANOVA_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 ---
 class: middle
-### Using a special matrix `\(X\)`, we can write our model in matrix notation:
+### With a special matrix `\(X\)`, we can write our model in matrix notation:
 
 ![](L6_ANOVA_files/model_matrix.png)
 ### and "a line" seems to appear!!
@@ -453,7 +455,7 @@ data.frame(X = model.matrix(gExp ~ gType, irs4Dat),
 ## 9              1         1    wt
 ## 10             1         1    wt
 ```
----
+
 ---
 class: middle
 ## Beyond 2-group comparisons in our case study:
