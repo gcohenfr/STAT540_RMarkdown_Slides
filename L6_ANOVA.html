@@ -30,7 +30,7 @@ class: middle, center
 ---
 class: middle
 ### **Statistics**: use a random sample to learn about the population
-![](L6_ANOVA_files/slide3.png)
+![](L6_ANOVA_files/pop_sample.png)
 ---
 class: middle
 
@@ -73,15 +73,21 @@ miniDat %&gt;% subset(gene == "Irs4") %&gt;% t.test(gExp ~ gType, data = .,
 class: middle
 # Today...
 
-### - review other methods to test statistical hypothesis
+### - show how to compare means of different groups (2 or more) using a linear regression model
 
-### - extend tests to more than 2-groups comparisons
+  - dummy variables to model the levels of a qualitative explanatory variable
 
-### - methods to analyze the association of multiple variables with the response
+### - use linear regression to model the association of multiple variables with the response
+
+  - interaction between explanatory variables
+  
+### - distinguish between conditional and marginal effects
+  - `\(t\)`-tests vs `\(F\)`-tests  
 ---
 class: middle
 
-![](L6_ANOVA_files/slide4.png)
+&lt;img src="L6_ANOVA_files/t_aov_lm.png" height="600px" /&gt;
+
 ---
 class: middle
 It seems that we can use any of these methods to test `\(H_0\)`
@@ -126,8 +132,10 @@ list("t value"=lm.irs4$coeff[2,3],"p-value"=lm.irs4$coeff[2,4])
 class: middle
 ## *t*-test *vs* linear regression: &lt;font color = "red"&gt;where's the line?&lt;/font&gt;
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-6-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-7-1.svg)&lt;!-- --&gt;
+&gt; Note that the `\(y\)`-axis in these plots is not numerical, thus a line in this space does not have any mathematical meaning. 
 
+### Why can we run a `\(t\)`-test with a &lt;font color = "red"&gt;linear&lt;/font&gt; regression model?
 ---
 class: middle
 # From *t*-test to linear regression
@@ -167,12 +175,12 @@ where `\(j = \textrm{\{wt, NrlKO}\}\)` or `\(j=\textrm{\{1, 2}\}\)`; and `\(i=1,
 ---
 class: middle
 
-### Note that for each group, the population mean is given by 
+### Note that for each group, the &lt;font color = "red"&gt;population&lt;/font&gt; mean is given by 
 ### `$$E[Y_{ij}] = \mu_j,$$` 
 
 ###A natural **estimator** of the population mean is the &lt;font color = "red"&gt;**sample mean**&lt;/font&gt;
 
-### Classical methods for *t*-test, ANOVA, and linear regression use the group sample means as estimators.
+### Classical hypothesis testing methods use the group sample means as estimators
 
 See, for example, the `t.test` function in R:
 
@@ -214,26 +222,25 @@ lm.irs4$coefficients[,1]
 &lt;font color = "red"&gt;sample mean of NrlKO group&lt;/font&gt; 
 
 
-### But the second coefficient is &lt;font color = "red"&gt;**not**&lt;/font&gt; the sample mean of the WT group
+### But `gTypewt` is &lt;font color = "red"&gt;**not**&lt;/font&gt; the sample mean of the WT group
 ---
 class: middle
 
 ### By default, the `lm` function uses a different &lt;font color=red&gt;parametrization&lt;/font&gt; since the goal is to *compare* the means, not to study each in isolation
 
-&lt;font size=5&gt; From &lt;font color=red&gt;**cell-means**&lt;/font&gt; - `\(\mu_j\)`:  `$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+&lt;Big&gt;
+
+From &lt;font color=red&gt;**cell-means**&lt;/font&gt; - `\(\mu_j\)`:  `$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+
 **&lt;center&gt;↓&lt;/center&gt;**
+
 to &lt;font color = "red"&gt;**reference-treatment effect**&lt;/font&gt; - `\((\theta,\tau_j)\)`: `$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
 
-### Note that for each group, the population mean is given by 
-&lt;font size=5&gt; `$$E[Y_{ij}] = \theta+\tau_j=\mu_j, \; \text{and}$$`
-`$$\tau_2=\mu_2-\mu_1=E[Y_{i2}] -E[Y_{i1}]$$` 
+Note that for each group, the population mean is given by 
+`$$E[Y_{ij}] = \theta+\tau_j=\mu_j,$$`
+and `\(\tau_2=\mu_2-\mu_1=E[Y_{i2}] -E[Y_{i1}]\)` compares the group means
 ---
-class: middle
-## Relation between parametrizations
 
-![](L6_ANOVA_files/slide16.png)
-
----
 class: middle
 
 ### `lm` reports the sample mean of the &lt;font color = "red"&gt;reference&lt;/font&gt; group (NrlKO): `\(\hat\theta\)`
@@ -261,85 +268,86 @@ data.frame(meanWT = means.irs4[1, 2],
 ```
 ---
 class: middle
-### The &lt;font color = "red"&gt;reference-treatment effect &lt;/font&gt; parametrization is also used by other methods
+## Relation between parametrizations
 
-### Note that the 2-sample *t*-test presented last class equals
+![](L6_ANOVA_files/slide16.png)
 
-&lt;font size=5&gt;$$t=\frac{\hat \tau_2}{\sqrt{V(\hat \tau_2})},$$&lt;/font&gt;
-
-&gt; `\(\hat \tau_2=\bar{Y_2}-\bar{Y_1}\)` is the difference of sample means
-
-
-
-
-```r
-diff(means.irs4$meanGroups)/sqrt(s2Diff.irs)
-```
-
-```
-##      Irs4 
-## 0.5288651
-```
-
-```r
-ttest.irs4$statistic
-```
-
-```
-##          t 
-## -0.5286494
-```
 ---
 class: middle
 
-### Similarly, `aov` uses `\(\hat \tau_2\)` to build the *F*-statistic
+  ![](L6_ANOVA_files/more_2_groups.png)
 
-
-
-```r
-summary(aov(gExp ~gType, irs4Dat))
-```
-
-```
-##             Df Sum Sq Mean Sq F value Pr(&gt;F)
-## gType        1 0.0066 0.00662   0.279    0.6
-## Residuals   37 0.8764 0.02369
-```
-### It can be proved mathematically that 
-### `$$F=t^2$$` 
-Here numerically,
-
-
-```r
-as.numeric(ttest.irs4$statistic^2)
-```
-
-```
-## [1] 0.2794701
-```
 ---
 class: middle
-### What if there are more than 2 groups?
-![](L6_ANOVA_files/slide17.png)
+# But where's the line?? 
+
+&lt;Big&gt; 
+`$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+
+&lt;img src="L6_ANOVA_files/figure-html/unnamed-chunk-12-1.png" style="display: block; margin: auto;" /&gt;
 ---
 class: middle
+# &lt;font color="red"&gt;Dummy&lt;/font&gt; variables
+&lt;Big&gt;
 
-# Beyond 2-groups comparisons
+Let's re-write our model using &lt;font color="red"&gt;dummy&lt;/font&gt; (or indicator) variables:
 
+`$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+**&lt;center&gt;↓&lt;/center&gt;**
 
-## &lt;font color = "red"&gt;t-test&lt;/font&gt; 
-&gt; Special case of &lt;font color = "red"&gt;ANOVA&lt;/font&gt;, but with ANOVA you can compare **more than two groups** and **more than one factor**.
+`$$Y_{ij} = \theta+\tau_2 * x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\begin{array}{l} 
+1\text{ if } j=2\\
+0 \text{ otherwise}\\
+\end{array}$$`
 
 &lt;br&gt;
 
-## &lt;font color = "red"&gt;ANOVA&lt;/font&gt; 
-&gt; Special case of &lt;font color = "red"&gt;linear regression&lt;/font&gt;, but with linear regression you can model **many quantitative and qualitative variables**. 
+&gt; Note that using both formulas `\(Y_{i1} = \theta + \varepsilon_{i1}\)`
 
+&gt; Note that using both formulas `\(Y_{i2} = \theta + \tau_2+ \varepsilon_{i2}\)`
+
+The second form is written as a &lt;font color="red"&gt;linear&lt;/font&gt; ( `\(y=a + bx +\varepsilon\)` ) regression, with a special (&lt;font color="red"&gt;dummy&lt;/font&gt;) explanatory variable &lt;font color="red"&gt; `\(x_{ij}\)` &lt;/font&gt; 
+---
+
+class: middle
+  
+## Beyond 2-groups comparisons
+  
+### Dummy variables can be used to model one *or more* categorical variables with 2 *or more* levels!
+
+### &lt;font color = "red"&gt;t-test&lt;/font&gt;: a special case of a linear model
+
+`$$Y_{ij} = \theta+\tau_2 * x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\begin{array}{l}
+1 \text{ if } j=2\\
+0 \text{ if } j=1\\
+\end{array}$$`
+
+### &lt;font color = "red"&gt;1-way ANOVA with more than 2 levels&lt;/font&gt;: another special case 
+`$$Y_{ij} = \theta+\tau_2 * x_{ij2} + \tau_3 * x_{ij3} +\varepsilon_{ij};\; \; x_{ij2}=\bigg\{\begin{array}{l}
+1\text{ if } j=2\\
+0 \text{ otherwise}\\
+\end{array}; \; x_{ij3}=\bigg\{\begin{array}{l}
+0\text{ if } j=3\\
+1 \text{ otherwise}\\
+\end{array}$$`
+
+### This is why R can estimate all of them with `lm()`
 ---
 class: middle
 
-# But where's the line??
-![](L6_ANOVA_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+## &lt;font color = "red"&gt;t-test&lt;/font&gt; 
+  &gt; Special case of &lt;font color = "red"&gt;ANOVA&lt;/font&gt;, but with ANOVA you can compare **more than two groups** and **more than one factor**.
+    
+## &lt;font color = "red"&gt;ANOVA&lt;/font&gt; 
+
+  &gt; Special case of &lt;font color = "red"&gt;linear regression&lt;/font&gt;, but with linear regression you can include **quantitative variables** in the model. 
+  
+## &lt;font color = "red"&gt;Linear regression&lt;/font&gt; 
+
+  &gt; Provides a unifying framework to model the association between a response **many quantitative and qualitative variables**. 
+ 
+### &lt;font color = "red"&gt;In R&lt;/font&gt;: all can be computed using the `lm()` function. 
+
 ---
 class: middle
 ### With a special matrix `\(X\)`, we can write our model in matrix notation:
@@ -466,7 +474,7 @@ class: middle
 &lt;center&gt;
 
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-22-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-19-1.svg)&lt;!-- --&gt;
 ---
 class: middle
 
@@ -484,7 +492,7 @@ with(devDat,
 ## 4_weeks 7.559000 9.173375
 ```
 &lt;center&gt;
-![](L6_ANOVA_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-21-1.svg)&lt;!-- --&gt;
 ---
 
 class: middle
@@ -617,7 +625,7 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 ]
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-30-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-27-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide28.png)
 
 ---
@@ -702,6 +710,17 @@ class: middle
 ## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
 ## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
 ```
+---
+class: middle
+$$ Y_{ijk}=\theta+\tau_i+\tau_{B}$$
+
+model parameter | R | stats
+--------|---------|---------
+`\(\theta\)` | (Intercept) | `\(E[Y_{wt,E16}]\)`
+`\(\tau_A\)` | gTypeNrlKO | *conditional* effect of NrlKO at E16
+`\(\tau_B\)` | devStage4_weeks | *conditional* effect of 4_weeks at WT
+`\(\tau_{AB}\)` | gTypeNrlKO:devStage4_weeks | *interaction* effect of NrlKO and 4_weeks
+---
 ---
 class: middle
 ![](L6_ANOVA_files/slide34.png)
@@ -824,24 +843,7 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();
-// adds .remark-code-has-line-highlighted class to <pre> parent elements
-// of code chunks containing highlighted lines with class .remark-code-line-highlighted
-(function(d) {
-  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
-  const preParents = [];
-  const findPreParent = function(line, p = 0) {
-    if (p > 1) return null; // traverse up no further than grandparent
-    const el = line.parentElement;
-    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
-  };
-
-  for (let line of hlines) {
-    let pre = findPreParent(line);
-    if (pre && !preParents.includes(pre)) preParents.push(pre);
-  }
-  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
-})(document);</script>
+})();</script>
 
 <script>
 (function() {

@@ -73,7 +73,7 @@ grid.arrange(irsLim, nrlLim, ncol = 1)
 ---
 class: middle
 ### **Statistics**: use a random sample to learn about the population
-![](L6_ANOVA_files/slide3.png)
+![](L6_ANOVA_files/pop_sample.png)
 ---
 class: middle
 
@@ -100,15 +100,23 @@ miniDat %>% subset(gene=="Irs4")%>% t.test(gExp ~ gType, data=., var.equal = TRU
 class: middle
 # Today...
 
-### - review other methods to test statistical hypothesis
+### - show how to compare means of different groups (2 or more) using a linear regression model
 
-### - extend tests to more than 2-groups comparisons
+  - dummy variables to model the levels of a qualitative explanatory variable
 
-### - methods to analyze the association of multiple variables with the response
+### - use linear regression to model the association of multiple variables with the response
+
+  - interaction between explanatory variables
+  
+### - distinguish between conditional and marginal effects
+  - $t$-tests vs $F$-tests  
 ---
 class: middle
 
-![](L6_ANOVA_files/slide4.png)
+```{r,echo=FALSE,out.height="600px"}
+knitr::include_graphics("L6_ANOVA_files/t_aov_lm.png")
+```
+
 ---
 class: middle
 It seems that we can use any of these methods to test $H_0$
@@ -154,7 +162,9 @@ nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) +
 
 grid.arrange(irsLim, nrlLim, ncol = 1)
 ```
+> Note that the $y$-axis in these plots is not numerical, thus a line in this space does not have any mathematical meaning. 
 
+### Why can we run a $t$-test with a <font color = "red">linear</font> regression model?
 ---
 class: middle
 # From *t*-test to linear regression
@@ -194,12 +204,12 @@ where $j = \textrm{\{wt, NrlKO}\}$ or $j=\textrm{\{1, 2}\}$; and $i=1, \ldots, n
 ---
 class: middle
 
-### Note that for each group, the population mean is given by 
+### Note that for each group, the <font color = "red">population</font> mean is given by 
 ### $$E[Y_{ij}] = \mu_j,$$ 
 
 ###A natural **estimator** of the population mean is the <font color = "red">**sample mean**</font>
 
-### Classical methods for *t*-test, ANOVA, and linear regression use the group sample means as estimators.
+### Classical hypothesis testing methods use the group sample means as estimators
 
 See, for example, the `t.test` function in R:
 
@@ -221,26 +231,25 @@ $\hspace{3em}$ **↓**
 <font color = "red">sample mean of NrlKO group</font> 
 
 
-### But the second coefficient is <font color = "red">**not**</font> the sample mean of the WT group
+### But `gTypewt` is <font color = "red">**not**</font> the sample mean of the WT group
 ---
 class: middle
 
 ### By default, the `lm` function uses a different <font color=red>parametrization</font> since the goal is to *compare* the means, not to study each in isolation
 
-<font size=5> From <font color=red>**cell-means**</font> - $\mu_j$:  $$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
+<Big>
+
+From <font color=red>**cell-means**</font> - $\mu_j$:  $$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
+
 **<center>↓</center>**
+
 to <font color = "red">**reference-treatment effect**</font> - $(\theta,\tau_j)$: $$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
 
-### Note that for each group, the population mean is given by 
-<font size=5> $$E[Y_{ij}] = \theta+\tau_j=\mu_j, \; \text{and}$$
-$$\tau_2=\mu_2-\mu_1=E[Y_{i2}] -E[Y_{i1}]$$ 
+Note that for each group, the population mean is given by 
+$$E[Y_{ij}] = \theta+\tau_j=\mu_j,$$
+and $\tau_2=\mu_2-\mu_1=E[Y_{i2}] -E[Y_{i1}]$ compares the group means
 ---
-class: middle
-## Relation between parametrizations
 
-![](L6_ANOVA_files/slide16.png)
-
----
 class: middle
 
 ### `lm` reports the sample mean of the <font color = "red">reference</font> group (NrlKO): $\hat\theta$
@@ -254,73 +263,88 @@ data.frame(meanWT=means.irs4[1,2],
 ```
 ---
 class: middle
-### The <font color = "red">reference-treatment effect </font> parametrization is also used by other methods
+## Relation between parametrizations
 
-### Note that the 2-sample *t*-test presented last class equals
+![](L6_ANOVA_files/slide16.png)
 
-<font size=5>$$t=\frac{\hat \tau_2}{\sqrt{V(\hat \tau_2})},$$</font>
-
-> $\hat \tau_2=\bar{Y_2}-\bar{Y_1}$ is the difference of sample means
-
-```{r,include=FALSE}
-theVars <- with(miniDat,
-                 tapply(gExp, list(gType, gene), var))
-## compute estimated variance of zbar - ybar
-(nY <- with(miniDat, sum(gType == "wt" & gene == "Irs4")))
-(nZ <- with(miniDat, sum(gType == "NrlKO" & gene == "Irs4")))
-
-## assuming equal true variance
-(s2Pooled <- colSums(theVars * c((nY - 1) / (nY + nZ - 2),
-                                 (nZ - 1) / (nY + nZ - 2))))
-
-(s2Diff.irs <- s2Pooled[1] * (1/nY + 1/nZ))
-```
-
-```{r}
-diff(means.irs4$meanGroups)/sqrt(s2Diff.irs)
-ttest.irs4$statistic
-```
 ---
 class: middle
 
-### Similarly, `aov` uses $\hat \tau_2$ to build the *F*-statistic
+  ![](L6_ANOVA_files/more_2_groups.png)
 
+---
+class: middle
+# But where's the line?? 
 
-```{r}
-summary(aov(gExp ~gType, irs4Dat))
-```
-### It can be proved mathematically that 
-### $$F=t^2$$ 
-Here numerically,
+<Big> 
+$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
 
-```{r}
-as.numeric(ttest.irs4$statistic^2)
+```{r,echo=FALSE,fig.width=7, fig.height= 4, fig.align='center'}
+nrlLim
 ```
 ---
 class: middle
-### What if there are more than 2 groups?
-![](L6_ANOVA_files/slide17.png)
----
-class: middle
+# <font color="red">Dummy</font> variables
+<Big>
 
-# Beyond 2-groups comparisons
+Let's re-write our model using <font color="red">dummy</font> (or indicator) variables:
 
+$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
+**<center>↓</center>**
 
-## <font color = "red">t-test</font> 
-> Special case of <font color = "red">ANOVA</font>, but with ANOVA you can compare **more than two groups** and **more than one factor**.
+$$Y_{ij} = \theta+\tau_2 * x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\begin{array}{l} 
+1\text{ if } j=2\\
+0 \text{ otherwise}\\
+\end{array}$$
 
 <br>
 
-## <font color = "red">ANOVA</font> 
-> Special case of <font color = "red">linear regression</font>, but with linear regression you can model **many quantitative and qualitative variables**. 
+> Note that using both formulas $Y_{i1} = \theta + \varepsilon_{i1}$
 
+> Note that using both formulas $Y_{i2} = \theta + \tau_2+ \varepsilon_{i2}$
+
+The second form is written as a <font color="red">linear</font> ( $y=a + bx +\varepsilon$ ) regression, with a special (<font color="red">dummy</font>) explanatory variable <font color="red"> $x_{ij}$ </font> 
+---
+
+class: middle
+  
+## Beyond 2-groups comparisons
+  
+### Dummy variables can be used to model one *or more* categorical variables with 2 *or more* levels!
+
+### <font color = "red">t-test</font>: a special case of a linear model
+
+$$Y_{ij} = \theta+\tau_2 * x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\begin{array}{l}
+1 \text{ if } j=2\\
+0 \text{ if } j=1\\
+\end{array}$$
+
+### <font color = "red">1-way ANOVA with more than 2 levels</font>: another special case 
+$$Y_{ij} = \theta+\tau_2 * x_{ij2} + \tau_3 * x_{ij3} +\varepsilon_{ij};\; \; x_{ij2}=\bigg\{\begin{array}{l}
+1\text{ if } j=2\\
+0 \text{ otherwise}\\
+\end{array}; \; x_{ij3}=\bigg\{\begin{array}{l}
+0\text{ if } j=3\\
+1 \text{ otherwise}\\
+\end{array}$$
+
+### This is why R can estimate all of them with `lm()`
 ---
 class: middle
 
-# But where's the line??
-```{r,echo=FALSE}
-grid.arrange(irsLim, nrlLim, ncol = 1)
-```
+## <font color = "red">t-test</font> 
+  > Special case of <font color = "red">ANOVA</font>, but with ANOVA you can compare **more than two groups** and **more than one factor**.
+    
+## <font color = "red">ANOVA</font> 
+
+  > Special case of <font color = "red">linear regression</font>, but with linear regression you can include **quantitative variables** in the model. 
+  
+## <font color = "red">Linear regression</font> 
+
+  > Provides a unifying framework to model the association between a response **many quantitative and qualitative variables**. 
+ 
+### <font color = "red">In R</font>: all can be computed using the `lm()` function. 
+
 ---
 class: middle
 ### With a special matrix $X$, we can write our model in matrix notation:
@@ -654,6 +678,17 @@ class: middle
 twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
 summary(twoFactFit)$coeff
 ```
+---
+class: middle
+$$ Y_{ijk}=\theta+\tau_i+\tau_{B}$$
+
+model parameter | R | stats
+--------|---------|---------
+$\theta$ | (Intercept) | $E[Y_{wt,E16}]$
+$\tau_A$ | gTypeNrlKO | *conditional* effect of NrlKO at E16
+$\tau_B$ | devStage4_weeks | *conditional* effect of 4_weeks at WT
+$\tau_{AB}$ | gTypeNrlKO:devStage4_weeks | *interaction* effect of NrlKO and 4_weeks
+---
 ---
 class: middle
 ![](L6_ANOVA_files/slide34.png)
