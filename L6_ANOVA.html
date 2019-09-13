@@ -85,14 +85,13 @@ class: middle
   - `\(t\)`-tests vs `\(F\)`-tests  
 ---
 class: middle
-
-&lt;img src="L6_ANOVA_files/t_aov_lm.png" height="600px" /&gt;
+![](L6_ANOVA_files/t_aov_lm.png)
 
 ---
 class: middle
 It seems that we can use any of these methods to test `\(H_0\)`
 
-![](L6_ANOVA_files/slide5.png)
+![](L6_ANOVA_files/t_aov_lm_res.png)
 ---
 class: middle
 ## *t*-test *vs* linear regression: &lt;font color = "red"&gt;why the same results?&lt;/font&gt;
@@ -132,7 +131,7 @@ list("t value"=lm.irs4$coeff[2,3],"p-value"=lm.irs4$coeff[2,4])
 class: middle
 ## *t*-test *vs* linear regression: &lt;font color = "red"&gt;where's the line?&lt;/font&gt;
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-7-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-6-1.svg)&lt;!-- --&gt;
 &gt; Note that the `\(y\)`-axis in these plots is not numerical, thus a line in this space does not have any mathematical meaning. 
 
 ### Why can we run a `\(t\)`-test with a &lt;font color = "red"&gt;linear&lt;/font&gt; regression model?
@@ -150,10 +149,11 @@ We can use a subindeces to distinguish observations from each group, i.e.,
 
 &lt;font size=5&gt; `$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G_j; \; \;E[\varepsilon_{ij}] = 0;$$` &lt;/font&gt;
 &lt;br&gt;
-where `\(j = \textrm{\{wt, NrlKO}\}\)` or `\(j=\textrm{\{1, 2}\}\)`; and `\(i=1, \ldots, n_j\)`.
+where `\(j = \textrm{\{wt, NrlKO}\}\)` or `\(j=\textrm{\{1, 2}\}\)` identifies the groups; 
+and `\(i=1, \ldots, n_j\)` identifies the observations within each group
 &lt;br&gt;
 
- &gt; For example: `\(Y_{11}\)` is the first observation in group 1 or wt
+ &gt; For example: `\(Y_{11}\)` is the first observation in group 1 or WT
  
 ---
 class: middle
@@ -219,16 +219,20 @@ lm.irs4$coefficients[,1]
 ##  7.73968421  0.02606579
 ```
 `\(\hspace{3em}\)` **↓**
-&lt;font color = "red"&gt;sample mean of NrlKO group&lt;/font&gt; 
-
-
-### But `gTypewt` is &lt;font color = "red"&gt;**not**&lt;/font&gt; the sample mean of the WT group
+.pull-left[
+`(Intercept)` is the &lt;font color = "red"&gt;sample mean&lt;/font&gt; of NrlKO group 
+]
+.pull-right[
+but `gTypewt` is &lt;font color = "red"&gt;not&lt;/font&gt; the sample mean of the WT group
+]
 ---
 class: middle
 
-### By default, the `lm` function uses a different &lt;font color=red&gt;parametrization&lt;/font&gt; since the goal is to *compare* the means, not to study each in isolation
-
+### Parametrizations: which parameters we use to write the model?
 &lt;Big&gt;
+By default, the `lm` does not use the cell-means parametrization 
+The goal is to *compare* the means, not to study each in isolation
+
 
 From &lt;font color=red&gt;**cell-means**&lt;/font&gt; - `\(\mu_j\)`:  `$$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
 
@@ -238,10 +242,15 @@ to &lt;font color = "red"&gt;**reference-treatment effect**&lt;/font&gt; - `\((\
 
 Note that for each group, the population mean is given by 
 `$$E[Y_{ij}] = \theta+\tau_j=\mu_j,$$`
-and `\(\tau_2=\mu_2-\mu_1=E[Y_{i2}] -E[Y_{i1}]\)` compares the group means
+and `\(\tau_2=\mu_2-\mu_1=E[Y_{i2}] -E[Y_{i1}]\)` *compares* the means
 ---
 
 class: middle
+## Relation between parametrizations
+
+![](L6_ANOVA_files/param_2.png)
+class: middle
+---
 
 ### `lm` reports the sample mean of the &lt;font color = "red"&gt;reference&lt;/font&gt; group (NrlKO): `\(\hat\theta\)`
 
@@ -266,25 +275,15 @@ data.frame(meanWT = means.irs4[1, 2],
 ##     meanWT   meanDiff
 ## 1 7.739684 0.02606579
 ```
----
-class: middle
-## Relation between parametrizations
-
-![](L6_ANOVA_files/slide16.png)
 
 ---
 class: middle
-
-  ![](L6_ANOVA_files/more_2_groups.png)
-
----
-class: middle
-# But where's the line?? 
+## We still haven't answered ... where's the line?? 
 
 &lt;Big&gt; 
 `$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
 
-&lt;img src="L6_ANOVA_files/figure-html/unnamed-chunk-12-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="L6_ANOVA_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
 ---
 class: middle
 # &lt;font color="red"&gt;Dummy&lt;/font&gt; variables
@@ -295,35 +294,76 @@ Let's re-write our model using &lt;font color="red"&gt;dummy&lt;/font&gt; (or in
 `$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
 **&lt;center&gt;↓&lt;/center&gt;**
 
-`$$Y_{ij} = \theta+\tau_2 * x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\begin{array}{l} 
+`$$Y_{ij} = \theta+\tau_2 \times x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\begin{array}{l} 
 1\text{ if } j=2\\
 0 \text{ otherwise}\\
 \end{array}$$`
 
 &lt;br&gt;
 
-&gt; Note that using both formulas `\(Y_{i1} = \theta + \varepsilon_{i1}\)`
-
-&gt; Note that using both formulas `\(Y_{i2} = \theta + \tau_2+ \varepsilon_{i2}\)`
+&gt; Note that `\(Y_{i1} = \theta + \varepsilon_{i1}\)`, because `\(\tau_1=0\)` and `\(x_{i1}=0\)` 
+&gt; and `\(Y_{i2} = \theta + \tau_2+ \varepsilon_{i2}\)`, because `\(x_{i2}=1\)` (for all `\(i\)`)
 
 The second form is written as a &lt;font color="red"&gt;linear&lt;/font&gt; ( `\(y=a + bx +\varepsilon\)` ) regression, with a special (&lt;font color="red"&gt;dummy&lt;/font&gt;) explanatory variable &lt;font color="red"&gt; `\(x_{ij}\)` &lt;/font&gt; 
 ---
 
 class: middle
   
-## Beyond 2-groups comparisons
-  
-### Dummy variables can be used to model one *or more* categorical variables with 2 *or more* levels!
+### Using a dummy variables to model our categorical variables `gtype` we can perform a  &lt;font color = "red"&gt;2-sample *t*-test&lt;/font&gt; with a linear model
 
-### &lt;font color = "red"&gt;t-test&lt;/font&gt;: a special case of a linear model
-
-`$$Y_{ij} = \theta+\tau_2 * x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\begin{array}{l}
+`$$Y_{ij} = \theta+\tau_2 \times x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\begin{array}{l}
 1 \text{ if } j=2\\
 0 \text{ if } j=1\\
 \end{array}$$`
 
-### &lt;font color = "red"&gt;1-way ANOVA with more than 2 levels&lt;/font&gt;: another special case 
-`$$Y_{ij} = \theta+\tau_2 * x_{ij2} + \tau_3 * x_{ij3} +\varepsilon_{ij};\; \; x_{ij2}=\bigg\{\begin{array}{l}
+
+
+```r
+list("t value"=ttest.irs4$stat,"p-value"=ttest.irs4$p.value)
+```
+
+```
+## $`t value`
+##          t 
+## -0.5286494 
+## 
+## $`p-value`
+## [1] 0.6002058
+```
+
+```r
+list("t value"=lm.irs4$coeff[2,3],"p-value"=lm.irs4$coeff[2,4])
+```
+
+```
+## $`t value`
+## [1] 0.5286494
+## 
+## $`p-value`
+## [1] 0.6002058
+```
+---
+
+class: middle
+## Beyond 2-groups comparisons: difference of means
+&lt;center&gt;
+&lt;img src="L6_ANOVA_files/more_2_groups.png" height="500px" /&gt;
+&lt;/center&gt;
+---
+class: middle
+
+  
+### Dummy variables can be used to model one *or more* categorical variables with 2 *or more* levels!
+
+### &lt;font color = "red"&gt;2-sample *t*-test&lt;/font&gt; using a linear model
+
+`$$Y_{ij} = \theta+\tau_2 \times x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\begin{array}{l}
+1 \text{ if } j=2\\
+0 \text{ if } j=1\\
+\end{array}$$`
+
+### &lt;font color = "red"&gt;1-way ANOVA with many levels&lt;/font&gt; `\(^{(*)}\)` using a linear model
+`$$Y_{ij} = \theta+\tau_2 \times x_{ij2} + \tau_3 \times x_{ij3} +\varepsilon_{ij};\; \; x_{ij2}=\bigg\{\begin{array}{l}
 1\text{ if } j=2\\
 0 \text{ otherwise}\\
 \end{array}; \; x_{ij3}=\bigg\{\begin{array}{l}
@@ -332,6 +372,8 @@ class: middle
 \end{array}$$`
 
 ### This is why R can estimate all of them with `lm()`
+&lt;small&gt;
+`\(^{(*)}\)` in general, *yet* another parametrization is used to present ANOVA 
 ---
 class: middle
 
@@ -347,17 +389,31 @@ class: middle
   &gt; Provides a unifying framework to model the association between a response **many quantitative and qualitative variables**. 
  
 ### &lt;font color = "red"&gt;In R&lt;/font&gt;: all can be computed using the `lm()` function. 
+---
+class: middle
+# Linear models using matrix notation
+
+![](L6_ANOVA_files/linear_form.png)
+
+### It will become handy to write our model using matrix notation
+---
+class: middle
+&lt;Big&gt;
+
+Let's form an `\(X\)`  matrix for a 3-groups comparison: 
+
+`$$Y_{ij} = \theta+\tau_2 \times x_{ij2} + \tau_3 \times x_{ij3} +\varepsilon_{ij}$$`
+&lt;center&gt;
+&lt;img src="L6_ANOVA_files/model_matrix_I.png" height="400px" /&gt;
+&lt;/center&gt;
+
+&lt;font size=4&gt;
+Note that `\(x_{ij2}\)` and `\(x_{ij3}\)` become the 2nd and 3rd columns of `\(X\)`: `\(x_{i12}=x_{i13}=0\)` for the reference group; `\(x_{i22}=1\)` for the 2nd group; and `\(x_{i33}=1\)` for the 3rd group
 
 ---
 class: middle
-### With a special matrix `\(X\)`, we can write our model in matrix notation:
 
-![](L6_ANOVA_files/model_matrix.png)
-### and "a line" seems to appear!!
----
-class: middle
-
-&lt;img src="L6_ANOVA_files/model_matrix_s.png" height="350px" /&gt;
+&lt;img src="L6_ANOVA_files/model_matrix_II.png" height="350px" /&gt;
 
 &gt; &lt;font color = "red"&gt;Note that `\(Y_{i1}= 1 \times \theta + 0 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i1}=\theta + \varepsilon_{i1}\)`
 
@@ -365,16 +421,19 @@ class: middle
 
 &gt; &lt;font color = "green"&gt;Note that `\(Y_{i3}= 1 \times \theta + 0 \times \tau_2 + 1 \times \tau_3 + \varepsilon_{i3}=\theta + \tau_3+\varepsilon_{i3}\)`
 
-&lt;br&gt;
 
-&lt;font size=5 color="black"&gt; 
+&lt;font color="black"&gt; 
 Which is the same as `\(\; \rightarrow \; Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0\)`
+
+Which is the same as `\(\; \rightarrow \; Y_{ij} = \theta +\tau_2 \times x_{ij2} + \tau_3 \times x_{ij3} + \varepsilon_{ij}\)`
+
 ---
 class: middle
-### Difference of means: the "treatment effect"
-&lt;img src="L6_ANOVA_files/slide18.png" height="320px" /&gt;
 
-&gt; Note that `\(E[Y_{ij}] = \theta + \tau_j + E[\varepsilon_{ij}]=\theta +\tau_{j}\)`
+&lt;img src="L6_ANOVA_files/rf_tx_matrix.png" height="320px" /&gt;
+
+### Note that the model is still written with a reference-treatment parametrization (difference of means)
+
 
 `\(E[Y_{i1}]=\theta\)`
 &lt;br&gt;
@@ -386,16 +445,13 @@ class: middle
 
 ---
 class: middle
-![](L6_ANOVA_files/linear_form.png)
----
-class: middle
 
 ### &lt;font color = "red"&gt;Linear regression&lt;/font&gt; can include **quantitative &amp; qualitative covariates**. 
 
 &lt;center&gt;
 &lt;img src="L6_ANOVA_files/LM_vbles.png" height="470px" /&gt;
 &lt;/center&gt;
-&gt; Linear in the parameters `\(\alpha\)`: `\(X\)` can contain `\(x^2\)`, `\(log(x)\)`, etc.
+&gt; &lt;font color="red"&gt;Linear&lt;/font&gt; in the parameters `\(\alpha\)`: `\(X\)` can contain `\(x^2\)`, `\(log(x)\)`, etc.
 
 ---
 class: middle, center
@@ -425,10 +481,11 @@ lm(y ~ x, data = yourData)
 ### By default, R uses a ref-tx parametrization but you can control that!
 ---
 class: middle
-## `\(X\)` with **categorical** variables
 
-- ### `\(X\)` is a numeric matrix
+## `$$Y=X\alpha+\varepsilon$$`
+- ### Mathematically, `\(X\)` is a numeric matrix
 - ### If your data contains categorical variables (e.g., `gType`), you need to set them as **factors**
+- ### R creates appropriate dummy variables for factors!
 
 
 ```r
@@ -440,9 +497,8 @@ str(irs4Dat$gType)
 ```
 ---
 class: middle
-## `\(X\)` with **categorical** variables (cont.)
 
-### Under the hood, R creates appropriate set of (numeric) dummy variables for `\(X\)`
+### Under the hood, R creates a numeric `\(X\)`:
 
 
 ```r
@@ -474,13 +530,13 @@ class: middle
 &lt;center&gt;
 
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-19-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-21-1.svg)&lt;!-- --&gt;
 ---
 class: middle
+### The &lt;font color="red"&gt;sample&lt;/font&gt; means: `\(\hat\mu_{E16}, \; \hat\mu_{P2}, \; \hat\mu_{P6}, \; \hat\mu_{P10}, \; \hat\mu_{4weeks}\)`
 
 ```r
-with(devDat,
-     tapply(gExp, list(devStage, gene), mean))
+with(devDat, tapply(gExp, list(devStage, gene), mean))
 ```
 
 ```
@@ -492,16 +548,15 @@ with(devDat,
 ## 4_weeks 7.559000 9.173375
 ```
 &lt;center&gt;
-![](L6_ANOVA_files/figure-html/unnamed-chunk-21-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-23-1.svg)&lt;!-- --&gt;
 ---
 
 class: middle
-## "theHit": time ("treatment") effect
+## "theHit" with significant time ("treatment") effect
 
 
-&lt;center&gt;
-&lt;img src="L6_ANOVA_files/devStg.png" width="850px" height="500px" /&gt;
-&lt;/center&gt;
+![](L6_ANOVA_files/devStage.png)
+
 ---
 class: middle
 
@@ -533,9 +588,12 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 ```
 
 .pull-left[
-###**Estimate**: `\(\hat\theta\)`
+&lt;font size=5&gt;
+**Estimate**: `\(\hat\theta=\hat\mu_{E16}\)`
 
-### `\(H_0: \theta=0\)`
+`\(H_0: \theta=0\)` or 
+
+`\(H_0: \mu_{E16}=0\)`
 ]
 
 .pull-right[
@@ -578,7 +636,9 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 &lt;font size=5&gt;
 **Estimate**: `\(\hat\tau_{P2}=\hat\mu_{P2}-\hat\mu_{E16}\)`
 
-`\(H_0: \tau_{P2}=\mu_{P2}-\mu_{E16}\)`
+`\(H_0: \tau_{P2}=0\)` or
+
+`\(H_0: \mu_{P2}=\mu_{E16}\)`
 ]
 .pull-right[
 &gt; we *are* usually interested in testing this hypothesis: first 2 days after birth
@@ -617,32 +677,38 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 &lt;font size=5&gt;
 **Estimate**: `\(\hat\tau_{4weeks}=\hat\mu_{4weeks}-\hat\mu_{E16}\)`
 
-`\(H_0: \tau_{4weeks}=\mu_{4weeks}-\mu_{E16}\)`
+`\(H_0: \tau_{4weeks}=0\)` or
+
+`\(H_0: \mu_{4weeks}=\mu_{E16}\)`
 ]
 
 .pull-right[
+&lt;br&gt;
 &gt; we *are* usually interested in testing this hypothesis: 4 weeks after birth
 ]
 ---
 class: middle
-![](L6_ANOVA_files/figure-html/unnamed-chunk-27-1.svg)&lt;!-- --&gt;
-![](L6_ANOVA_files/slide28.png)
+
+![](L6_ANOVA_files/figure-html/unnamed-chunk-28-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/same_se.png)
 
 ---
 class: middle
 &lt;big&gt;
-&lt;font size = 5&gt;$$Y = X \alpha + \varepsilon$$&lt;/font&gt;
-`$$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4weeks})$$`
-
+  &lt;font size = 5&gt;$$Y = X \alpha + \varepsilon$$&lt;/font&gt;
+    `$$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4weeks})$$`
+      
 ### We generally test two types of null hypotheses:
+
 .pull-left[
 &lt;center&gt;
 `$$H_0: \tau_j = 0$$`
 vs
 `$$H_0: \tau_j \neq 0$$`
 for each *j* individually
+Is the
 ]
-
+    
 .pull-right[
 &lt;center&gt;
 `$$H_0: \tau_j = 0$$`
@@ -652,19 +718,21 @@ for all *j* at the same time
 ]
 ---
 class: middle
-![](L6_ANOVA_files/slide30.png)
+### We generally test two types of null hypotheses:
+&lt;img src="L6_ANOVA_files/one_more_H0.png" height="530px" /&gt;
+
 ---
 class: middle
 
-## F-test and overall significance of one or more covariates
+## *F*-test and overall significance of one or more covariates
 &lt;big&gt;
-- the t-stat in linear regression allows us to test simple hypotheses:
+- the *t*-test in linear regression allows us to test simple hypotheses:
 `$$H_0 : \tau_i = 0$$`
 `$$H_A : \tau_j \neq 0$$`
-- But when we have multiple covariates/factors, we often like to test more complex hypotheses: 
+- but we often like to test multiple hypotheses *simultaneously*: 
 `$$H_0 : \tau_2 = \tau_3 = ... = 0\textrm{ [AND statement]}$$`
 `$$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$`
-- F-test allows us to test such compound tests
+- the *F*-test allows us to test such compound tests
 ---
 class: middle
 ### Increasing the complexity of our linear regression model ...
@@ -717,8 +785,8 @@ $$ Y_{ijk}=\theta+\tau_i+\tau_{B}$$
 model parameter | R | stats
 --------|---------|---------
 `\(\theta\)` | (Intercept) | `\(E[Y_{wt,E16}]\)`
-`\(\tau_A\)` | gTypeNrlKO | *conditional* effect of NrlKO at E16
-`\(\tau_B\)` | devStage4_weeks | *conditional* effect of 4_weeks at WT
+`\(\tau_A\)` | gTypeNrlKO | *conditional* effect of NrlKO *at* E16
+`\(\tau_B\)` | devStage4_weeks | *conditional* effect of 4_weeks *at* WT
 `\(\tau_{AB}\)` | gTypeNrlKO:devStage4_weeks | *interaction* effect of NrlKO and 4_weeks
 ---
 ---
@@ -843,7 +911,24 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();</script>
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
 (function() {
