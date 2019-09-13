@@ -256,8 +256,9 @@ class: middle
 ## Relation between parametrizations
 
 ![](L6_ANOVA_files/param_2.png)
-class: middle
 ---
+class: middle
+
 
 ### `lm` reports the sample mean of the <font color = "red">reference</font> group (NrlKO): $\hat\theta$
 
@@ -491,7 +492,7 @@ class: middle
 
 ### <font color="red"> Is the expression of gene A the same at all developmental stages?</font>
 
-$$H_0 : \mu_{E16} = \mu_{P2} = \mu_{P6} = \mu_{P10} = \mu_{4weeks}$$
+$$H_0 : \mu_{E16} = \mu_{P2} = \mu_{P6} = \mu_{P10} = \mu_{4W}$$
 <center>
 ```{r, include=FALSE}
 library(lattice)
@@ -539,9 +540,14 @@ hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) +
 
 grid.arrange(boreLim, hitLim, nrow = 1)
 ```
+
+
+<font size=3>
+.left[Note: 4W = 4_weeks]
+</font>
 ---
 class: middle
-### The <font color="red">sample</font> means: $\hat\mu_{E16}, \; \hat\mu_{P2}, \; \hat\mu_{P6}, \; \hat\mu_{P10}, \; \hat\mu_{4weeks}$
+### The <font color="red">sample</font> means: $\hat\mu_{E16}, \; \hat\mu_{P2}, \; \hat\mu_{P6}, \; \hat\mu_{P10}, \; \hat\mu_{4W}$
 ``` {r}
 with(devDat, tapply(gExp, list(devStage, gene), mean))
 ```
@@ -550,7 +556,6 @@ with(devDat, tapply(gExp, list(devStage, gene), mean))
 grid.arrange(boreLim, hitLim, nrow = 1)
 ```
 ---
-
 class: middle
 ## "theHit" with significant time ("treatment") effect
 
@@ -562,6 +567,28 @@ means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 
 ---
 class: middle
+## "theHit" with significant time ("treatment") effect
+
+### Can you guess the size of the $X$ matrix??
+> How many dummy variables do we need?
+
+--
+
+### We need 4 dummy variables to estimate and test 4 time differences: 
+> $x_{P2}$: P2 vs E16, 
+> $x_{P6}$: P6 vs E16,
+> $x_{P10}$: P10 vs E16, 
+> $x_{4W}$: 4W vs E16)
+
+--
+
+### Mathematically:
+
+$$Y_{ij}=\theta+\tau_{P2} \times x_{ijP2}+\tau_{P6} \times x_{ijP6}+\tau_{P10} \times x_{ijP10}+\tau_{4W} \times x_{ij4W}+\varepsilon_{ij}$$
+<font size=3>
+*Notation*: $x_{ijk}$, where $i$ is an index for the observation, $j$ for the level of `devStage`, and $k$ for the name of the dummy variable
+---
+class: middle
 
 ```{r,highlight.output = c(2)}
 summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
@@ -571,7 +598,7 @@ means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 
 .pull-left[
 <font size=5>
-**Estimate**: $\hat\theta=\hat\mu_{E16}$
+**Estimate**: $\hat\theta=\hat\mu_{E16}=\bar{Y}_{.E16}$
 
 $H_0: \theta=0$ or 
 
@@ -595,7 +622,7 @@ means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 
 .pull-left[
 <font size=5>
-**Estimate**: $\hat\tau_{P2}=\hat\mu_{P2}-\hat\mu_{E16}$
+**Estimate**: $\hat\tau_{P2}=\hat\mu_{P2}-\hat\mu_{E16}=\bar{Y}_{.P2}-\bar{Y}_{.E16}$
 
 $H_0: \tau_{P2}=0$ or
 
@@ -615,11 +642,11 @@ means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 
 .pull-left[
 <font size=5>
-**Estimate**: $\hat\tau_{4weeks}=\hat\mu_{4weeks}-\hat\mu_{E16}$
+**Estimate**: $\hat\tau_{4W}=\hat\mu_{4W}-\hat\mu_{E16}=\bar{Y}_{.4W}-\bar{Y}_{.E16}$
 
-$H_0: \tau_{4weeks}=0$ or
+$H_0: \tau_{4W}=0$ or
 
-$H_0: \mu_{4weeks}=\mu_{E16}$
+$H_0: \mu_{4W}=\mu_{E16}$
 ]
 
 .pull-right[
@@ -638,167 +665,51 @@ hitLim
 class: middle
 <big>
   <font size = 5>$$Y = X \alpha + \varepsilon$$</font>
-    $$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4weeks})$$
+    $$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4W})$$
       
 ### We generally test two types of null hypotheses:
-
+      
 .pull-left[
-<center>
-$$H_0: \tau_j = 0$$
-vs
-$$H_0: \tau_j \neq 0$$
-for each *j* individually
-Is the
-]
+        <center>
+          $$H_0: \tau_j = 0$$
+          vs
+        $$H_0: \tau_j \neq 0$$
+          for each *j* <font color="red">individually</font>
+          
+          e.g., Is gene A differencially expressed 2 days after birth?
+          
+          $$H_0: \tau_{P2}=0$$
+          ]
     
 .pull-right[
-<center>
-$$H_0: \tau_j = 0$$
-vs
-$$H_0: \tau_j \neq 0$$
-for all *j* at the same time
-]
+      <center>
+        $$H_0: \tau_j = 0$$
+        
+        vs
+      $$H_0: \tau_j \neq 0$$
+        for all *j* <font color="red">at the same time</font>
+        
+        e.g., Is gene A significantly affected by time (`devStage`)?
+        
+        $$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$
+        ]
 ---
 class: middle
-### We generally test two types of null hypotheses:
+### Two types of null hypotheses in R:
+
 ```{r,echo=FALSE,out.height="530px"}
-knitr::include_graphics("L6_ANOVA_files/one_more_H0.png")
+    knitr::include_graphics("L6_ANOVA_files/one_more_H0.png")
 ```
-
+    
 ---
 class: middle
-
+    
 ## *F*-test and overall significance of one or more covariates
 <big>
-- the *t*-test in linear regression allows us to test simple hypotheses:
-$$H_0 : \tau_i = 0$$
-$$H_A : \tau_j \neq 0$$
-- but we often like to test multiple hypotheses *simultaneously*: 
-$$H_0 : \tau_2 = \tau_3 = ... = 0\textrm{ [AND statement]}$$
-$$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$
-- the *F*-test allows us to test such compound tests
+  - the *t*-test in linear regression allows us to test simple hypotheses:
+      $$H_0 : \tau_i = 0$$
+      $$H_A : \tau_j \neq 0$$
+  - but we often like to test multiple hypotheses *simultaneously*: 
+      $$H_0 : \tau_{P2} = \tau_{P6} = \tau_{P10} = \tau_{4W}=0\textrm{ [AND statement]}$$
+      $$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$ the *F*-test allows us to test such compound tests
 ---
-class: middle
-### Increasing the complexity of our linear regression model ...
-What if you have two categorical variables: `gType` and `devStage`
-(for simplicity, let's consider only two time points E16 and 4weeks)
-
-> ### Is the assocation between gene expression and genotype different at different developmental stages?
-
-![](L6_ANOVA_files/slide32.png)
-
----
-class: middle
-```{r,echo=FALSE, include=FALSE}
-##########################################################
-## simplying devStage to first and last timepoints
-##########################################################
-prDes <- 
-  droplevels(subset(prDes,
-                    subset = devStage %in%
-                      levels(devStage)[c(1, nlevels(devStage))]))
-str(prDes) # 15 obs. of  4 variables
-prDat <- subset(prDat, select = prDes$sidChar)
-
-# Gene selected for illustration
-(luckyGene <- which(rownames(prDat) == "1455695_at")) # 26861
-twoDat <- data.frame(gExp = unlist(prDat[luckyGene, ]))
-twoDat <- data.frame(prDes, twoDat)
-twoDat$grp <- with(twoDat, interaction(gType, devStage))
-str(twoDat)
-with(twoDat, table(gType, devStage))
-table(twoDat$grp)
-```
-
-## Two-way ANOVA or regression with interaction 
-
-### What parameters are we estimating? 
-
-### What hypotheses are we testing?
-
-```{r}
-twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
-summary(twoFactFit)$coeff
-```
----
-class: middle
-![](L6_ANOVA_files/slide33.png)
-
-```{r,echo=F,highlight.output = c(2)}
-twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
-summary(twoFactFit)$coeff
-```
----
-class: middle
-$$ Y_{ijk}=\theta+\tau_i+\tau_{B}$$
-
-model parameter | R | stats
---------|---------|---------
-$\theta$ | (Intercept) | $E[Y_{wt,E16}]$
-$\tau_A$ | gTypeNrlKO | *conditional* effect of NrlKO *at* E16
-$\tau_B$ | devStage4_weeks | *conditional* effect of 4_weeks *at* WT
-$\tau_{AB}$ | gTypeNrlKO:devStage4_weeks | *interaction* effect of NrlKO and 4_weeks
----
----
-class: middle
-![](L6_ANOVA_files/slide34.png)
-
-```{r,echo=F,highlight.output = c(3)}
-twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
-summary(twoFactFit)$coeff
-```
----
-class: middle
-![](L6_ANOVA_files/slide35.png)
-
-```{r,echo=F,highlight.output = c(4)}
-twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
-summary(twoFactFit)$coeff
-```
-
----
-class: middle
-![](L6_ANOVA_files/slide36.png)
-
-```{r,echo=F,highlight.output = c(5)}
-twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
-summary(twoFactFit)$coeff
-```
-
----
-class: middle
-![](L6_ANOVA_files/slide37.png)
----
-class: middle
-![](L6_ANOVA_files/slide38.png)
----
-class: middle
-
-## Let's go through some example genes to get a sense of what an interaction effect looks like.
-
-We have three parameters we'd like to interpret:
-.pull-left[
-> ### Main effect: genotype
-### Main effect: age
-### Interaction: genotype*age
-]
-.pull-right[
-<br>
-![](L6_ANOVA_files/slide39.png)
-]
-
----
-class: middle
-![](L6_ANOVA_files/slide40.png)
----
-class: middle
-![](L6_ANOVA_files/slide41.png)
----
-class: middle
-![](L6_ANOVA_files/slide42.png)
----
-class: middle
-![](L6_ANOVA_files/slide43.png)
----
-class: middle
-![](L6_ANOVA_files/slide44.png)

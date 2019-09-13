@@ -249,8 +249,9 @@ class: middle
 ## Relation between parametrizations
 
 ![](L6_ANOVA_files/param_2.png)
-class: middle
 ---
+class: middle
+
 
 ### `lm` reports the sample mean of the &lt;font color = "red"&gt;reference&lt;/font&gt; group (NrlKO): `\(\hat\theta\)`
 
@@ -526,14 +527,19 @@ class: middle
 
 ### &lt;font color="red"&gt; Is the expression of gene A the same at all developmental stages?&lt;/font&gt;
 
-`$$H_0 : \mu_{E16} = \mu_{P2} = \mu_{P6} = \mu_{P10} = \mu_{4weeks}$$`
+`$$H_0 : \mu_{E16} = \mu_{P2} = \mu_{P6} = \mu_{P10} = \mu_{4W}$$`
 &lt;center&gt;
 
 
 ![](L6_ANOVA_files/figure-html/unnamed-chunk-21-1.svg)&lt;!-- --&gt;
+
+
+&lt;font size=3&gt;
+.left[Note: 4W = 4_weeks]
+&lt;/font&gt;
 ---
 class: middle
-### The &lt;font color="red"&gt;sample&lt;/font&gt; means: `\(\hat\mu_{E16}, \; \hat\mu_{P2}, \; \hat\mu_{P6}, \; \hat\mu_{P10}, \; \hat\mu_{4weeks}\)`
+### The &lt;font color="red"&gt;sample&lt;/font&gt; means: `\(\hat\mu_{E16}, \; \hat\mu_{P2}, \; \hat\mu_{P6}, \; \hat\mu_{P10}, \; \hat\mu_{4W}\)`
 
 ```r
 with(devDat, tapply(gExp, list(devStage, gene), mean))
@@ -550,13 +556,34 @@ with(devDat, tapply(gExp, list(devStage, gene), mean))
 &lt;center&gt;
 ![](L6_ANOVA_files/figure-html/unnamed-chunk-23-1.svg)&lt;!-- --&gt;
 ---
-
 class: middle
 ## "theHit" with significant time ("treatment") effect
 
 
 ![](L6_ANOVA_files/devStage.png)
 
+---
+class: middle
+## "theHit" with significant time ("treatment") effect
+
+### Can you guess the size of the `\(X\)` matrix??
+&gt; How many dummy variables do we need?
+
+--
+
+### We need 4 dummy variables to estimate and test 4 time differences: 
+&gt; `\(x_{P2}\)`: P2 vs E16, 
+&gt; `\(x_{P6}\)`: P6 vs E16,
+&gt; `\(x_{P10}\)`: P10 vs E16, 
+&gt; `\(x_{4W}\)`: 4W vs E16)
+
+--
+
+### Mathematically:
+
+`$$Y_{ij}=\theta+\tau_{P2} \times x_{ijP2}+\tau_{P6} \times x_{ijP6}+\tau_{P10} \times x_{ijP10}+\tau_{4W} \times x_{ij4W}+\varepsilon_{ij}$$`
+&lt;font size=3&gt;
+*Notation*: `\(x_{ijk}\)`, where `\(i\)` is an index for the observation, `\(j\)` for the level of `devStage`, and `\(k\)` for the name of the dummy variable
 ---
 class: middle
 
@@ -589,7 +616,7 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 
 .pull-left[
 &lt;font size=5&gt;
-**Estimate**: `\(\hat\theta=\hat\mu_{E16}\)`
+**Estimate**: `\(\hat\theta=\hat\mu_{E16}=\bar{Y}_{.E16}\)`
 
 `\(H_0: \theta=0\)` or 
 
@@ -634,7 +661,7 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 
 .pull-left[
 &lt;font size=5&gt;
-**Estimate**: `\(\hat\tau_{P2}=\hat\mu_{P2}-\hat\mu_{E16}\)`
+**Estimate**: `\(\hat\tau_{P2}=\hat\mu_{P2}-\hat\mu_{E16}=\bar{Y}_{.P2}-\bar{Y}_{.E16}\)`
 
 `\(H_0: \tau_{P2}=0\)` or
 
@@ -675,11 +702,11 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 
 .pull-left[
 &lt;font size=5&gt;
-**Estimate**: `\(\hat\tau_{4weeks}=\hat\mu_{4weeks}-\hat\mu_{E16}\)`
+**Estimate**: `\(\hat\tau_{4W}=\hat\mu_{4W}-\hat\mu_{E16}=\bar{Y}_{.4W}-\bar{Y}_{.E16}\)`
 
-`\(H_0: \tau_{4weeks}=0\)` or
+`\(H_0: \tau_{4W}=0\)` or
 
-`\(H_0: \mu_{4weeks}=\mu_{E16}\)`
+`\(H_0: \mu_{4W}=\mu_{E16}\)`
 ]
 
 .pull-right[
@@ -696,174 +723,52 @@ class: middle
 class: middle
 &lt;big&gt;
   &lt;font size = 5&gt;$$Y = X \alpha + \varepsilon$$&lt;/font&gt;
-    `$$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4weeks})$$`
+    `$$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4W})$$`
       
 ### We generally test two types of null hypotheses:
-
+      
 .pull-left[
-&lt;center&gt;
-`$$H_0: \tau_j = 0$$`
-vs
-`$$H_0: \tau_j \neq 0$$`
-for each *j* individually
-Is the
-]
+        &lt;center&gt;
+          `$$H_0: \tau_j = 0$$`
+          vs
+        `$$H_0: \tau_j \neq 0$$`
+          for each *j* &lt;font color="red"&gt;individually&lt;/font&gt;
+          
+          e.g., Is gene A differencially expressed 2 days after birth?
+          
+          `$$H_0: \tau_{P2}=0$$`
+          ]
     
 .pull-right[
-&lt;center&gt;
-`$$H_0: \tau_j = 0$$`
-vs
-`$$H_0: \tau_j \neq 0$$`
-for all *j* at the same time
-]
+      &lt;center&gt;
+        `$$H_0: \tau_j = 0$$`
+        
+        vs
+      `$$H_0: \tau_j \neq 0$$`
+        for all *j* &lt;font color="red"&gt;at the same time&lt;/font&gt;
+        
+        e.g., Is gene A significantly affected by time (`devStage`)?
+        
+        `$$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$`
+        ]
 ---
 class: middle
-### We generally test two types of null hypotheses:
+### Two types of null hypotheses in R:
+
 &lt;img src="L6_ANOVA_files/one_more_H0.png" height="530px" /&gt;
-
+    
 ---
 class: middle
-
+    
 ## *F*-test and overall significance of one or more covariates
 &lt;big&gt;
-- the *t*-test in linear regression allows us to test simple hypotheses:
-`$$H_0 : \tau_i = 0$$`
-`$$H_A : \tau_j \neq 0$$`
-- but we often like to test multiple hypotheses *simultaneously*: 
-`$$H_0 : \tau_2 = \tau_3 = ... = 0\textrm{ [AND statement]}$$`
-`$$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$`
-- the *F*-test allows us to test such compound tests
+  - the *t*-test in linear regression allows us to test simple hypotheses:
+      `$$H_0 : \tau_i = 0$$`
+      `$$H_A : \tau_j \neq 0$$`
+  - but we often like to test multiple hypotheses *simultaneously*: 
+      `$$H_0 : \tau_{P2} = \tau_{P6} = \tau_{P10} = \tau_{4W}=0\textrm{ [AND statement]}$$`
+      `$$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$` the *F*-test allows us to test such compound tests
 ---
-class: middle
-### Increasing the complexity of our linear regression model ...
-What if you have two categorical variables: `gType` and `devStage`
-(for simplicity, let's consider only two time points E16 and 4weeks)
-
-&gt; ### Is the assocation between gene expression and genotype different at different developmental stages?
-
-![](L6_ANOVA_files/slide32.png)
-
----
-class: middle
-
-
-## Two-way ANOVA or regression with interaction 
-
-### What parameters are we estimating? 
-
-### What hypotheses are we testing?
-
-
-```r
-twoFactFit &lt;- lm(gExp ~ gType * devStage, twoDat)
-summary(twoFactFit)$coeff
-```
-
-```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
-```
----
-class: middle
-![](L6_ANOVA_files/slide33.png)
-
-
-```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-*## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
-```
----
-class: middle
-$$ Y_{ijk}=\theta+\tau_i+\tau_{B}$$
-
-model parameter | R | stats
---------|---------|---------
-`\(\theta\)` | (Intercept) | `\(E[Y_{wt,E16}]\)`
-`\(\tau_A\)` | gTypeNrlKO | *conditional* effect of NrlKO *at* E16
-`\(\tau_B\)` | devStage4_weeks | *conditional* effect of 4_weeks *at* WT
-`\(\tau_{AB}\)` | gTypeNrlKO:devStage4_weeks | *interaction* effect of NrlKO and 4_weeks
----
----
-class: middle
-![](L6_ANOVA_files/slide34.png)
-
-
-```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-*## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
-```
----
-class: middle
-![](L6_ANOVA_files/slide35.png)
-
-
-```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-*## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
-```
-
----
-class: middle
-![](L6_ANOVA_files/slide36.png)
-
-
-```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-*## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
-```
-
----
-class: middle
-![](L6_ANOVA_files/slide37.png)
----
-class: middle
-![](L6_ANOVA_files/slide38.png)
----
-class: middle
-
-## Let's go through some example genes to get a sense of what an interaction effect looks like.
-
-We have three parameters we'd like to interpret:
-.pull-left[
-&gt; ### Main effect: genotype
-### Main effect: age
-### Interaction: genotype*age
-]
-.pull-right[
-&lt;br&gt;
-![](L6_ANOVA_files/slide39.png)
-]
-
----
-class: middle
-![](L6_ANOVA_files/slide40.png)
----
-class: middle
-![](L6_ANOVA_files/slide41.png)
----
-class: middle
-![](L6_ANOVA_files/slide42.png)
----
-class: middle
-![](L6_ANOVA_files/slide43.png)
----
-class: middle
-![](L6_ANOVA_files/slide44.png)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -911,24 +816,7 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();
-// adds .remark-code-has-line-highlighted class to <pre> parent elements
-// of code chunks containing highlighted lines with class .remark-code-line-highlighted
-(function(d) {
-  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
-  const preParents = [];
-  const findPreParent = function(line, p = 0) {
-    if (p > 1) return null; // traverse up no further than grandparent
-    const el = line.parentElement;
-    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
-  };
-
-  for (let line of hlines) {
-    let pre = findPreParent(line);
-    if (pre && !preParents.includes(pre)) preParents.push(pre);
-  }
-  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
-})(document);</script>
+})();</script>
 
 <script>
 (function() {
