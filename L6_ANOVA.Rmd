@@ -104,9 +104,9 @@ class: middle
 
   - dummy variables to model the levels of a qualitative explanatory variable
 
-### - use linear regression to model the association of multiple variables with the response
+### - write a linear model using matrix notation
 
-  - interaction between explanatory variables
+  - understand which matrix is built by R
   
 ### - distinguish between conditional and marginal effects
   - $t$-tests vs $F$-tests  
@@ -572,7 +572,16 @@ class: middle
 ### Can you guess the size of the $X$ matrix??
 > How many dummy variables do we need?
 
---
+![](L6_ANOVA_files/devStage.png)
+
+---
+class: middle
+## "theHit" with significant time ("treatment") effect
+
+``` {r,echo=FALSE,highlight.output = c(3:6)}
+means.dev <- as.data.frame(devDat %>% subset(gene=="theHit") %>% group_by(devStage) %>% summarize(cellMeans=mean(gExp)))
+means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
+```
 
 ### We need 4 dummy variables to estimate and test 4 time differences: 
 > $x_{P2}$: P2 vs E16, 
@@ -587,6 +596,21 @@ class: middle
 $$Y_{ij}=\theta+\tau_{P2} \times x_{ijP2}+\tau_{P6} \times x_{ijP6}+\tau_{P10} \times x_{ijP10}+\tau_{4W} \times x_{ij4W}+\varepsilon_{ij}$$
 <font size=3>
 *Notation*: $x_{ijk}$, where $i$ is an index for the observation, $j$ for the level of `devStage`, and $k$ for the name of the dummy variable
+---
+class: middle
+### Under the hood, R creates a numeric $X$:
+
+```{r,tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+X.matrix<-data.frame(X=model.matrix(gExp ~ devStage, irs4Dat),
+                devStage=irs4Dat$devStage)
+```
+
+```{r,echo=F}
+colnames(X.matrix)[2:6] <- c("X.dStP2", "X.dStP6","X.dStP10","X.dS4W","dS")
+head(X.matrix,16)
+```
+<font size=3>
+Note: column names changed and  first 16 rows displayed to fit output in the page (code hidden) 
 ---
 class: middle
 
@@ -670,28 +694,27 @@ class: middle
 ### We generally test two types of null hypotheses:
       
 .pull-left[
-        <center>
-          $$H_0: \tau_j = 0$$
-          vs
-        $$H_0: \tau_j \neq 0$$
-          for each *j* <font color="red">individually</font>
+<center>
+$$H_0: \tau_j = 0$$
+vs
+$$H_0: \tau_j \neq 0$$
+for each *j* <font color="red">individually</font>
           
-          e.g., Is gene A differencially expressed 2 days after birth?
-          
-          $$H_0: \tau_{P2}=0$$
+e.g., Is gene A differencially expressed 2 days after birth?
+$$H_0: \tau_{P2}=0$$
           ]
     
 .pull-right[
-      <center>
-        $$H_0: \tau_j = 0$$
-        
+<center>
+
+$$H_0: \tau_j = 0$$
         vs
-      $$H_0: \tau_j \neq 0$$
-        for all *j* <font color="red">at the same time</font>
+$$H_0: \tau_j \neq 0$$
+for all *j* <font color="red">at the same time</font>
         
-        e.g., Is gene A significantly affected by time (`devStage`)?
+e.g., Is gene A significantly affected by time (`devStage`)?
         
-        $$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$
+$$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$
         ]
 ---
 class: middle
@@ -713,3 +736,36 @@ class: middle
       $$H_0 : \tau_{P2} = \tau_{P6} = \tau_{P10} = \tau_{4W}=0\textrm{ [AND statement]}$$
       $$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$ the *F*-test allows us to test such compound tests
 ---
+class: middle
+## To conclude
+
+### - we can use different parametrizations to write statistical models
+From <font color=red>**cell-means**</font> - $\mu_j$:  $Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$
+
+to <font color = "red">**reference-treatment effect**</font> - $(\theta,\tau_j)$: (used by default by `lm`)
+$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
+
+### - we can compare group means  (2 or more) using a linear model
+  - <font color=red>**dummy variables**</font> (e.g., $x_{ijP2}$) to model the levels of a qualitative explanatory variables
+  $$Y_{ij}=\theta+\tau_{P2} \times x_{ijP2}+\tau_{P6} \times x_{ijP6}+\tau_{P10} \times x_{ijP10}+\tau_{4W} \times x_{ij4W}+\varepsilon_{ij}$$
+  - qualitative variables need to be set as "factors" in the data --> R creates the dummy variables
+
+---
+class:middle
+
+### - we can write a linear model using matrix notation: 
+<font size =5>
+
+$$Y = X \alpha + \varepsilon$$
+
+### - <font color = "red">Linear model</font> can include **quantitative & qualitative covariates**. 
+
+<center>
+```{r,echo=FALSE,out.height="250px"}
+knitr::include_graphics("L6_ANOVA_files/LM_vbles.png")
+```
+</center>
+
+### - distinguish between single and joint hypotheses:
+  - $t$-tests vs $F$-tests
+  

@@ -77,9 +77,9 @@ class: middle
 
   - dummy variables to model the levels of a qualitative explanatory variable
 
-### - use linear regression to model the association of multiple variables with the response
+### - write a linear model using matrix notation
 
-  - interaction between explanatory variables
+  - understand which matrix is built by R
   
 ### - distinguish between conditional and marginal effects
   - `\(t\)`-tests vs `\(F\)`-tests  
@@ -569,7 +569,21 @@ class: middle
 ### Can you guess the size of the `\(X\)` matrix??
 &gt; How many dummy variables do we need?
 
---
+![](L6_ANOVA_files/devStage.png)
+
+---
+class: middle
+## "theHit" with significant time ("treatment") effect
+
+
+```
+##   devStage cellMeans txEffects
+## 1      E16  5.540857 0.0000000
+*## 2       P2  5.844875 0.3040179
+*## 3       P6  5.784250 0.2433929
+*## 4      P10  6.375125 0.8342679
+*## 5  4_weeks  9.173375 3.6325179
+```
 
 ### We need 4 dummy variables to estimate and test 4 time differences: 
 &gt; `\(x_{P2}\)`: P2 vs E16, 
@@ -584,6 +598,38 @@ class: middle
 `$$Y_{ij}=\theta+\tau_{P2} \times x_{ijP2}+\tau_{P6} \times x_{ijP6}+\tau_{P10} \times x_{ijP10}+\tau_{4W} \times x_{ij4W}+\varepsilon_{ij}$$`
 &lt;font size=3&gt;
 *Notation*: `\(x_{ijk}\)`, where `\(i\)` is an index for the observation, `\(j\)` for the level of `devStage`, and `\(k\)` for the name of the dummy variable
+---
+class: middle
+### Under the hood, R creates a numeric `\(X\)`:
+
+
+```r
+X.matrix &lt;- data.frame(X = model.matrix(gExp ~ devStage, irs4Dat), 
+    devStage = irs4Dat$devStage)
+```
+
+
+```
+##    X..Intercept. X.dStP2 X.dStP6 X.dStP10 X.dS4W  dS
+## 1              1       0       0        0      0 E16
+## 2              1       0       0        0      0 E16
+## 3              1       0       0        0      0 E16
+## 4              1       0       0        0      0 E16
+## 5              1       0       0        0      0 E16
+## 6              1       0       0        0      0 E16
+## 7              1       0       0        0      0 E16
+## 8              1       1       0        0      0  P2
+## 9              1       1       0        0      0  P2
+## 10             1       1       0        0      0  P2
+## 11             1       1       0        0      0  P2
+## 12             1       1       0        0      0  P2
+## 13             1       1       0        0      0  P2
+## 14             1       1       0        0      0  P2
+## 15             1       1       0        0      0  P2
+## 16             1       0       1        0      0  P6
+```
+&lt;font size=3&gt;
+Note: column names changed and  first 16 rows displayed to fit output in the page (code hidden) 
 ---
 class: middle
 
@@ -716,7 +762,7 @@ means.dev %&gt;% mutate(txEffects=cellMeans-cellMeans[1])
 ---
 class: middle
 
-![](L6_ANOVA_files/figure-html/unnamed-chunk-28-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/figure-html/unnamed-chunk-31-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/same_se.png)
 
 ---
@@ -728,28 +774,27 @@ class: middle
 ### We generally test two types of null hypotheses:
       
 .pull-left[
-        &lt;center&gt;
-          `$$H_0: \tau_j = 0$$`
-          vs
-        `$$H_0: \tau_j \neq 0$$`
-          for each *j* &lt;font color="red"&gt;individually&lt;/font&gt;
+&lt;center&gt;
+`$$H_0: \tau_j = 0$$`
+vs
+`$$H_0: \tau_j \neq 0$$`
+for each *j* &lt;font color="red"&gt;individually&lt;/font&gt;
           
-          e.g., Is gene A differencially expressed 2 days after birth?
-          
-          `$$H_0: \tau_{P2}=0$$`
+e.g., Is gene A differencially expressed 2 days after birth?
+`$$H_0: \tau_{P2}=0$$`
           ]
     
 .pull-right[
-      &lt;center&gt;
-        `$$H_0: \tau_j = 0$$`
-        
+&lt;center&gt;
+
+`$$H_0: \tau_j = 0$$`
         vs
-      `$$H_0: \tau_j \neq 0$$`
-        for all *j* &lt;font color="red"&gt;at the same time&lt;/font&gt;
+`$$H_0: \tau_j \neq 0$$`
+for all *j* &lt;font color="red"&gt;at the same time&lt;/font&gt;
         
-        e.g., Is gene A significantly affected by time (`devStage`)?
+e.g., Is gene A significantly affected by time (`devStage`)?
         
-        `$$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$`
+`$$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$`
         ]
 ---
 class: middle
@@ -769,6 +814,36 @@ class: middle
       `$$H_0 : \tau_{P2} = \tau_{P6} = \tau_{P10} = \tau_{4W}=0\textrm{ [AND statement]}$$`
       `$$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$` the *F*-test allows us to test such compound tests
 ---
+class: middle
+## To conclude
+
+### - we can use different parametrizations to write statistical models
+From &lt;font color=red&gt;**cell-means**&lt;/font&gt; - `\(\mu_j\)`:  `\(Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;\)`
+
+to &lt;font color = "red"&gt;**reference-treatment effect**&lt;/font&gt; - `\((\theta,\tau_j)\)`: (used by default by `lm`)
+`$$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$`
+
+### - we can compare group means  (2 or more) using a linear model
+  - &lt;font color=red&gt;**dummy variables**&lt;/font&gt; (e.g., `\(x_{ijP2}\)`) to model the levels of a qualitative explanatory variables
+  `$$Y_{ij}=\theta+\tau_{P2} \times x_{ijP2}+\tau_{P6} \times x_{ijP6}+\tau_{P10} \times x_{ijP10}+\tau_{4W} \times x_{ij4W}+\varepsilon_{ij}$$`
+  - qualitative variables need to be set as "factors" in the data --&gt; R creates the dummy variables
+
+---
+class:middle
+
+### - we can write a linear model using matrix notation: 
+&lt;font size =5&gt;
+
+`$$Y = X \alpha + \varepsilon$$`
+
+### - &lt;font color = "red"&gt;Linear model&lt;/font&gt; can include **quantitative &amp; qualitative covariates**. 
+
+&lt;center&gt;
+&lt;img src="L6_ANOVA_files/LM_vbles.png" height="250px" /&gt;
+&lt;/center&gt;
+
+### - distinguish between single and joint hypotheses:
+  - `\(t\)`-tests vs `\(F\)`-tests
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -816,7 +891,24 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();</script>
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
 (function() {
