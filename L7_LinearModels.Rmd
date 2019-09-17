@@ -79,25 +79,9 @@ grid.arrange(boreLim, hitLim, nrow = 1)
 ```
 
 ---
-class: middle
+class: center, middle
 
-## From <i>t</i>-test to linear regression
-
-### 2-sample <i>t</i>-test
-.pull-left[
-$$Y \sim G; \;\;\;\;\;\;\;\; E[Y] = \mu_Y$$
-$$Z \sim G; \;\;\;\;\;\;\;\; E[Z] = \mu_Z$$
-]
-.pull-right[
-<br>
-$$ H_0: \mu_Y = \mu_Z$$
-]
-<br>
-
-###Linear regression <big>
-$$Y = X\alpha + \varepsilon \;\;\;\;\;\;\;\; H_0:\alpha_j = 0 $$
-<br>
-## <center> How? and Why?
+![](L7_LinearModels_files/slide4.png)
 ---
 class: center
 
@@ -110,6 +94,21 @@ class: center
 class: center
 
 ![](L7_LinearModels_files/slide7.png)
+---
+class: middle
+
+```{r, include=FALSE}
+altDat <- as.vector(t(prDat[c("1422248_at", "1450946_at"), ]))
+altDat <- data.frame(gene = rep(c("Irs4", "Nrl"), each = nrow(prDes)),
+                      gExp = altDat)
+
+altDat <- data.frame(prDes, altDat)
+```
+
+```{r}
+summary(lm(gExp ~ gType, altDat, subset = gene == "Irs4"))
+```
+
 ---
 class: middle
 ### Different ways of writing this (design matrix, parameter vector) pair correspond to different parametrizations of the model.
@@ -128,6 +127,19 @@ class: center
 
 ![](L7_LinearModels_files/slide10.png)
 ---
+class: middle
+
+``` {r}
+lm12 <- summary(hitFitCellMeans)
+lm12$coefficients
+```
+
+---
+class: middle
+``` {r}
+summary(hitFit)
+```
+---
 class: center
 
 ![](L7_LinearModels_files/slide11.png)
@@ -135,6 +147,16 @@ class: center
 class: center
 
 ![](L7_LinearModels_files/slide12.png)
+---
+class: middle
+
+``` {r, include = FALSE}
+twoFactFit <- lm(formula = gExp ~ gType * devStage, data = miniDat)
+```
+
+``` {r , echo = FALSE}
+summary(twoFactFit)
+```
 ---
 class: center
 
@@ -165,8 +187,10 @@ class: middle
 
 ![](L7_LinearModels_files/slide17.png)
 ---
-Slide 18
-
+class: middle
+``` {r}
+summary(lm(formula = gExp ~ gType +devStage, data = miniDat))
+```
 ---
 Slide 19
 
@@ -191,6 +215,37 @@ class: center
 
 ![](L7_LinearModels_files/slide22.png)
 ---
+
+SLIDE 23
+
+---
+
+slide 24
+
+---
 class: center
+
+![](L7_LinearModels_files/slide25.png)
+---
+class: center
+
+![](L7_LinearModels_files/slide26.png)
+---
+
+SLIDE 27
+
+---
+
+SLIDE 28
+
+---
+class: center, middle
+
+## How do we estimate the intercept and the slope?
+
+### Is there an optimal line?
+
+---
+
 
 

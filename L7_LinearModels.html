@@ -35,25 +35,9 @@ class: middle
 ![](L7_LinearModels_files/figure-html/unnamed-chunk-2-1.svg)&lt;!-- --&gt;
 
 ---
-class: middle
+class: center, middle
 
-## From &lt;i&gt;t&lt;/i&gt;-test to linear regression
-
-### 2-sample &lt;i&gt;t&lt;/i&gt;-test
-.pull-left[
-`$$Y \sim G; \;\;\;\;\;\;\;\; E[Y] = \mu_Y$$`
-`$$Z \sim G; \;\;\;\;\;\;\;\; E[Z] = \mu_Z$$`
-]
-.pull-right[
-&lt;br&gt;
-$$ H_0: \mu_Y = \mu_Z$$
-]
-&lt;br&gt;
-
-###Linear regression &lt;big&gt;
-$$Y = X\alpha + \varepsilon \;\;\;\;\;\;\;\; H_0:\alpha_j = 0 $$
-&lt;br&gt;
-## &lt;center&gt; How? and Why?
+![](L7_LinearModels_files/slide4.png)
 ---
 class: center
 
@@ -66,6 +50,37 @@ class: center
 class: center
 
 ![](L7_LinearModels_files/slide7.png)
+---
+class: middle
+
+
+
+
+```r
+summary(lm(gExp ~ gType, altDat, subset = gene == "Irs4"))
+```
+
+```
+## 
+## Call:
+## lm(formula = gExp ~ gType, data = altDat, subset = gene == "Irs4")
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.36575 -0.09072  0.01725  0.09428  0.36525 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  7.76575    0.03441 225.650   &lt;2e-16 ***
+## gTypeNrlKO  -0.02607    0.04931  -0.529      0.6    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1539 on 37 degrees of freedom
+## Multiple R-squared:  0.007497,	Adjusted R-squared:  -0.01933 
+## F-statistic: 0.2795 on 1 and 37 DF,  p-value: 0.6002
+```
+
 ---
 class: middle
 ### Different ways of writing this (design matrix, parameter vector) pair correspond to different parametrizations of the model.
@@ -84,6 +99,55 @@ class: center
 
 ![](L7_LinearModels_files/slide10.png)
 ---
+class: middle
+
+
+```r
+lm12 &lt;- summary(hitFitCellMeans)
+lm12$coefficients
+```
+
+```
+##                 Estimate Std. Error  t value     Pr(&gt;|t|)
+## devStageE16     5.540857 0.10213807 54.24870 1.307554e-34
+## devStageP2      5.844875 0.09554141 61.17635 2.287666e-36
+## devStageP6      5.784250 0.09554141 60.54181 3.250790e-36
+## devStageP10     6.375125 0.09554141 66.72630 1.223052e-37
+## devStage4_weeks 9.173375 0.09554141 96.01465 5.523959e-43
+```
+
+---
+class: middle
+
+```r
+summary(hitFit)
+```
+
+```
+## 
+## Call:
+## lm(formula = gExp ~ devStage, data = miniDat, subset = gene == 
+##     "theHit")
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.78538 -0.13299 -0.04788  0.17062  0.51814 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       5.5409     0.1021  54.249  &lt; 2e-16 ***
+## devStageP2        0.3040     0.1399   2.174   0.0368 *  
+## devStageP6        0.2434     0.1399   1.740   0.0909 .  
+## devStageP10       0.8343     0.1399   5.965 9.56e-07 ***
+## devStage4_weeks   3.6325     0.1399  25.973  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.2702 on 34 degrees of freedom
+## Multiple R-squared:  0.9663,	Adjusted R-squared:  0.9623 
+## F-statistic: 243.4 on 4 and 34 DF,  p-value: &lt; 2.2e-16
+```
+---
 class: center
 
 ![](L7_LinearModels_files/slide11.png)
@@ -91,6 +155,40 @@ class: center
 class: center
 
 ![](L7_LinearModels_files/slide12.png)
+---
+class: middle
+
+
+
+
+```
+## 
+## Call:
+## lm(formula = gExp ~ gType * devStage, data = miniDat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.18437 -0.82788 -0.05175  0.80825  1.43067 
+## 
+## Coefficients:
+##                            Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                 6.53737    0.32754  19.959  &lt; 2e-16 ***
+## gTypeNrlKO                  0.01196    0.50032   0.024    0.981    
+## devStageP2                  0.20350    0.46321   0.439    0.662    
+## devStageP6                  0.06163    0.46321   0.133    0.895    
+## devStageP10                 0.45738    0.46321   0.987    0.327    
+## devStage4_weeks             2.02125    0.46321   4.364 4.46e-05 ***
+## gTypeNrlKO:devStageP2      -0.06533    0.68182  -0.096    0.924    
+## gTypeNrlKO:devStageP6       0.12829    0.68182   0.188    0.851    
+## gTypeNrlKO:devStageP10     -0.05533    0.68182  -0.081    0.936    
+## gTypeNrlKO:devStage4_weeks -0.39683    0.68182  -0.582    0.562    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9264 on 68 degrees of freedom
+## Multiple R-squared:  0.3829,	Adjusted R-squared:  0.3012 
+## F-statistic: 4.688 on 9 and 68 DF,  p-value: 7.517e-05
+```
 ---
 class: center
 
@@ -121,8 +219,36 @@ class: middle
 
 ![](L7_LinearModels_files/slide17.png)
 ---
-Slide 18
+class: middle
 
+```r
+summary(lm(formula = gExp ~ gType +devStage, data = miniDat))
+```
+
+```
+## 
+## Call:
+## lm(formula = gExp ~ gType + devStage, data = miniDat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.2187 -0.8622 -0.1371  0.8317  1.4765 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      6.57172    0.25736  25.535  &lt; 2e-16 ***
+## gTypeNrlKO      -0.06817    0.20530  -0.332    0.741    
+## devStageP2       0.17656    0.33150   0.533    0.596    
+## devStageP6       0.13149    0.33150   0.397    0.693    
+## devStageP10      0.43543    0.33150   1.314    0.193    
+## devStage4_weeks  1.82856    0.33150   5.516 5.15e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9049 on 72 degrees of freedom
+## Multiple R-squared:  0.3766,	Adjusted R-squared:  0.3333 
+## F-statistic: 8.698 on 5 and 72 DF,  p-value: 1.73e-06
+```
 ---
 Slide 19
 
@@ -146,6 +272,38 @@ class: middle
 class: center
 
 ![](L7_LinearModels_files/slide22.png)
+---
+
+SLIDE 23
+
+---
+
+slide 24
+
+---
+class: center
+
+![](L7_LinearModels_files/slide25.png)
+---
+class: center
+
+![](L7_LinearModels_files/slide26.png)
+---
+
+SLIDE 27
+
+---
+
+SLIDE 28
+
+---
+class: center, middle
+
+## How do we estimate the intercept and the slope?
+
+### Is there an optimal line?
+
+---
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
