@@ -32,7 +32,46 @@ class: middle
 ---
 
 class: middle
+<<<<<<< HEAD
 ![](L6_ANOVA_files/slide4.png)
+=======
+## We can run these tests in R 
+### Example: use the `t.test` function to test `\(H_0\)` using a classical 2-sample *t*-test.
+
+
+```r
+miniDat %&gt;% subset(gene == "Irs4") %&gt;% t.test(gExp ~ gType, data = ., 
+    var.equal = TRUE)
+```
+
+```
+## 
+## 	Two Sample t-test
+## 
+## data:  gExp by gType
+## t = -0.52865, df = 37, p-value = 0.6002
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.12597002  0.07383844
+## sample estimates:
+## mean in group NrlKO    mean in group wt 
+##            7.739684            7.765750
+```
+---
+class: middle
+# Today...
+
+### - show how to compare means of different groups (2 or more) using a linear regression model
+
+  - dummy variables to model the levels of a qualitative explanatory variable
+
+### - use linear regression to model the association of multiple variables with the response
+
+  - interaction between explanatory variables
+  
+### - distinguish between conditional and marginal effects
+  - `\(t\)`-tests vs `\(F\)`-tests  
+>>>>>>> parent of 390d121... L6 final
 ---
 class: middle
 ![](L6_ANOVA_files/slide5.png)
@@ -226,6 +265,7 @@ class: middle
 ![](L6_ANOVA_files/slide25.png)
 ---
 class: middle
+<<<<<<< HEAD
 ![](L6_ANOVA_files/figure-html/unnamed-chunk-8-1.svg)&lt;!-- --&gt;
 ![](L6_ANOVA_files/slide26.png)
 ---
@@ -241,6 +281,30 @@ class: middle
 &lt;big&gt;
 &lt;font size = 5&gt;$$Y = X \alpha + \varepsilon$$&lt;/font&gt;
 `$$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4weeks})$$`
+=======
+## "theHit" with significant time ("treatment") effect
+
+### Can you guess the size of the `\(X\)` matrix??
+&gt; How many dummy variables do we need?
+
+--
+
+### We need 4 dummy variables to estimate and test 4 time differences: 
+&gt; `\(x_{P2}\)`: P2 vs E16, 
+&gt; `\(x_{P6}\)`: P6 vs E16,
+&gt; `\(x_{P10}\)`: P10 vs E16, 
+&gt; `\(x_{4W}\)`: 4W vs E16)
+
+--
+
+### Mathematically:
+
+`$$Y_{ij}=\theta+\tau_{P2} \times x_{ijP2}+\tau_{P6} \times x_{ijP6}+\tau_{P10} \times x_{ijP10}+\tau_{4W} \times x_{ij4W}+\varepsilon_{ij}$$`
+&lt;font size=3&gt;
+*Notation*: `\(x_{ijk}\)`, where `\(i\)` is an index for the observation, `\(j\)` for the level of `devStage`, and `\(k\)` for the name of the dummy variable
+---
+class: middle
+>>>>>>> parent of 390d121... L6 final
 
 ### in the context of this model, we generally test null hypothesis of two types:
 .pull-left[
@@ -317,10 +381,49 @@ We have three parameters we'd like to interpret:
 ]
 ---
 class: middle
+<<<<<<< HEAD
 ![](L6_ANOVA_files/slide40.png)
 ---
 class: middle
 ![](L6_ANOVA_files/slide41.png)
+=======
+
+![](L6_ANOVA_files/figure-html/unnamed-chunk-28-1.svg)&lt;!-- --&gt;
+![](L6_ANOVA_files/same_se.png)
+
+---
+class: middle
+&lt;big&gt;
+  &lt;font size = 5&gt;$$Y = X \alpha + \varepsilon$$&lt;/font&gt;
+    `$$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4W})$$`
+      
+### We generally test two types of null hypotheses:
+      
+.pull-left[
+        &lt;center&gt;
+          `$$H_0: \tau_j = 0$$`
+          vs
+        `$$H_0: \tau_j \neq 0$$`
+          for each *j* &lt;font color="red"&gt;individually&lt;/font&gt;
+          
+          e.g., Is gene A differencially expressed 2 days after birth?
+          
+          `$$H_0: \tau_{P2}=0$$`
+          ]
+    
+.pull-right[
+      &lt;center&gt;
+        `$$H_0: \tau_j = 0$$`
+        
+        vs
+      `$$H_0: \tau_j \neq 0$$`
+        for all *j* &lt;font color="red"&gt;at the same time&lt;/font&gt;
+        
+        e.g., Is gene A significantly affected by time (`devStage`)?
+        
+        `$$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$`
+        ]
+>>>>>>> parent of 390d121... L6 final
 ---
 class: middle
 ![](L6_ANOVA_files/slide42.png)
@@ -328,8 +431,11 @@ class: middle
 class: middle
 ![](L6_ANOVA_files/slide43.png)
 ---
+<<<<<<< HEAD
 class: middle
 ![](L6_ANOVA_files/slide44.png)
+=======
+>>>>>>> parent of 390d121... L6 final
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

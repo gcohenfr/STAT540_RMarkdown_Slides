@@ -86,10 +86,22 @@ class: middle
 # Today: beyond 2-groups comparisons
 
 
+<<<<<<< HEAD
 ## <font color = "red">t-test</font> 
 > Special case of **ANOVA**, where the only difference is that with ANOVA you can compare more than two groups.
 
 <br>
+=======
+### - use linear regression to model the association of multiple variables with the response
+
+  - interaction between explanatory variables
+  
+### - distinguish between conditional and marginal effects
+  - $t$-tests vs $F$-tests  
+---
+class: middle
+![](L6_ANOVA_files/t_aov_lm.png)
+>>>>>>> parent of 390d121... L6 final
 
 ## <font color = "red">ANOVA</font> 
 > Special case of **linear regression/model**, where the only difference is with linear models you can consider quantitative and categorical variables. 
@@ -323,6 +335,7 @@ class: middle
 ![](L6_ANOVA_files/slide25.png)
 ---
 class: middle
+<<<<<<< HEAD
 ```{r, echo=FALSE, fig.height= 3, dev='svg'}
 hitLim
 ```
@@ -344,6 +357,30 @@ class: middle
 <big>
 <font size = 5>$$Y = X \alpha + \varepsilon$$</font>
 $$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4weeks})$$
+=======
+## "theHit" with significant time ("treatment") effect
+
+### Can you guess the size of the $X$ matrix??
+> How many dummy variables do we need?
+
+--
+
+### We need 4 dummy variables to estimate and test 4 time differences: 
+> $x_{P2}$: P2 vs E16, 
+> $x_{P6}$: P6 vs E16,
+> $x_{P10}$: P10 vs E16, 
+> $x_{4W}$: 4W vs E16)
+
+--
+
+### Mathematically:
+
+$$Y_{ij}=\theta+\tau_{P2} \times x_{ijP2}+\tau_{P6} \times x_{ijP6}+\tau_{P10} \times x_{ijP10}+\tau_{4W} \times x_{ij4W}+\varepsilon_{ij}$$
+<font size=3>
+*Notation*: $x_{ijk}$, where $i$ is an index for the observation, $j$ for the level of `devStage`, and $k$ for the name of the dummy variable
+---
+class: middle
+>>>>>>> parent of 390d121... L6 final
 
 ### in the context of this model, we generally test null hypothesis of two types:
 .pull-left[
@@ -423,13 +460,59 @@ class: middle
 ![](L6_ANOVA_files/slide40.png)
 ---
 class: middle
+<<<<<<< HEAD
 ![](L6_ANOVA_files/slide41.png)
+=======
+<big>
+  <font size = 5>$$Y = X \alpha + \varepsilon$$</font>
+    $$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4W})$$
+      
+### We generally test two types of null hypotheses:
+      
+.pull-left[
+        <center>
+          $$H_0: \tau_j = 0$$
+          vs
+        $$H_0: \tau_j \neq 0$$
+          for each *j* <font color="red">individually</font>
+          
+          e.g., Is gene A differencially expressed 2 days after birth?
+          
+          $$H_0: \tau_{P2}=0$$
+          ]
+    
+.pull-right[
+      <center>
+        $$H_0: \tau_j = 0$$
+        
+        vs
+      $$H_0: \tau_j \neq 0$$
+        for all *j* <font color="red">at the same time</font>
+        
+        e.g., Is gene A significantly affected by time (`devStage`)?
+        
+        $$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$
+        ]
+>>>>>>> parent of 390d121... L6 final
 ---
 class: middle
 ![](L6_ANOVA_files/slide42.png)
 ---
 class: middle
+<<<<<<< HEAD
 ![](L6_ANOVA_files/slide43.png)
 ---
 class: middle
 ![](L6_ANOVA_files/slide44.png)
+=======
+    
+## *F*-test and overall significance of one or more covariates
+<big>
+  - the *t*-test in linear regression allows us to test simple hypotheses:
+      $$H_0 : \tau_i = 0$$
+      $$H_A : \tau_j \neq 0$$
+  - but we often like to test multiple hypotheses *simultaneously*: 
+      $$H_0 : \tau_{P2} = \tau_{P6} = \tau_{P10} = \tau_{4W}=0\textrm{ [AND statement]}$$
+      $$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$ the *F*-test allows us to test such compound tests
+---
+>>>>>>> parent of 390d121... L6 final
