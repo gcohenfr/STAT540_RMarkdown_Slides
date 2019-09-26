@@ -16,6 +16,17 @@ class: middle
 We want to understand a **population** (e.g., gene behaviour) but we can only study a <font color=red>**random sample**</font> from it. *[Picture from Dr. Fowler, UW]*
 ---
 class: middle
+# Book and online resources
+* Linear Models with R by Julian Faraway, Chapman & Hall/CRC Texts in Statistical Science, 2004
+
+* http://www.biostat.jhsph.edu/~iruczins/teaching/jf/faraway.html
+
+* https://sites.google.com/a/cs.washington.edu/genome560-spr18/CourseMaterials
+
+* http://genomicsclass.github.io/book/
+
+---
+class: middle
 # <center> Hypothesis Testing in Genomics
 ![](L5_TwoGroupComp_files/paperRef.PNG)
 
