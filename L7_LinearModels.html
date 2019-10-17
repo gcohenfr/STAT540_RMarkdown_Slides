@@ -130,6 +130,7 @@ class: middle
   - `\(t\)`-tests vs `\(F\)`-tests  
 ---
 class: middle
+
 ## Increasing the complexity of the linear model ...
 
 ### What if you have two categorical variables?
@@ -137,9 +138,9 @@ class: middle
   
   e.g., `gType` and `devStage` (for simplicity, let's consider only E16 and 4W)
 
-- ANOVA is usually used to study models with one or more categorical variables
+- ANOVA is usually used to study models with one or more categorical variables (factors)
 
-- Can we combine variables to simplify the analysis??
+- Can we combine levels into 4 groups to simplify the analysis??
 
 
 ![](L7_LinearModels_files/anova.png)
@@ -149,12 +150,20 @@ class: middle
 class: middle
 
 
-## Two-way ANOVA: a linear model with interaction 
+## Two-way ANOVA or a linear model with interaction 
 
-By default, `lm` assumes a &lt;font color = "red"&gt;**reference-treatment effect**&lt;/font&gt; parametrization. 
+Which group means are we comparing in a model with 2 factors? 
 
-But, which group means are we comparing for a model with 2 factors (e.g., genotype and developmental stage)? What hypotheses are we testing?
+![](L7_LinearModels_files/figure-html/unnamed-chunk-7-1.svg)&lt;!-- --&gt;
 
+`$$\mu_1=E[Y_{(wt,E16)}], \ \mu_2=E[Y_{(NrlKO,E16)}], 
+\ \mu_3=E[Y_{(wt,4W)}], \ \mu_4=E[Y_{(NrlKO,4W)}]$$`
+
+---
+class: middle
+### Reference-treatment effect parametrization
+
+By default, `lm` assumes a &lt;font color = "red"&gt;**reference-treatment effect**&lt;/font&gt; parametrization (let's skip the math for now...)
 
 
 ```r
@@ -169,8 +178,182 @@ summary(twoFactFit)$coeff
 ## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
 ## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
 ```
+
+```r
+means.2Fact &lt;- as.data.frame(twoDat %&gt;% 
+          group_by(grp) %&gt;% summarize(cellMeans=mean(gExp)))
+means.2Fact &lt;-means.2Fact %&gt;%   mutate(txEffects=cellMeans-cellMeans[1],
+          lmEst=summary(twoFactFit)$coeff[,1])
+```
+
+---
+class: middle
+
+## The reference: &lt;font color="blue"&gt; wt &amp; E16 &lt;/font&gt;
+
+&lt;big&gt;
+As before, comparisons are relative to a reference but in this case there is a reference level in each factor: &lt;font color="blue"&gt;wt and E16 &lt;/font&gt;
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-9-1.svg)&lt;!-- --&gt;
+
+---
+class: middle
+
+## The reference: wt &amp; E16
+&lt;big&gt;
+
+**Mean of reference group**: `\(\theta=E[Y_{wt,E16}]\)` 
+  
+**`lm` estimate**: `\(\hat{\theta}\)` is the sample mean of the group 
+
+
+```
+##                              Estimate Std. Error   t value     Pr(&gt;|t|)
+*## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
+## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
+## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
+## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+```
+
+```
+##             grp cellMeans  txEffects      lmEst
+*## 1        wt.E16  9.908000  0.0000000  9.9080000
+## 2     NrlKO.E16  8.922333 -0.9856667 -0.9856667
+## 3    wt.4_weeks 11.542500  1.6345000  1.6345000
+## 4 NrlKO.4_weeks  8.518750 -1.3892500 -2.0380833
+```
+
+In general, one is not interested in: `\(H_0: \theta=0\)`
+
+---
+class: middle
+
+## Conditional genotype effect: wt *vs* NrlKO &lt;font color="blue"&gt; at E16 &lt;/font&gt;
+
+&lt;big&gt;
+And now the "treatment effects"... but note that this time effects are not marginal but *conditional* (at a given level of the other factor, e.g., at E16)
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-11-1.svg)&lt;!-- --&gt;
+
 ---
 
+class: middle
+
+## Conditional genotype effect: wt *vs* NrlKO &lt;font color="blue"&gt; at E16 &lt;/font&gt;
+
+**Conditional effect of genotype at E16**: `\(\tau_{KO}=E[Y_{NrlKO,E16}]-E[Y_{wt,E16}]\)`
+
+**`lm` estimate**: `\(\hat{\tau}_{KO}\)` is a *difference* of sample means (see table below)
+
+
+```
+##                              Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
+*## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
+## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
+## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+```
+
+```
+##             grp cellMeans  txEffects      lmEst
+## 1        wt.E16  9.908000  0.0000000  9.9080000
+*## 2     NrlKO.E16  8.922333 -0.9856667 -0.9856667
+## 3    wt.4_weeks 11.542500  1.6345000  1.6345000
+## 4 NrlKO.4_weeks  8.518750 -1.3892500 -2.0380833
+```
+
+**But**, are you interested in testing the *conditional* effect at E16: `\(H_0: \tau_{KO}=0\)`?? 
+
+---
+
+class: middle
+### *Conditional* developmental effect: E16 *vs* 4W &lt;font color="blue"&gt; at wt &lt;/font&gt;
+
+&lt;big&gt;
+
+Similar for the other factor:
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
+
+---
+
+class: middle
+### *Conditional* developmental effect: E16 *vs* 4W &lt;font color="blue"&gt; at wt &lt;/font&gt;
+
+**Conditional effect of development at wt**: `\(\tau_{4W}=E[Y_{wt,4W}]-E[Y_{wt,E16}]\)`
+
+**`lm` estimate**: `\(\hat{\tau}_{4W}\)` is another *difference* of sample means (see table below)
+
+
+```
+##                              Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
+## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
+*## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
+## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+```
+
+```
+##             grp cellMeans  txEffects      lmEst
+## 1        wt.E16  9.908000  0.0000000  9.9080000
+## 2     NrlKO.E16  8.922333 -0.9856667 -0.9856667
+*## 3    wt.4_weeks 11.542500  1.6345000  1.6345000
+## 4 NrlKO.4_weeks  8.518750 -1.3892500 -2.0380833
+```
+
+---
+class: middle
+
+## Interaction effect
+
+&lt;big&gt;
+
+Is the effect of genotype the same at different developmental stages (or the other way around)? 
+
+**Yes if**, there's no interaction effect, i.e., `\(\tau_{KO4W}=0\)` 
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-15-1.svg)&lt;!-- --&gt;
+
+The genotype effect at E16 is `\(\tau_{KO}\)`. However, `\(\tau_{KO}\)` does not seem to be the effect at 4W. The difference is the interaction effect!
+---
+## Interaction effect
+
+`\(\tau_{KO4W}=(E[Y_{wt,E16}]-E[Y_{NrlKO,E16}]) - (E[Y_{wt,4W}]-E[Y_{NrlKO,4W}])\)` 
+
+
+```
+##                              Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
+## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
+## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
+*## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+```
+
+
+```r
+means.2Fact
+```
+
+```
+##             grp cellMeans  txEffects      lmEst
+## 1        wt.E16  9.908000  0.0000000  9.9080000
+## 2     NrlKO.E16  8.922333 -0.9856667 -0.9856667
+## 3    wt.4_weeks 11.542500  1.6345000  1.6345000
+*## 4 NrlKO.4_weeks  8.518750 -1.3892500 -2.0380833
+```
+
+```r
+((means.2Fact$cellMeans[1]-means.2Fact$cellMeans[2])-
+  (means.2Fact$cellMeans[3]-means.2Fact$cellMeans[4]))
+```
+
+```
+## [1] -2.038083
+
+NA
+NA
+*NA```
+---
 class: middle
 
 ### Mathematically (a bit more difficult...)
@@ -195,141 +378,16 @@ class: middle
 
 `$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$`
 
-model parameter | R estimate| stats
+model parameter | R estimate| stats | interpretation
 --------|---------|---------
-`\(\theta\)` | (Intercept) | reference, `\(E[Y_{wt,E16}]\)`
-`\(\tau_{KO}\)` | gTypeNrlKO | *conditional* effect of NrlKO *at* E16: `\(E[Y_{NrlKO,E16}]\)` - `\(E[Y_{wt,E16}]\)`
-`\(\tau_{4W}\)` | devStage4_weeks | *conditional* effect of 4W *at* wt: `\(E[Y_{wt,4W}]\)` - `\(E[Y_{wt,E16}]\)`
-`\(\tau_{KO4W}\)` | gTypeNrlKO:devStage4_weeks | *interaction* effect of NrlKO and 4W: (complicated, see later)
+`\(\theta\)` | (Intercept) | `\(E[Y_{wt,E16}]\)` | reference
+`\(\tau_{KO}\)` | gTypeNrlKO | `\(E[Y_{NrlKO,E16}]\)` - `\(E[Y_{wt,E16}]\)` | *conditional* effect of NrlKO *at* E16
+`\(\tau_{4W}\)` | devStage4_weeks | `\(E[Y_{wt,4W}]\)` - `\(E[Y_{wt,E16}]\)` | *conditional* effect of 4W *at* wt
+`\(\tau_{KO4W}\)` | gTypeNrlKO:devStage4_weeks | complicated, see additional slides | *interaction* effect of NrlKO and 4W
 
-The math is more difficult but it is *important* to understand that `lm` estimates *conditional, not main* effects!! 
-
-As before, comparisons are relative to a reference but now we have references in both factors: E16 and wt
----
-class: middle
-
-## Reference: wt &amp; E16
+It is *important* to remember that `lm` reports *conditional, not main* effects!! &lt;font color="blue"&gt; why?? because of the parametrization used!! &lt;/font&gt; (see additional slides at the end)
 
 
-`$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$`
-
-
-For any sample `\(i\)` in the reference group: `\(j=wt\)` and `\(k=E16\)`, then `\(x_{KO}=0\)` and `\(x_{4W}=0\)` 
-
-As before `\(\theta\)` is the mean of the reference group: `\(E[Y_{wt,E16}]=\theta\)`
-
-![](L7_LinearModels_files/ref_2wANOVA.png)
----
-class: middle
-
-## Reference: wt &amp; E16, estimate from the data
-
-
-```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-*## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
-```
-
-![](L7_LinearModels_files/ref_2wANOVA.png)
-
-Note that we are generally not interested in testing the hypothesis: `\(H_0: \theta=0\)`
----
-
-class: middle
-### *Conditional* genotype effect: wt *vs* NrlKO &lt;font color="blue"&gt; at E16 &lt;/font&gt;
-
-
-`$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$`
-
-For any wt sample at E16: `\(x_{KO}=0\)` and `\(x_{4W}=0\)`. Then &lt;font color="red"&gt; `\(E[Y_{wt,E16}]=\theta\)` &lt;/font&gt;
-
-For any KO sample at E16: `\(x_{KO}=1\)` and `\(x_{4W}=0\)`. Then &lt;font color="red"&gt; `\(E[Y_{NrlKO,E16}]=\theta + \tau_{KO}\)` &lt;/font&gt;
-
-Then (substract expectations), `\(\tau_{KO}\)` is the *conditional* genotype effect &lt;font color="blue"&gt; at E16 &lt;/font&gt;: 
-
-`\(\tau_{KO}=E[Y_{NrlKO,E16}]-E[Y_{wt,E16}]\)` 
-
-![](L7_LinearModels_files/gType_2wANOVA.png)
----
-class: middle
-### *Conditional* genotype effect: wt *vs* NrlKO &lt;font color="blue"&gt; at E16 &lt;/font&gt;, from the data
-
-
-```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-*## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
-```
-
-![](L7_LinearModels_files/gType_2wANOVA.png)
----
-class: middle
-### *Conditional* developmental effect: E16 *vs* 4W &lt;font color="blue"&gt; at wt &lt;/font&gt;
-
-`$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$`
-
-For any wt sample at E16: `\(x_{KO}=0\)` and `\(x_{4W}=0\)`. Then &lt;font color="red"&gt; `\(E[Y_{wt,E16}]=\theta\)` &lt;/font&gt;
-
-For any wt sample at 4W: `\(x_{KO}=0\)` and `\(x_{4W}=1\)`. Then &lt;font color="red"&gt; `\(E[Y_{wt,4W}]=\theta + \tau_{4W}\)` &lt;/font&gt;
-
-Then (substract expectations), `\(\tau_{4W}\)` is the *conditional* development effect &lt;font color="blue"&gt; at wt &lt;/font&gt;: 
-
-`\(\tau_{4W}=E[Y_{wt,4W}]-E[Y_{wt,E16}]\)` 
-
-![](L7_LinearModels_files/dev_2wANOVA.png)
----
-class: middle
-### *Conditional* developmental effect: E16 *vs* 4W &lt;font color="blue"&gt; at wt &lt;/font&gt;, from the data
-
-
-```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-*## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
-```
-![](L7_LinearModels_files/dev_2wANOVA.png)
----
-class: middle
-### Interaction effect: can we add up both effects??
-
-`$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$`
-
-Mathematically more challenging (try it!):
-
-For any KO sample at 4w: `\(x_{KO}=1\)` and `\(x_{4W}=1\)`. Then &lt;font color="red"&gt; `\(E[Y_{NrlKO,4W}]=\theta + \tau_{KO} + \tau_{4W} + \tau_{KO4W}\)` &lt;/font&gt;
-
-Using the expectations from previous pages, you can show that:
-
-`\(\tau_{KO4W}=(E[Y_{NrlKO,E16}]-E[Y_{wt,E16}]) + (E[Y_{NrlKO,4W}]-E[Y_{wt,4W}])\)` 
-
-
-![](L7_LinearModels_files/int_2wANOVA.png)
----
-class: middle
-### Interaction effect: additive factors??, from the data
-
-
-```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-*## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
-```
-
-![](L7_LinearModels_files/int_2wANOVA.png)
-
-&gt; **Interaction**: is the assocation between gene expression and genotype different at different developmental stages?
----
-class: middle
-![](L6_ANOVA_files/slide37.png)
 ---
 class: middle
 ![](L6_ANOVA_files/slide38.png)
@@ -564,24 +622,7 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();
-// adds .remark-code-has-line-highlighted class to <pre> parent elements
-// of code chunks containing highlighted lines with class .remark-code-line-highlighted
-(function(d) {
-  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
-  const preParents = [];
-  const findPreParent = function(line, p = 0) {
-    if (p > 1) return null; // traverse up no further than grandparent
-    const el = line.parentElement;
-    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
-  };
-
-  for (let line of hlines) {
-    let pre = findPreParent(line);
-    if (pre && !preParents.includes(pre)) preParents.push(pre);
-  }
-  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
-})(document);</script>
+})();</script>
 
 <script>
 (function() {

@@ -21,6 +21,7 @@ library(ggplot2)
 library(ggthemes)
 library(grid)
 library(gridExtra)
+library(latex2exp)
 
 prDes <- readRDS("data/GSE4051_design.rds")
 
@@ -149,6 +150,7 @@ class: middle
   - $t$-tests vs $F$-tests  
 ---
 class: middle
+
 ## Increasing the complexity of the linear model ...
 
 ### What if you have two categorical variables?
@@ -156,9 +158,9 @@ class: middle
   
   e.g., `gType` and `devStage` (for simplicity, let's consider only E16 and 4W)
 
-- ANOVA is usually used to study models with one or more categorical variables
+- ANOVA is usually used to study models with one or more categorical variables (factors)
 
-- Can we combine variables to simplify the analysis??
+- Can we combine levels into 4 groups to simplify the analysis??
 
 
 ![](L7_LinearModels_files/anova.png)
@@ -185,21 +187,201 @@ twoDat$grp <- with(twoDat, interaction(gType, devStage))
 str(twoDat)
 with(twoDat, table(gType, devStage))
 table(twoDat$grp)
+
 ```
 
-## Two-way ANOVA: a linear model with interaction 
+## Two-way ANOVA or a linear model with interaction 
 
-By default, `lm` assumes a <font color = "red">**reference-treatment effect**</font> parametrization. 
+Which group means are we comparing in a model with 2 factors? 
 
-But, which group means are we comparing for a model with 2 factors (e.g., genotype and developmental stage)? What hypotheses are we testing?
+```{r,echo=FALSE,fig.height= 4, dev='svg'}
+mu.hat<-twoDat %>% group_by(grp) %>% summarize(mean(gExp)) %>% as.data.frame()
+lucky <- ggplot(twoDat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+             geom_jitter(width = 0.1) +
+             theme_bw() +
+             theme(legend.position = "none") +
+             ylim(6, 13) + stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) 
 
+lucky +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+  geom_text(aes(x = .8, y = mu.hat[1,2], label = TeX("$\\widehat{\\mu_1}$", output = "character")),colour="black", size=6,parse = TRUE)+
+  geom_text(aes(x = .8, y = mu.hat[2,2], label = TeX("$\\widehat{\\mu_2}$", output = "character")), colour="black", size=6,parse = TRUE)+
+  geom_text(aes(x = 2.2, y = mu.hat[3,2], label = TeX("$\\widehat{\\mu_3}$", output = "character")), colour="black", size=6, parse = TRUE)+
+  geom_text(aes(x = 2.2, y = mu.hat[4,2], label = TeX("$\\widehat{\\mu_4}$", output = "character")), colour="black", size=6, parse = TRUE)
+```
 
-```{r}
+$$\mu_1=E[Y_{(wt,E16)}], \ \mu_2=E[Y_{(NrlKO,E16)}], 
+\ \mu_3=E[Y_{(wt,4W)}], \ \mu_4=E[Y_{(NrlKO,4W)}]$$
+
+---
+class: middle
+### Reference-treatment effect parametrization
+
+By default, `lm` assumes a <font color = "red">**reference-treatment effect**</font> parametrization (let's skip the math for now...)
+
+```{r,tidy.opts=list(width.cutoff=40)}
 twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
 summary(twoFactFit)$coeff
+
+means.2Fact <- as.data.frame(twoDat %>% 
+          group_by(grp) %>% summarize(cellMeans=mean(gExp)))
+means.2Fact <-means.2Fact %>%   mutate(txEffects=cellMeans-cellMeans[1],
+          lmEst=summary(twoFactFit)$coeff[,1])
 ```
+
+---
+class: middle
+
+## The reference: <font color="blue"> wt & E16 </font>
+
+<big>
+As before, comparisons are relative to a reference but in this case there is a reference level in each factor: <font color="blue">wt and E16 </font>
+
+```{r,echo=FALSE,fig.height= 2.7, dev='svg'}
+lucky +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+  geom_text(aes(x = .8, y = mu.hat[1,2], label = TeX("$\\widehat{\\theta}=\\widehat{\\mu_1}$", output = "character")),colour="black", size=6, parse = TRUE) + 
+  geom_point(aes(x = 1, y = mu.hat[1,2]),size=7,shape=1,colour='#00BFC4')
+```
+
+---
+class: middle
+
+## The reference: wt & E16
+<big>
+
+**Mean of reference group**: $\theta=E[Y_{wt,E16}]$ 
+  
+**`lm` estimate**: $\hat{\theta}$ is the sample mean of the group 
+
+```{r,echo=FALSE,highlight.output = c(2)}
+summary(twoFactFit)$coeff
+
+means.2Fact
+```
+
+In general, one is not interested in: $H_0: \theta=0$
+
+---
+class: middle
+
+## Conditional genotype effect: wt *vs* NrlKO <font color="blue"> at E16 </font>
+
+<big>
+And now the "treatment effects"... but note that this time effects are not marginal but *conditional* (at a given level of the other factor, e.g., at E16)
+
+```{r,echo=FALSE,fig.height= 2.7, dev='svg'}
+lucky +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+  geom_text(aes(x = .7, y = abs(mu.hat[1,2]+mu.hat[2,2])/2, label = TeX("$\\widehat{\\tau_{KO}}$", output = "character")),colour="black", size=6, parse = TRUE) + 
+  geom_point(aes(x = 1, y = mu.hat[1,2]),size=7,shape=1,colour='#00BFC4')+
+  geom_point(aes(x = 1, y = mu.hat[2,2]),size=7,shape=1,colour='#F8766D')+
+  geom_segment(aes(x=.8,y=mu.hat[1,2],xend=.8,yend=mu.hat[2,2]),colour=1,arrow = arrow(length = unit(0.1,"cm")))+
+  geom_segment(aes(x=.8,y=mu.hat[2,2],xend=.8,yend=mu.hat[1,2]),colour=1,arrow = arrow(length = unit(0.1,"cm"))) #other way for double arrow??
+```
+
 ---
 
+class: middle
+
+## Conditional genotype effect: wt *vs* NrlKO <font color="blue"> at E16 </font>
+
+**Conditional effect of genotype at E16**: $\tau_{KO}=E[Y_{NrlKO,E16}]-E[Y_{wt,E16}]$
+
+**`lm` estimate**: $\hat{\tau}_{KO}$ is a *difference* of sample means (see table below)
+
+```{r,echo=F,highlight.output = c(3)}
+summary(twoFactFit)$coeff
+
+means.2Fact
+```
+
+**But**, are you interested in testing the *conditional* effect at E16: $H_0: \tau_{KO}=0$?? 
+
+---
+
+class: middle
+### *Conditional* developmental effect: E16 *vs* 4W <font color="blue"> at wt </font>
+
+<big>
+
+Similar for the other factor:
+
+```{r,echo=FALSE,fig.height= 3.5, dev='svg'}
+lucky +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+#circles around mean
+  geom_point(aes(x = 1, y = mu.hat[1,2]),size=7,shape=1,colour='#00BFC4')+
+  geom_point(aes(x = 2, y = mu.hat[3,2]),size=7,shape=1,colour='#00BFC4')+
+#parameter and segments
+  geom_text(aes(x = 2.2, y = abs(mu.hat[1,2]+mu.hat[3,2])/2, label = TeX("$\\widehat{\\tau_{4W}}$", output = "character")),colour="black", size=6, parse = TRUE) + 
+  geom_segment(aes(x=2.1,y=mu.hat[3,2],xend=2.1,yend=mu.hat[1,2]),colour=1,arrow = arrow(length = unit(0.1,"cm")))+
+  geom_segment(aes(x=2.1,y=mu.hat[1,2],xend=2.1,yend=mu.hat[3,2]),colour=1,arrow = arrow(length = unit(0.1,"cm"))) + #other way for double arrow??
+  geom_segment(aes(x=1,y=mu.hat[1,2],xend=2,yend=mu.hat[1,2]),colour='grey',linetype=2) #other way for double arrow??
+```
+
+---
+
+class: middle
+### *Conditional* developmental effect: E16 *vs* 4W <font color="blue"> at wt </font>
+
+**Conditional effect of development at wt**: $\tau_{4W}=E[Y_{wt,4W}]-E[Y_{wt,E16}]$
+
+**`lm` estimate**: $\hat{\tau}_{4W}$ is another *difference* of sample means (see table below)
+
+```{r,echo=F,highlight.output = c(4)}
+summary(twoFactFit)$coeff
+
+means.2Fact
+```
+
+---
+class: middle
+
+## Interaction effect
+
+<big>
+
+Is the effect of genotype the same at different developmental stages (or the other way around)? 
+
+**Yes if**, there's no interaction effect, i.e., $\tau_{KO4W}=0$ 
+
+```{r,echo=FALSE,fig.height= 3, dev='svg'}
+mu.add<-mu.hat[3,2]-(mu.hat[1,2]-mu.hat[2,2])
+lucky +
+     scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+  #circles at means    
+     geom_point(aes(x = 2, y = mu.hat[3,2]),size=7,shape=1,colour='#00BFC4')+
+     geom_point(aes(x = 2, y = mu.hat[3,2]-(mu.hat[1,2]-mu.hat[2,2])),size=7,shape=1,colour='grey')+
+  #parameters and segments
+  #additive position
+    geom_segment(aes(x=1,y=mu.hat[2,2],xend=2,yend=mu.add),colour='grey',linetype=2)+
+  #tau_4W
+  geom_segment(aes(x=2.1,y=mu.hat[3,2],xend=2.1,yend=mu.add),colour='grey',arrow = arrow(length = unit(0.1,"cm")))+
+  geom_segment(aes(x=2.1,y=mu.add,xend=2.1,yend=mu.hat[3,2]),colour='grey',arrow = arrow(length = unit(0.1,"cm"))) +
+  geom_text(aes(x = 2.2, y = abs(mu.hat[3,2]+mu.add)/2, label = TeX("$\\widehat{\\tau_{4W}}$", output = "character")),colour='grey', size=3, parse = TRUE) +
+  #interaction
+geom_segment(aes(x=2.1,y=mu.hat[4,2],xend=2.1,yend=mu.add),colour='blue',arrow = arrow(length = unit(0.1,"cm")))+
+  geom_segment(aes(x=2.1,y=mu.add,xend=2.1,yend=mu.hat[4,2]),colour='blue',arrow = arrow(length = unit(0.1,"cm"))) +
+  geom_text(aes(x = 2.2, y = abs(mu.hat[4,2]+mu.add)/2, label = TeX("$\\widehat{\\tau_{KO4W}}$", output = "character")),colour="blue", size=3, parse = TRUE) 
+```
+
+The genotype effect at E16 is $\tau_{KO}$. However, $\tau_{KO}$ does not seem to be the effect at 4W. The difference is the interaction effect!
+---
+## Interaction effect
+
+$\tau_{KO4W}=(E[Y_{wt,E16}]-E[Y_{NrlKO,E16}]) - (E[Y_{wt,4W}]-E[Y_{NrlKO,4W}])$ 
+
+```{r,echo=FALSE,highlight.output = c(5)}
+summary(twoFactFit)$coeff
+```
+
+```{r,highlight.output = c(5)}
+means.2Fact
+((means.2Fact$cellMeans[1]-means.2Fact$cellMeans[2])-
+  (means.2Fact$cellMeans[3]-means.2Fact$cellMeans[4]))
+```
+---
 class: middle
 
 ### Mathematically (a bit more difficult...)
@@ -224,125 +406,16 @@ class: middle
 
 $$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$
 
-model parameter | R estimate| stats
+model parameter | R estimate| stats | interpretation
 --------|---------|---------
-$\theta$ | (Intercept) | reference, $E[Y_{wt,E16}]$
-$\tau_{KO}$ | gTypeNrlKO | *conditional* effect of NrlKO *at* E16: $E[Y_{NrlKO,E16}]$ - $E[Y_{wt,E16}]$
-$\tau_{4W}$ | devStage4_weeks | *conditional* effect of 4W *at* wt: $E[Y_{wt,4W}]$ - $E[Y_{wt,E16}]$
-$\tau_{KO4W}$ | gTypeNrlKO:devStage4_weeks | *interaction* effect of NrlKO and 4W: (complicated, see later)
+$\theta$ | (Intercept) | $E[Y_{wt,E16}]$ | reference
+$\tau_{KO}$ | gTypeNrlKO | $E[Y_{NrlKO,E16}]$ - $E[Y_{wt,E16}]$ | *conditional* effect of NrlKO *at* E16
+$\tau_{4W}$ | devStage4_weeks | $E[Y_{wt,4W}]$ - $E[Y_{wt,E16}]$ | *conditional* effect of 4W *at* wt
+$\tau_{KO4W}$ | gTypeNrlKO:devStage4_weeks | complicated, see additional slides | *interaction* effect of NrlKO and 4W
 
-The math is more difficult but it is *important* to understand that `lm` estimates *conditional, not main* effects!! 
-
-As before, comparisons are relative to a reference but now we have references in both factors: E16 and wt
----
-class: middle
-
-## Reference: wt & E16
+It is *important* to remember that `lm` reports *conditional, not main* effects!! <font color="blue"> why?? because of the parametrization used!! </font> (see additional slides at the end)
 
 
-$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$
-
-
-For any sample $i$ in the reference group: $j=wt$ and $k=E16$, then $x_{KO}=0$ and $x_{4W}=0$ 
-
-As before $\theta$ is the mean of the reference group: $E[Y_{wt,E16}]=\theta$
-
-![](L7_LinearModels_files/ref_2wANOVA.png)
----
-class: middle
-
-## Reference: wt & E16, estimate from the data
-
-```{r,echo=F,highlight.output = c(2)}
-twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
-summary(twoFactFit)$coeff
-```
-
-![](L7_LinearModels_files/ref_2wANOVA.png)
-
-Note that we are generally not interested in testing the hypothesis: $H_0: \theta=0$
----
-
-class: middle
-### *Conditional* genotype effect: wt *vs* NrlKO <font color="blue"> at E16 </font>
-
-
-$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$
-
-For any wt sample at E16: $x_{KO}=0$ and $x_{4W}=0$. Then <font color="red"> $E[Y_{wt,E16}]=\theta$ </font>
-
-For any KO sample at E16: $x_{KO}=1$ and $x_{4W}=0$. Then <font color="red"> $E[Y_{NrlKO,E16}]=\theta + \tau_{KO}$ </font>
-
-Then (substract expectations), $\tau_{KO}$ is the *conditional* genotype effect <font color="blue"> at E16 </font>: 
-
-$\tau_{KO}=E[Y_{NrlKO,E16}]-E[Y_{wt,E16}]$ 
-
-![](L7_LinearModels_files/gType_2wANOVA.png)
----
-class: middle
-### *Conditional* genotype effect: wt *vs* NrlKO <font color="blue"> at E16 </font>, from the data
-
-```{r,echo=F,highlight.output = c(3)}
-twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
-summary(twoFactFit)$coeff
-```
-
-![](L7_LinearModels_files/gType_2wANOVA.png)
----
-class: middle
-### *Conditional* developmental effect: E16 *vs* 4W <font color="blue"> at wt </font>
-
-$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$
-
-For any wt sample at E16: $x_{KO}=0$ and $x_{4W}=0$. Then <font color="red"> $E[Y_{wt,E16}]=\theta$ </font>
-
-For any wt sample at 4W: $x_{KO}=0$ and $x_{4W}=1$. Then <font color="red"> $E[Y_{wt,4W}]=\theta + \tau_{4W}$ </font>
-
-Then (substract expectations), $\tau_{4W}$ is the *conditional* development effect <font color="blue"> at wt </font>: 
-
-$\tau_{4W}=E[Y_{wt,4W}]-E[Y_{wt,E16}]$ 
-
-![](L7_LinearModels_files/dev_2wANOVA.png)
----
-class: middle
-### *Conditional* developmental effect: E16 *vs* 4W <font color="blue"> at wt </font>, from the data
-
-```{r,echo=F,highlight.output = c(4)}
-twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
-summary(twoFactFit)$coeff
-```
-![](L7_LinearModels_files/dev_2wANOVA.png)
----
-class: middle
-### Interaction effect: can we add up both effects??
-
-$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$
-
-Mathematically more challenging (try it!):
-
-For any KO sample at 4w: $x_{KO}=1$ and $x_{4W}=1$. Then <font color="red"> $E[Y_{NrlKO,4W}]=\theta + \tau_{KO} + \tau_{4W} + \tau_{KO4W}$ </font>
-
-Using the expectations from previous pages, you can show that:
-
-$\tau_{KO4W}=(E[Y_{NrlKO,E16}]-E[Y_{wt,E16}]) + (E[Y_{NrlKO,4W}]-E[Y_{wt,4W}])$ 
-
-
-![](L7_LinearModels_files/int_2wANOVA.png)
----
-class: middle
-### Interaction effect: additive factors??, from the data
-
-```{r,echo=F,highlight.output = c(5)}
-twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
-summary(twoFactFit)$coeff
-```
-
-![](L7_LinearModels_files/int_2wANOVA.png)
-
-> **Interaction**: is the assocation between gene expression and genotype different at different developmental stages?
----
-class: middle
-![](L6_ANOVA_files/slide37.png)
 ---
 class: middle
 ![](L6_ANOVA_files/slide38.png)
