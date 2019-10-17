@@ -381,44 +381,22 @@ means.2Fact
 ((means.2Fact$cellMeans[1]-means.2Fact$cellMeans[2])-
   (means.2Fact$cellMeans[3]-means.2Fact$cellMeans[4]))
 ```
+
 ---
 class: middle
-
-### Mathematically (a bit more difficult...)
-
-$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$
-Subscripts: $i$ indexes samples per group, $j=\{wt, NrlKO\}$, $k=\{E16, 4W\}$  
-
-The names of these parameters and variables look overwhelming but think of them as just names for:
-
-> $x_{KO,ijk}$: a dummy variable with value 1 for NrlKO genotype samples (j=NrlKO), and 0 otherwise. I call this variable $x_{KO}$
-
-> $x_{4W,ijk}$: a different dummy variable with value 1 for 4W  samples (k=4W), and 0 otherwise. I call this variable $x_{4W}$
-
-> $\tau_{KO}$, $\tau_{4W}$, and $\tau_{KO4W}$: parameters to model the *conditional* effects of genotype (NrlKO), development (4W), and their interaction
-
-**Note**: in this "simple" version with 2 levels per factor we need only one dummy variable per factor: $x_{KO}$ and $x_{4W}$. 
-
-### This model can be extended to multiple factors with multiple levels!!
----
-class: middle
-## What do these parameters represent??
-
-$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$
+## Summary of model parameters 
 
 model parameter | R estimate| stats | interpretation
 --------|---------|---------
 $\theta$ | (Intercept) | $E[Y_{wt,E16}]$ | reference
-$\tau_{KO}$ | gTypeNrlKO | $E[Y_{NrlKO,E16}]$ - $E[Y_{wt,E16}]$ | *conditional* effect of NrlKO *at* E16
-$\tau_{4W}$ | devStage4_weeks | $E[Y_{wt,4W}]$ - $E[Y_{wt,E16}]$ | *conditional* effect of 4W *at* wt
-$\tau_{KO4W}$ | gTypeNrlKO:devStage4_weeks | complicated, see additional slides | *interaction* effect of NrlKO and 4W
+$\tau_{KO}$ | gTypeNrlKO | $E[Y_{NrlKO,E16}] - E[Y_{wt,E16}]$ | *conditional* effect of NrlKO *at* E16
+$\tau_{4W}$ | devStage4_weeks | $E[Y_{wt,4W}] - E[Y_{wt,E16}]$ | *conditional* effect of 4W *at* wt
+$\tau_{KO4W}$ | gTypeNrlKO: devStage4_weeks | $E[Y_{NrlKO,4W}] - E[Y_{wt,4W}] - \tau_{KO}$  | *interaction* effect of NrlKO and 4W
 
 It is *important* to remember that `lm` reports *conditional, not main* effects!! <font color="blue"> why?? because of the parametrization used!! </font> (see additional slides at the end)
 
+It can also be shown that $\tau_{KO4W}=E[Y_{NrlKO,4W}]-\tau_{4W}-\tau_{KO}-\theta$ 
 
----
-class: middle
-![](L6_ANOVA_files/slide38.png)
 ---
 class: middle
 
@@ -518,6 +496,27 @@ class: middle
 
 - **F-tests** can be used to test the *simultaneous significance of multiple coefficients*. We need it to test the association between a response and categorical variable.
 ---
+
+class: middle
+
+### Mathematically (a bit more difficult...)
+
+$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$
+Subscripts: $i$ indexes samples per group, $j=\{wt, NrlKO\}$, $k=\{E16, 4W\}$  
+
+The names of these parameters and variables look overwhelming but think of them as just names for:
+
+> $x_{KO,ijk}$: a dummy variable with value 1 for NrlKO genotype samples (j=NrlKO), and 0 otherwise. I call this variable $x_{KO}$
+
+> $x_{4W,ijk}$: a different dummy variable with value 1 for 4W  samples (k=4W), and 0 otherwise. I call this variable $x_{4W}$
+
+> $\tau_{KO}$, $\tau_{4W}$, and $\tau_{KO4W}$: parameters to model the *conditional* effects of genotype (NrlKO), development (4W), and their interaction
+
+**Note**: in this "simple" version with 2 levels per factor we need only one dummy variable per factor: $x_{KO}$ and $x_{4W}$. 
+
+### This model can be extended to multiple factors with multiple levels!!
+
+---
 class: center
 
 ![](L7_LinearModels_files/slide22.png)
@@ -553,6 +552,7 @@ class: center, middle
 ### Is there an optimal line?
 
 ---
+
 
 
 
