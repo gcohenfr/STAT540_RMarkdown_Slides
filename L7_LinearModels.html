@@ -372,34 +372,201 @@ It can also be shown that `\(\tau_{KO4W}=E[Y_{NrlKO,4W}]-\tau_{4W}-\tau_{KO}-\th
 ---
 class: middle
 
-## Let's go through some example genes to get a sense of what an interaction effect looks like.
-     
-     We have three parameters we'd like to interpret:
+## Let's go through some example genes to examine these parameters closer
+
+&lt;big&gt;     
+For our model, there are 3 hypotheses of interest:
+
 .pull-left[
-&gt; ### Main effect: genotype
-### Main effect: age
-### Interaction: genotype*age
+&gt; ### `\(H_0: \tau_{KO}\)`
+### `\(H_0: \tau_{4W}\)`
+### `\(H_0: \tau_{KO4W}\)`
 ]
 .pull-right[
 &lt;br&gt;
-![](L6_ANOVA_files/slide39.png)
+![](L7_LinearModels_files/2way_param.png)
 ]
+
+Note that we may not be interested in the first two hypotheses since these are *conditional* effects (*at* a given level of a factor)
+---
+class: middle
+
+### Nothing is statistically significant, very flat genes
+
+```r
+egDat&lt;-prDat %&gt;% subset(row.names(prDat) %in%
+       c("1442080_at","1448243_at")) %&gt;%
+       mutate(gene=c("1442080_at","1448243_at")) %&gt;% 
+       gather(sidChar, gExp,-gene) %&gt;%
+       inner_join(prDes,by="sidChar")
+```
+
+Summary of `lm` for first gene:
+
+
+```
+##                              Estimate Std. Error    t value     Pr(&gt;|t|)
+## (Intercept)                 8.5240000  0.2561305 33.2799114 2.154028e-12
+*## gTypeNrlKO                 -0.4336667  0.3912458 -1.1084251 2.913251e-01
+*## devStage4_weeks            -0.2532500  0.3622232 -0.6991545 4.989723e-01
+*## gTypeNrlKO:devStage4_weeks  0.5504167  0.5331781  1.0323317 3.240804e-01
+```
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-20-1.svg)&lt;!-- --&gt;
 
 ---
 class: middle
-![](L6_ANOVA_files/slide40.png)
+### Only developmental stage is statistically significant
+
+
+
+Summary of `lm` for first gene:
+
+
+```
+##                            Estimate Std. Error    t value     Pr(&gt;|t|)
+## (Intercept)                 6.53175  0.1395392 46.8094417 5.180085e-14
+*## gTypeNrlKO                  0.20225  0.2131496  0.9488642 3.630706e-01
+*## devStage4_weeks             0.75675  0.1973382  3.8347878 2.771373e-03
+*## gTypeNrlKO:devStage4_weeks -0.43275  0.2904739 -1.4898067 1.643790e-01
+```
+
+
+```
+## Warning: Removed 2 rows containing non-finite values (stat_summary).
+```
+
+```
+## Warning: Removed 2 rows containing missing values (geom_point).
+```
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-23-1.svg)&lt;!-- --&gt;
+
+Note the almost parallel pattern (no significant interacction effect)
 ---
 class: middle
-![](L6_ANOVA_files/slide41.png)
+### Only genotype is statistically significant
+
+
+
+Summary of `lm` for first gene:
+
+
+```
+##                              Estimate Std. Error     t value     Pr(&gt;|t|)
+## (Intercept)                 6.5007500 0.07279305 89.30454614 4.329107e-17
+*## gTypeNrlKO                  0.2475833 0.11119322  2.22660467 4.780966e-02
+*## devStage4_weeks            -0.0022500 0.10294491 -0.02185635 9.829540e-01
+*## gTypeNrlKO:devStage4_weeks -0.1320833 0.15153081 -0.87165992 4.020184e-01
+```
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-26-1.svg)&lt;!-- --&gt;
+
+Note the almost parallel pattern (no significant interacction effect)
 ---
 class: middle
-![](L6_ANOVA_files/slide42.png)
+### Development and genotype are statistically significant
+
+
+
+Summary of `lm` for first gene:
+
+
+```
+##                            Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)                 10.3885  0.1575638 65.932036 1.211750e-15
+*## gTypeNrlKO                  -0.8435  0.2406826 -3.504615 4.930085e-03
+*## devStage4_weeks              1.6490  0.2228288  7.400300 1.359371e-05
+*## gTypeNrlKO:devStage4_weeks  -0.4215  0.3279951 -1.285080 2.251634e-01
+```
+
+
+```
+## Warning: Removed 15 rows containing non-finite values (stat_summary).
+```
+
+```
+## Warning in min(x): no non-missing arguments to min; returning Inf
+```
+
+```
+## Warning in max(x): no non-missing arguments to max; returning -Inf
+```
+
+```
+## Warning in min(diff(sort(x))): no non-missing arguments to min; returning
+## Inf
+```
+
+```
+## Warning in min(x): no non-missing arguments to min; returning Inf
+```
+
+```
+## Warning in max(x): no non-missing arguments to max; returning -Inf
+```
+
+```
+## Warning in stats::runif(length(x), -amount, amount): NAs produced
+```
+
+```
+## Warning: Removed 15 rows containing missing values (geom_point).
+```
+
+```
+## Warning: Removed 14 rows containing non-finite values (stat_summary).
+```
+
+```
+## Warning: Removed 14 rows containing missing values (geom_point).
+```
+
+```
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+```
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-29-1.svg)&lt;!-- --&gt;
+
+Note the almost parallel pattern (no significant interacction effect)
 ---
 class: middle
-![](L6_ANOVA_files/slide43.png)
----
-class: middle
-![](L6_ANOVA_files/slide44.png)
+### Statistically significant interaction effect
+
+
+
+Summary of `lm` for first gene:
+
+
+```
+##                            Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)                 8.58550  0.2215161 38.757897 4.083165e-13
+*## gTypeNrlKO                 -1.59250  0.3383715 -4.706366 6.434783e-04
+*## devStage4_weeks            -2.22075  0.3132711 -7.088907 2.021975e-05
+*## gTypeNrlKO:devStage4_weeks  4.96975  0.4611226 10.777502 3.481389e-07
+```
+
+
+```
+## Warning: Removed 6 rows containing non-finite values (stat_summary).
+```
+
+```
+## Warning: Removed 6 rows containing missing values (geom_point).
+```
+
+```
+## Warning: Removed 4 rows containing non-finite values (stat_summary).
+```
+
+```
+## Warning: Removed 4 rows containing missing values (geom_point).
+```
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-32-1.svg)&lt;!-- --&gt;
+
+Non-parallel pattern (significant interacction effect)
 ---
 class: center
 
@@ -621,24 +788,7 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();
-// adds .remark-code-has-line-highlighted class to <pre> parent elements
-// of code chunks containing highlighted lines with class .remark-code-line-highlighted
-(function(d) {
-  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
-  const preParents = [];
-  const findPreParent = function(line, p = 0) {
-    if (p > 1) return null; // traverse up no further than grandparent
-    const el = line.parentElement;
-    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
-  };
-
-  for (let line of hlines) {
-    let pre = findPreParent(line);
-    if (pre && !preParents.includes(pre)) preParents.push(pre);
-  }
-  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
-})(document);</script>
+})();</script>
 
 <script>
 (function() {

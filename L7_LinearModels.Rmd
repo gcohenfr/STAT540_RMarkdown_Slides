@@ -359,11 +359,11 @@ lucky +
   #tau_4W
   geom_segment(aes(x=2.1,y=mu.hat[3,2],xend=2.1,yend=mu.add),colour='grey',arrow = arrow(length = unit(0.1,"cm")))+
   geom_segment(aes(x=2.1,y=mu.add,xend=2.1,yend=mu.hat[3,2]),colour='grey',arrow = arrow(length = unit(0.1,"cm"))) +
-  geom_text(aes(x = 2.2, y = abs(mu.hat[3,2]+mu.add)/2, label = TeX("$\\widehat{\\tau_{4W}}$", output = "character")),colour='grey', size=3, parse = TRUE) +
+  geom_text(aes(x = 2.2, y = abs(mu.hat[3,2]+mu.add)/2, label = TeX("$\\widehat{\\tau_{4W}}$", output = "character")),colour='grey', size=6, parse = TRUE) +
   #interaction
 geom_segment(aes(x=2.1,y=mu.hat[4,2],xend=2.1,yend=mu.add),colour='blue',arrow = arrow(length = unit(0.1,"cm")))+
   geom_segment(aes(x=2.1,y=mu.add,xend=2.1,yend=mu.hat[4,2]),colour='blue',arrow = arrow(length = unit(0.1,"cm"))) +
-  geom_text(aes(x = 2.2, y = abs(mu.hat[4,2]+mu.add)/2, label = TeX("$\\widehat{\\tau_{KO4W}}$", output = "character")),colour="blue", size=3, parse = TRUE) 
+  geom_text(aes(x = 2.2, y = abs(mu.hat[4,2]+mu.add)/2, label = TeX("$\\widehat{\\tau_{KO4W}}$", output = "character")),colour="blue", size=6, parse = TRUE) 
 ```
 
 The genotype effect at E16 is $\tau_{KO}$. However, $\tau_{KO}$ does not seem to be the effect at 4W. The difference is the interaction effect!
@@ -400,34 +400,236 @@ It can also be shown that $\tau_{KO4W}=E[Y_{NrlKO,4W}]-\tau_{4W}-\tau_{KO}-\thet
 ---
 class: middle
 
-## Let's go through some example genes to get a sense of what an interaction effect looks like.
-     
-     We have three parameters we'd like to interpret:
+## Let's go through some example genes to examine these parameters closer
+
+<big>     
+For our model, there are 3 hypotheses of interest:
+
 .pull-left[
-> ### Main effect: genotype
-### Main effect: age
-### Interaction: genotype*age
+> ### $H_0: \tau_{KO}$
+### $H_0: \tau_{4W}$
+### $H_0: \tau_{KO4W}$
 ]
 .pull-right[
 <br>
-![](L6_ANOVA_files/slide39.png)
+![](L7_LinearModels_files/2way_param.png)
 ]
+
+Note that we may not be interested in the first two hypotheses since these are *conditional* effects (*at* a given level of a factor)
+---
+class: middle
+
+### Nothing is statistically significant, very flat genes
+```{r,tidy.opts=list(width.cutoff=30)}
+egDat<-prDat %>% subset(row.names(prDat) %in%
+       c("1442080_at","1448243_at")) %>%
+       mutate(gene=c("1442080_at","1448243_at")) %>% 
+       gather(sidChar, gExp,-gene) %>%
+       inner_join(prDes,by="sidChar")
+```
+
+Summary of `lm` for first gene:
+
+```{r,echo=FALSE,highlight.output = c(3:5)}
+egFit <- lm(gExp ~ gType * devStage, subset(egDat,gene=="1448243_at"))
+summary(egFit)$coeff
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=14, dev='svg'}
+plot1Dat <- filter(egDat, gene == "1442080_at")
+plot2Dat <- filter(egDat, gene == "1448243_at")
+
+plot1Lim <- ggplot(plot1Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1442080_at") +
+             theme_bw() +
+             theme(legend.position = "none") +
+             ylim(6, 10) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+plot2Lim <- ggplot(plot2Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1448243_at") +
+             theme_bw() +
+             theme(legend.position = "none") +
+             ylim(6, 10) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+grid.arrange(plot1Lim, plot2Lim, ncol = 2)
+```
 
 ---
 class: middle
-![](L6_ANOVA_files/slide40.png)
+### Only developmental stage is statistically significant
+
+```{r,echo=FALSE}
+egDat<-prDat %>% subset(row.names(prDat) %in%
+       c("1447988_at","1438764_at")) %>%
+       mutate(gene=c("1447988_at","1438764_at")) %>% 
+       gather(sidChar, gExp,-gene) %>%
+       inner_join(prDes,by="sidChar")
+```
+
+Summary of `lm` for first gene:
+
+```{r,echo=FALSE,highlight.output = c(3:5)}
+egFit <- lm(gExp ~ gType * devStage, subset(egDat,gene=="1447988_at"))
+summary(egFit)$coeff
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=14, dev='svg'}
+plot1Dat <- filter(egDat, gene == "1447988_at")
+plot2Dat <- filter(egDat, gene == "1438764_at")
+
+plot1Lim <- ggplot(plot1Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1447988_at") +
+             theme_bw() +
+             theme(legend.position = "none") +
+             ylim(6, 8) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+plot2Lim <- ggplot(plot2Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1438764_at") +
+             theme_bw() +
+             theme(legend.position = "none") +
+             ylim(6, 8) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+grid.arrange(plot1Lim, plot2Lim, ncol = 2)
+```
+
+Note the almost parallel pattern (no significant interacction effect)
 ---
 class: middle
-![](L6_ANOVA_files/slide41.png)
+### Only genotype is statistically significant
+
+```{r,echo=FALSE}
+egDat<-prDat %>% subset(row.names(prDat) %in%
+       c("1447753_at","1431651_at")) %>%
+       mutate(gene=c("1447753_at","1431651_at")) %>% 
+       gather(sidChar, gExp,-gene) %>%
+       inner_join(prDes,by="sidChar")
+```
+
+Summary of `lm` for first gene:
+
+```{r,echo=FALSE,highlight.output = c(3:5)}
+egFit <- lm(gExp ~ gType * devStage, subset(egDat,gene=="1447753_at"))
+summary(egFit)$coeff
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=14, dev='svg'}
+plot1Dat <- filter(egDat, gene == "1447753_at")
+plot2Dat <- filter(egDat, gene == "1431651_at")
+
+plot1Lim <- ggplot(plot1Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1447753_at") +
+             theme_bw() +
+             theme(legend.position = "none") +
+             ylim(6, 7.5) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+plot2Lim <- ggplot(plot2Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1431651_at") +
+             theme_bw() +
+             theme(legend.position = "none") +
+             ylim(6, 7.5) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+grid.arrange(plot1Lim, plot2Lim, ncol = 2)
+```
+
+Note the almost parallel pattern (no significant interacction effect)
 ---
 class: middle
-![](L6_ANOVA_files/slide42.png)
+### Development and genotype are statistically significant
+
+```{r,echo=FALSE}
+egDat<-prDat %>% subset(row.names(prDat) %in%
+       c("1456930_at","1417810_a_at")) %>%
+       mutate(gene=c("1456930_at","1417810_a_at"))%>%
+       gather(sidChar, gExp,-gene) %>%
+       inner_join(prDes,by="sidChar")
+```
+
+Summary of `lm` for first gene:
+
+```{r,echo=FALSE,highlight.output = c(3:5)}
+egFit <- lm(gExp ~ gType * devStage, subset(egDat,gene=="1456930_at"))
+summary(egFit)$coeff
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=14, dev='svg'}
+plot1Dat <- filter(egDat, gene == "1456930_at")
+plot2Dat <- filter(egDat, gene == "1417810_a_at")
+
+plot1Lim <- ggplot(plot1Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1456930_at") +
+             theme_bw() +
+             theme(legend.position = "none") +
+             ylim(6, 9) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+plot2Lim <- ggplot(plot2Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1417810_a_at") +
+             theme_bw() +
+             theme(legend.position = "none") +
+             ylim(6, 9) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+grid.arrange(plot1Lim, plot2Lim, ncol = 2)
+```
+
+Note the almost parallel pattern (no significant interacction effect)
 ---
 class: middle
-![](L6_ANOVA_files/slide43.png)
----
-class: middle
-![](L6_ANOVA_files/slide44.png)
+### Statistically significant interaction effect
+
+```{r,echo=FALSE,warning=FALSE}
+egDat<-prDat %>% subset(row.names(prDat) %in%
+       c("1434709_at","1458220_at")) %>%
+       mutate(gene=c("1434709_at","1458220_at")) %>% 
+       gather(sidChar, gExp,-gene) %>%
+       inner_join(prDes,by="sidChar")
+```
+
+Summary of `lm` for first gene:
+
+```{r,echo=FALSE,highlight.output = c(3:5),warning=FALSE}
+egFit <- lm(gExp ~ gType * devStage, subset(egDat,gene=="1434709_at"))
+summary(egFit)$coeff
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=14, dev='svg'}
+plot1Dat <- filter(egDat, gene == "1434709_at")
+plot2Dat <- filter(egDat, gene == "1458220_at")
+
+plot1Lim <- ggplot(plot1Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1434709_at") +
+             theme_bw() +
+             theme(legend.position = "none") +
+             ylim(6, 9) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+plot2Lim <- ggplot(plot2Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1458220_at") +
+             theme_bw() +
+             theme(legend.position = "none") +
+             ylim(6, 9) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+grid.arrange(plot1Lim, plot2Lim, ncol = 2)
+```
+
+Non-parallel pattern (significant interacction effect)
 ---
 class: center
 
