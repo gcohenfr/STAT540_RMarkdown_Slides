@@ -154,7 +154,7 @@ class: middle
 
 Which group means are we comparing in a model with 2 factors? 
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-9-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-7-1.svg)&lt;!-- --&gt;
 
 `$$\mu_1=E[Y_{(wt,E16)}], \ \mu_2=E[Y_{(NrlKO,E16)}], 
 \ \mu_3=E[Y_{(wt,4W)}], \ \mu_4=E[Y_{(NrlKO,4W)}]$$`
@@ -204,7 +204,7 @@ class: middle
 &lt;big&gt;
 As before, comparisons are relative to a reference but in this case there is a reference level in each factor: &lt;font color="blue"&gt;wt and E16 &lt;/font&gt;
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-11-1.svg)&lt;!-- --&gt;
 
 ---
 class: middle
@@ -243,7 +243,7 @@ class: middle
 &lt;big&gt;
 And now the "treatment effects"... but note that this time effects are not marginal but *conditional* (at a given level of the other factor, e.g., at E16)
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-15-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
 
 ---
 
@@ -283,7 +283,7 @@ class: middle
 
 Similar for the other factor:
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-17-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-15-1.svg)&lt;!-- --&gt;
 
 ---
 
@@ -322,7 +322,7 @@ Is the effect of genotype the same at different developmental stages (or the oth
 
 **Yes if**, there's no interaction effect, i.e., `\(\tau_{KO4W}=0\)` 
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-19-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-17-1.svg)&lt;!-- --&gt;
 
 The genotype effect at E16 is `\(\tau_{KO}\)`. However, `\(\tau_{KO}\)` does not seem to be the effect at 4W. The difference is the interaction effect!
 ---
@@ -422,7 +422,7 @@ egDat&lt;-prDat %&gt;% subset(row.names(prDat) %in%
 *## gTypeNrlKO:devStage4W  0.5504167  0.5331781  1.0323317 3.240804e-01
 ```
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-22-1.svg)&lt;!-- --&gt;
 
 ---
 class: middle
@@ -440,7 +440,7 @@ class: middle
 *## gTypeNrlKO:devStage4W  4.96975  0.4611226 10.777502 3.481389e-07
 ```
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-27-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-25-1.svg)&lt;!-- --&gt;
 
 When the interaction effect is significant, the *conditional* effects may not agree: compare the genotype effect @E16 with that @4W!
 
@@ -468,7 +468,7 @@ How do we test a *main effect*?? coming soon!
 ## gTypeNrlKO:devStage4W -0.1320833 0.15153081 -0.87165992 4.020184e-01
 ```
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-30-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-28-1.svg)&lt;!-- --&gt;
 
 ---
 class: middle
@@ -478,7 +478,7 @@ When the interaction is not significant, we may want to test the *overall* assoc
 
 &gt; **Note**: a significant interaction means that the effect of a factor depends on the level of the other. Thus, main effects may mask interesting results!
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-31-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-29-1.svg)&lt;!-- --&gt;
 
 ---
 class: middle
@@ -705,7 +705,7 @@ How do we test a *main effect*?? coming soon!
 ## gTypeNrlKO:devStage4W -0.4121667  0.2975853 -1.3850371 1.934864e-01
 ```
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-38-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-36-1.svg)&lt;!-- --&gt;
 
 ---
 class: middle
@@ -725,7 +725,7 @@ but not the interaction... note the almost parallel pattern
 *## gTypeNrlKO:devStage4W -0.20675  0.2639266 -0.7833619 4.499523e-01
 ```
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-41-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-39-1.svg)&lt;!-- --&gt;
 
 ---
     </textarea>
