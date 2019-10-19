@@ -107,12 +107,12 @@ summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
 ```
 
 ```
-##                  Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)     5.5408571  0.1021381 54.248698 1.307554e-34
-## devStageP2      0.3040179  0.1398583  2.173756 3.678022e-02
-## devStageP6      0.2433929  0.1398583  1.740282 9.085489e-02
-## devStageP10     0.8342679  0.1398583  5.965093 9.559065e-07
-## devStage4_weeks 3.6325179  0.1398583 25.972843 5.266481e-24
+##              Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept) 5.5408571  0.1021381 54.248698 1.307554e-34
+## devStageP2  0.3040179  0.1398583  2.173756 3.678022e-02
+## devStageP6  0.2433929  0.1398583  1.740282 9.085489e-02
+## devStageP10 0.8342679  0.1398583  5.965093 9.559065e-07
+## devStage4W  3.6325179  0.1398583 25.972843 5.266481e-24
 ```
 ---
 class: middle
@@ -154,7 +154,7 @@ class: middle
 
 Which group means are we comparing in a model with 2 factors? 
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-7-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-9-1.svg)&lt;!-- --&gt;
 
 `$$\mu_1=E[Y_{(wt,E16)}], \ \mu_2=E[Y_{(NrlKO,E16)}], 
 \ \mu_3=E[Y_{(wt,4W)}], \ \mu_4=E[Y_{(NrlKO,4W)}]$$`
@@ -168,22 +168,32 @@ By default, `lm` assumes a &lt;font color = "red"&gt;**reference-treatment effec
 
 ```r
 twoFactFit &lt;- lm(gExp ~ gType * devStage, twoDat)
-summary(twoFactFit)$coeff
 ```
 
+
 ```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+##                         Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)            9.9080000  0.1574912 62.911469 2.027211e-15
+## gTypeNrlKO            -0.9856667  0.2405717 -4.097184 1.767824e-03
+## devStage4W             1.6345000  0.2227261  7.338609 1.469261e-05
+## gTypeNrlKO:devStage4W -2.0380833  0.3278440 -6.216626 6.560671e-05
 ```
+
 
 ```r
 means.2Fact &lt;- as.data.frame(twoDat %&gt;% 
           group_by(grp) %&gt;% summarize(cellMeans=mean(gExp)))
-means.2Fact &lt;-means.2Fact %&gt;%   mutate(txEffects=cellMeans-cellMeans[1],
-          lmEst=summary(twoFactFit)$coeff[,1])
+(means.2Fact &lt;-means.2Fact %&gt;%
+          mutate(txEffects=cellMeans-cellMeans[1],
+          lmEst=summary(twoFactFit)$coeff[,1]))
+```
+
+```
+##         grp cellMeans  txEffects      lmEst
+## 1    wt.E16  9.908000  0.0000000  9.9080000
+## 2 NrlKO.E16  8.922333 -0.9856667 -0.9856667
+## 3     wt.4W 11.542500  1.6345000  1.6345000
+## 4  NrlKO.4W  8.518750 -1.3892500 -2.0380833
 ```
 
 ---
@@ -194,7 +204,7 @@ class: middle
 &lt;big&gt;
 As before, comparisons are relative to a reference but in this case there is a reference level in each factor: &lt;font color="blue"&gt;wt and E16 &lt;/font&gt;
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-9-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
 
 ---
 class: middle
@@ -208,19 +218,19 @@ class: middle
 
 
 ```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-*## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+##                         Estimate Std. Error   t value     Pr(&gt;|t|)
+*## (Intercept)            9.9080000  0.1574912 62.911469 2.027211e-15
+## gTypeNrlKO            -0.9856667  0.2405717 -4.097184 1.767824e-03
+## devStage4W             1.6345000  0.2227261  7.338609 1.469261e-05
+## gTypeNrlKO:devStage4W -2.0380833  0.3278440 -6.216626 6.560671e-05
 ```
 
 ```
-##             grp cellMeans  txEffects      lmEst
-*## 1        wt.E16  9.908000  0.0000000  9.9080000
-## 2     NrlKO.E16  8.922333 -0.9856667 -0.9856667
-## 3    wt.4_weeks 11.542500  1.6345000  1.6345000
-## 4 NrlKO.4_weeks  8.518750 -1.3892500 -2.0380833
+##         grp cellMeans  txEffects      lmEst
+*## 1    wt.E16  9.908000  0.0000000  9.9080000
+## 2 NrlKO.E16  8.922333 -0.9856667 -0.9856667
+## 3     wt.4W 11.542500  1.6345000  1.6345000
+## 4  NrlKO.4W  8.518750 -1.3892500 -2.0380833
 ```
 
 In general, one is not interested in: `\(H_0: \theta=0\)`
@@ -233,7 +243,7 @@ class: middle
 &lt;big&gt;
 And now the "treatment effects"... but note that this time effects are not marginal but *conditional* (at a given level of the other factor, e.g., at E16)
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-11-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-15-1.svg)&lt;!-- --&gt;
 
 ---
 
@@ -247,22 +257,22 @@ class: middle
 
 
 ```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-*## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+##                         Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)            9.9080000  0.1574912 62.911469 2.027211e-15
+*## gTypeNrlKO            -0.9856667  0.2405717 -4.097184 1.767824e-03
+## devStage4W             1.6345000  0.2227261  7.338609 1.469261e-05
+## gTypeNrlKO:devStage4W -2.0380833  0.3278440 -6.216626 6.560671e-05
 ```
 
 ```
-##             grp cellMeans  txEffects      lmEst
-## 1        wt.E16  9.908000  0.0000000  9.9080000
-*## 2     NrlKO.E16  8.922333 -0.9856667 -0.9856667
-## 3    wt.4_weeks 11.542500  1.6345000  1.6345000
-## 4 NrlKO.4_weeks  8.518750 -1.3892500 -2.0380833
+##         grp cellMeans  txEffects      lmEst
+## 1    wt.E16  9.908000  0.0000000  9.9080000
+*## 2 NrlKO.E16  8.922333 -0.9856667 -0.9856667
+## 3     wt.4W 11.542500  1.6345000  1.6345000
+## 4  NrlKO.4W  8.518750 -1.3892500 -2.0380833
 ```
 
-**But**, are you interested in testing the *conditional* effect at E16: `\(H_0: \tau_{KO}=0\)`?? 
+**But**, do you want to test the *conditional* effect at E16: `\(H_0: \tau_{KO}=0\)`?? 
 
 ---
 
@@ -273,7 +283,7 @@ class: middle
 
 Similar for the other factor:
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-17-1.svg)&lt;!-- --&gt;
 
 ---
 
@@ -286,19 +296,19 @@ class: middle
 
 
 ```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-*## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+##                         Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)            9.9080000  0.1574912 62.911469 2.027211e-15
+## gTypeNrlKO            -0.9856667  0.2405717 -4.097184 1.767824e-03
+*## devStage4W             1.6345000  0.2227261  7.338609 1.469261e-05
+## gTypeNrlKO:devStage4W -2.0380833  0.3278440 -6.216626 6.560671e-05
 ```
 
 ```
-##             grp cellMeans  txEffects      lmEst
-## 1        wt.E16  9.908000  0.0000000  9.9080000
-## 2     NrlKO.E16  8.922333 -0.9856667 -0.9856667
-*## 3    wt.4_weeks 11.542500  1.6345000  1.6345000
-## 4 NrlKO.4_weeks  8.518750 -1.3892500 -2.0380833
+##         grp cellMeans  txEffects      lmEst
+## 1    wt.E16  9.908000  0.0000000  9.9080000
+## 2 NrlKO.E16  8.922333 -0.9856667 -0.9856667
+*## 3     wt.4W 11.542500  1.6345000  1.6345000
+## 4  NrlKO.4W  8.518750 -1.3892500 -2.0380833
 ```
 
 ---
@@ -312,7 +322,7 @@ Is the effect of genotype the same at different developmental stages (or the oth
 
 **Yes if**, there's no interaction effect, i.e., `\(\tau_{KO4W}=0\)` 
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-15-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-19-1.svg)&lt;!-- --&gt;
 
 The genotype effect at E16 is `\(\tau_{KO}\)`. However, `\(\tau_{KO}\)` does not seem to be the effect at 4W. The difference is the interaction effect!
 ---
@@ -322,11 +332,11 @@ The genotype effect at E16 is `\(\tau_{KO}\)`. However, `\(\tau_{KO}\)` does not
 
 
 ```
-##                              Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 9.9080000  0.1574912 62.911469 2.027211e-15
-## gTypeNrlKO                 -0.9856667  0.2405717 -4.097184 1.767824e-03
-## devStage4_weeks             1.6345000  0.2227261  7.338609 1.469261e-05
-*## gTypeNrlKO:devStage4_weeks -2.0380833  0.3278440 -6.216626 6.560671e-05
+##                         Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)            9.9080000  0.1574912 62.911469 2.027211e-15
+## gTypeNrlKO            -0.9856667  0.2405717 -4.097184 1.767824e-03
+## devStage4W             1.6345000  0.2227261  7.338609 1.469261e-05
+*## gTypeNrlKO:devStage4W -2.0380833  0.3278440 -6.216626 6.560671e-05
 ```
 
 
@@ -335,11 +345,11 @@ means.2Fact
 ```
 
 ```
-##             grp cellMeans  txEffects      lmEst
-## 1        wt.E16  9.908000  0.0000000  9.9080000
-## 2     NrlKO.E16  8.922333 -0.9856667 -0.9856667
-## 3    wt.4_weeks 11.542500  1.6345000  1.6345000
-*## 4 NrlKO.4_weeks  8.518750 -1.3892500 -2.0380833
+##         grp cellMeans  txEffects      lmEst
+## 1    wt.E16  9.908000  0.0000000  9.9080000
+## 2 NrlKO.E16  8.922333 -0.9856667 -0.9856667
+## 3     wt.4W 11.542500  1.6345000  1.6345000
+*## 4  NrlKO.4W  8.518750 -1.3892500 -2.0380833
 ```
 
 ```r
@@ -356,7 +366,7 @@ NA
 
 ---
 class: middle
-## Summary of model parameters 
+## Summary of model parameters: with interaction 
 
 model parameter | R estimate| stats | interpretation
 --------|---------|---------
@@ -372,207 +382,178 @@ It can also be shown that `\(\tau_{KO4W}=E[Y_{NrlKO,4W}]-\tau_{4W}-\tau_{KO}-\th
 ---
 class: middle
 
-## Let's go through some example genes to examine these parameters closer
+### Let's examine these parameters closer and some examples
 
 &lt;big&gt;     
-For our model, there are 3 hypotheses of interest:
+For our model, `lm` tests 4 hypotheses:
 
 .pull-left[
-&gt; ### `\(H_0: \tau_{KO}\)`
-### `\(H_0: \tau_{4W}\)`
-### `\(H_0: \tau_{KO4W}\)`
+&gt; ### `\(H_0: \theta=0\)`
+### `\(H_0: \tau_{KO}=0\)`
+### `\(H_0: \tau_{4W}=0\)`
+### `\(H_0: \tau_{KO4W}=0\)`
 ]
 .pull-right[
 &lt;br&gt;
 ![](L7_LinearModels_files/2way_param.png)
 ]
 
-Note that we may not be interested in the first two hypotheses since these are *conditional* effects (*at* a given level of a factor)
+Note that we may not be interested in these hypotheses, e.g., `\(\tau_{KO}\)` and `\(\tau_{4W}\)` are *conditional* effects (*at* a given level of a factor)
 ---
 class: middle
 
-### Nothing is statistically significant, very flat genes
+### Example 1: nothing is statistically significant, very flat genes `\(^*\)`
 
 ```r
 egDat&lt;-prDat %&gt;% subset(row.names(prDat) %in%
        c("1442080_at","1448243_at")) %&gt;%
-       mutate(gene=c("1442080_at","1448243_at")) %&gt;% 
+       tibble::rownames_to_column(var = "gene")%&gt;% 
        gather(sidChar, gExp,-gene) %&gt;%
        inner_join(prDes,by="sidChar")
 ```
-
-Summary of `lm` for first gene:
+&lt;small&gt; `\(^*\)` Summary of `lm` shown for the gene in the left plot
 
 
 ```
-##                              Estimate Std. Error    t value     Pr(&gt;|t|)
-## (Intercept)                 8.5240000  0.2561305 33.2799114 2.154028e-12
-*## gTypeNrlKO                 -0.4336667  0.3912458 -1.1084251 2.913251e-01
-*## devStage4_weeks            -0.2532500  0.3622232 -0.6991545 4.989723e-01
-*## gTypeNrlKO:devStage4_weeks  0.5504167  0.5331781  1.0323317 3.240804e-01
+##                         Estimate Std. Error    t value     Pr(&gt;|t|)
+## (Intercept)            8.5240000  0.2561305 33.2799114 2.154028e-12
+*## gTypeNrlKO            -0.4336667  0.3912458 -1.1084251 2.913251e-01
+*## devStage4W            -0.2532500  0.3622232 -0.6991545 4.989723e-01
+*## gTypeNrlKO:devStage4W  0.5504167  0.5331781  1.0323317 3.240804e-01
 ```
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-20-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
 
 ---
 class: middle
-### Only developmental stage is statistically significant
+### Statistically significant interaction effect: non-parallel pattern 
 
 
 
-Summary of `lm` for first gene:
-
-
-```
-##                            Estimate Std. Error    t value     Pr(&gt;|t|)
-## (Intercept)                 6.53175  0.1395392 46.8094417 5.180085e-14
-*## gTypeNrlKO                  0.20225  0.2131496  0.9488642 3.630706e-01
-*## devStage4_weeks             0.75675  0.1973382  3.8347878 2.771373e-03
-*## gTypeNrlKO:devStage4_weeks -0.43275  0.2904739 -1.4898067 1.643790e-01
-```
 
 
 ```
-## Warning: Removed 2 rows containing non-finite values (stat_summary).
+##                       Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)            8.58550  0.2215161 38.757897 4.083165e-13
+*## gTypeNrlKO            -1.59250  0.3383715 -4.706366 6.434783e-04
+*## devStage4W            -2.22075  0.3132711 -7.088907 2.021975e-05
+*## gTypeNrlKO:devStage4W  4.96975  0.4611226 10.777502 3.481389e-07
 ```
 
-```
-## Warning: Removed 2 rows containing missing values (geom_point).
-```
+![](L7_LinearModels_files/figure-html/unnamed-chunk-27-1.svg)&lt;!-- --&gt;
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-23-1.svg)&lt;!-- --&gt;
+When the interaction effect is significant, the *conditional* effects may not agree: compare the genotype effect @E16 with that @4W!
 
-Note the almost parallel pattern (no significant interacction effect)
+*Main* effects (overall, regardless of level) may mask interesting patterns! (more discussed later) 
+
 ---
 class: middle
-### Only genotype is statistically significant
+
+### Example 3: only genotype @E16 is statistically significant: parallel 
+
+Note that the interaction effect is not significant (almost parallel pattern).
+
+Thus, there may be a genotype effect *regardless* of the developmental stage (*main* effect). However, that hypothesis is *not* tested here!!  
+
+How do we test a *main effect*?? coming soon!  
 
 
-
-Summary of `lm` for first gene:
 
 
 ```
-##                              Estimate Std. Error     t value     Pr(&gt;|t|)
-## (Intercept)                 6.5007500 0.07279305 89.30454614 4.329107e-17
-*## gTypeNrlKO                  0.2475833 0.11119322  2.22660467 4.780966e-02
-*## devStage4_weeks            -0.0022500 0.10294491 -0.02185635 9.829540e-01
-*## gTypeNrlKO:devStage4_weeks -0.1320833 0.15153081 -0.87165992 4.020184e-01
+##                         Estimate Std. Error     t value     Pr(&gt;|t|)
+## (Intercept)            6.5007500 0.07279305 89.30454614 4.329107e-17
+*## gTypeNrlKO             0.2475833 0.11119322  2.22660467 4.780966e-02
+## devStage4W            -0.0022500 0.10294491 -0.02185635 9.829540e-01
+## gTypeNrlKO:devStage4W -0.1320833 0.15153081 -0.87165992 4.020184e-01
 ```
 
-![](L7_LinearModels_files/figure-html/unnamed-chunk-26-1.svg)&lt;!-- --&gt;
+![](L7_LinearModels_files/figure-html/unnamed-chunk-30-1.svg)&lt;!-- --&gt;
 
-Note the almost parallel pattern (no significant interacction effect)
 ---
 class: middle
-### Development and genotype are statistically significant
+## **How** do we test the *main* effects?
 
+When the interaction is not significant, we may want to test the *overall* association between the response and a factor
 
+&gt; **Note**: a significant interaction means that the effect of a factor depends on the level of the other. Thus, main effects may mask interesting results!
 
-Summary of `lm` for first gene:
+![](L7_LinearModels_files/figure-html/unnamed-chunk-31-1.svg)&lt;!-- --&gt;
 
-
-```
-##                            Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 10.3885  0.1575638 65.932036 1.211750e-15
-*## gTypeNrlKO                  -0.8435  0.2406826 -3.504615 4.930085e-03
-*## devStage4_weeks              1.6490  0.2228288  7.400300 1.359371e-05
-*## gTypeNrlKO:devStage4_weeks  -0.4215  0.3279951 -1.285080 2.251634e-01
-```
-
-
-```
-## Warning: Removed 15 rows containing non-finite values (stat_summary).
-```
-
-```
-## Warning in min(x): no non-missing arguments to min; returning Inf
-```
-
-```
-## Warning in max(x): no non-missing arguments to max; returning -Inf
-```
-
-```
-## Warning in min(diff(sort(x))): no non-missing arguments to min; returning
-## Inf
-```
-
-```
-## Warning in min(x): no non-missing arguments to min; returning Inf
-```
-
-```
-## Warning in max(x): no non-missing arguments to max; returning -Inf
-```
-
-```
-## Warning in stats::runif(length(x), -amount, amount): NAs produced
-```
-
-```
-## Warning: Removed 15 rows containing missing values (geom_point).
-```
-
-```
-## Warning: Removed 14 rows containing non-finite values (stat_summary).
-```
-
-```
-## Warning: Removed 14 rows containing missing values (geom_point).
-```
-
-```
-## geom_path: Each group consists of only one observation. Do you need to
-## adjust the group aesthetic?
-```
-
-![](L7_LinearModels_files/figure-html/unnamed-chunk-29-1.svg)&lt;!-- --&gt;
-
-Note the almost parallel pattern (no significant interacction effect)
 ---
 class: middle
-### Statistically significant interaction effect
+
+## Main effects
+
+We can use the function `anova()` in R to test the effect of a factor, on average over the levels of the other 
+
+&gt; `anova` uses type II sums of squares, which follows the principle of marginality (order of variables in the model matters)
 
 
-
-Summary of `lm` for first gene:
-
-
-```
-##                            Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)                 8.58550  0.2215161 38.757897 4.083165e-13
-*## gTypeNrlKO                 -1.59250  0.3383715 -4.706366 6.434783e-04
-*## devStage4_weeks            -2.22075  0.3132711 -7.088907 2.021975e-05
-*## gTypeNrlKO:devStage4_weeks  4.96975  0.4611226 10.777502 3.481389e-07
-```
-
-
-```
-## Warning: Removed 6 rows containing non-finite values (stat_summary).
+```r
+tidy(anova(lm(gExp ~ gType * devStage, subset(egDat,gene=="1431651_at"))))
 ```
 
 ```
-## Warning: Removed 6 rows containing missing values (geom_point).
+## # A tibble: 4 x 6
+##   term              df  sumsq meansq statistic p.value
+##   &lt;chr&gt;          &lt;int&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+*## 1 gType              1 0.110  0.110      5.21   0.0434
+*## 2 devStage           1 0.0148 0.0148     0.700  0.421 
+## 3 gType:devStage     1 0.0161 0.0161     0.760  0.402 
+## 4 Residuals         11 0.233  0.0212    NA     NA
 ```
 
-```
-## Warning: Removed 4 rows containing non-finite values (stat_summary).
-```
-
-```
-## Warning: Removed 4 rows containing missing values (geom_point).
-```
-
-![](L7_LinearModels_files/figure-html/unnamed-chunk-32-1.svg)&lt;!-- --&gt;
-
-Non-parallel pattern (significant interacction effect)
+As we suspected in slide #25, there is a significant genotype effect for this gene, i.e., its mean expression changes in NrlKO group (compared to wt), on average over develpmental stages.
 ---
-class: center
+&lt;big&gt;
+Is it easier to use an additive model?
+- Additive models are easier and smaller (fewer parameters)
+- But in some applications, we need to test the interaction term.
+- And it does not always test the overall association between a factor and a response.
 
-![](L7_LinearModels_files/slide12.png)
+![](L7_LinearModels_files/slide15.png)
 ---
 class: middle
+
+# Additive model
+
+
+```r
+summary(lm(formula = gExp ~ gType +devStage, data = miniDat))
+```
+
+```
+## 
+## Call:
+## lm(formula = gExp ~ gType + devStage, data = miniDat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.31027 -1.45530 -0.02388  1.16338  2.54091 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       8.9662     0.4432  20.229  &lt; 2e-16 ***
+## gTypeNrlKO       -2.6187     0.3536  -7.406 1.96e-10 ***
+## devStageP2        0.4523     0.5709   0.792    0.431    
+## devStageP6        0.6656     0.5709   1.166    0.248    
+## devStageP10       0.6729     0.5709   1.179    0.242    
+## devStage4_weeks   0.9031     0.5709   1.582    0.118    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.558 on 72 degrees of freedom
+## Multiple R-squared:  0.4403,	Adjusted R-squared:  0.4014 
+## F-statistic: 11.33 on 5 and 72 DF,  p-value: 4.436e-08
+```
+---
+class: middle
+
+# Nested models
+
+![](L7_LinearModels_files/slide16.png)
+---
 
 
 
@@ -613,58 +594,20 @@ class: center
 class: center
 
 ![](L7_LinearModels_files/slide14.png)
----
-class: middle
-## **How** do we test the **overall** association between the response and a factor?
-&lt;big&gt;
-Is it easier to use an additive model?
-- Additive models are easier and smaller (fewer parameters)
-- But in some applications, we need to test the interaction term.
-- And it does not always test the overall association between a factor and a response.
 
-![](L7_LinearModels_files/slide15.png)
 
 ---
 class: middle
 ## **How** do we test the **overall** association between the response and a factor?
 
-![](L7_LinearModels_files/slide16.png)
+
 ---
 class: middle
 ## **How** do we test the **overall** association between the response and a factor?
 
 ![](L7_LinearModels_files/slide17.png)
 ---
-class: middle
 
-```r
-summary(lm(formula = gExp ~ gType +devStage, data = miniDat))
-```
-
-```
-## 
-## Call:
-## lm(formula = gExp ~ gType + devStage, data = miniDat)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -2.31027 -1.45530 -0.02388  1.16338  2.54091 
-## 
-## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)       8.9662     0.4432  20.229  &lt; 2e-16 ***
-## gTypeNrlKO       -2.6187     0.3536  -7.406 1.96e-10 ***
-## devStageP2        0.4523     0.5709   0.792    0.431    
-## devStageP6        0.6656     0.5709   1.166    0.248    
-## devStageP10       0.6729     0.5709   1.179    0.242    
-## devStage4_weeks   0.9031     0.5709   1.582    0.118    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 1.558 on 72 degrees of freedom
-## Multiple R-squared:  0.4403,	Adjusted R-squared:  0.4014 
-## F-statistic: 11.33 on 5 and 72 DF,  p-value: 4.436e-08
-```
 ---
 Slide 19
 
@@ -739,6 +682,50 @@ class: center, middle
 ## How do we estimate the intercept and the slope?
 
 ### Is there an optimal line?
+---
+class: center
+
+# ADDITIONAL SLIDES
+---
+class: middle
+### Example 4: development @wt is statistically significant
+
+Again, the interaction effect is not significant, so there may be a developmetn effect *regardless* of the genotype. 
+
+How do we test a *main effect*?? coming soon!  
+
+
+
+
+```
+##                         Estimate Std. Error    t value     Pr(&gt;|t|)
+## (Intercept)            6.1212500  0.1429553 42.8193149 1.373475e-13
+## gTypeNrlKO            -0.1195833  0.2183679 -0.5476232 5.948876e-01
+*## devStage4W             1.1065000  0.2021694  5.4731332 1.939366e-04
+## gTypeNrlKO:devStage4W -0.4121667  0.2975853 -1.3850371 1.934864e-01
+```
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-38-1.svg)&lt;!-- --&gt;
+
+---
+class: middle
+### Example 5: conditional development and genotype are statistically significant
+
+but not the interaction... note the almost parallel pattern
+
+
+
+
+
+```
+##                       Estimate Std. Error    t value     Pr(&gt;|t|)
+## (Intercept)            9.47325  0.1267862 74.7182965 3.069092e-16
+*## gTypeNrlKO            -0.52625  0.1936691 -2.7172630 2.002920e-02
+*## devStage4W             0.79275  0.1793028  4.4212922 1.026315e-03
+*## gTypeNrlKO:devStage4W -0.20675  0.2639266 -0.7833619 4.499523e-01
+```
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-41-1.svg)&lt;!-- --&gt;
 
 ---
     </textarea>
