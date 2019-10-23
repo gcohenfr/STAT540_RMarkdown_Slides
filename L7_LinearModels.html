@@ -638,10 +638,77 @@ addEst
 ##   6.5021239   0.2372478  -0.1264978
 ```
 ---
-![](L7_LinearModels_files/slide15.png)
+# Factors with multiple levels
+&lt;big&gt;
 
-SHOW AN ANALYSIS WITH MULTIPLE LEVELS
-F-TEST FOR NESTED MODELS
+In  previous examples, we simplified the comparisons and assume that each factor have 2 levels (e.g., E16 *vs* 4W)
+
+We can generalize the regression model to factors with more levels (e.g., E16, P2, P10 and 4W): we just additional dummy variables (and parameters)!!
+
+&gt; With interaction
+
+
+```
+## 
+## Call:
+## lm(formula = gExp ~ gType * devStage, data = hitDat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.56425 -0.11987 -0.03525  0.08313  0.53775 
+## 
+## Coefficients:
+##                        Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)             5.43325    0.12403  43.806  &lt; 2e-16 ***
+## gTypeNrlKO              0.25108    0.18946   1.325   0.1954    
+## devStageP2              0.39900    0.17540   2.275   0.0305 *  
+## devStageP6              0.19525    0.17540   1.113   0.2748    
+## devStageP10             0.92000    0.17540   5.245 1.28e-05 ***
+## devStage4W              3.96125    0.17540  22.584  &lt; 2e-16 ***
+## gTypeNrlKO:devStageP2  -0.22583    0.25819  -0.875   0.3889    
+## gTypeNrlKO:devStageP6   0.06042    0.25819   0.234   0.8166    
+## gTypeNrlKO:devStageP10 -0.20733    0.25819  -0.803   0.4285    
+## gTypeNrlKO:devStage4W  -0.69333    0.25819  -2.685   0.0119 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.2481 on 29 degrees of freedom
+## Multiple R-squared:  0.9757,	Adjusted R-squared:  0.9682 
+## F-statistic: 129.6 on 9 and 29 DF,  p-value: &lt; 2.2e-16
+```
+
+Note that all these parameters are still *simple* effects, but we now have more (one for each level of `devStage`)
+
+---
+&gt; Additive
+
+
+
+```
+## 
+## Call:
+## lm(formula = gExp ~ gType + devStage, data = hitDat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.80117 -0.12450 -0.03208  0.17062  0.50009 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  5.52732    0.11011  50.200  &lt; 2e-16 ***
+## gTypeNrlKO   0.03160    0.08783   0.360   0.7213    
+## devStageP2   0.30176    0.14182   2.128   0.0409 *  
+## devStageP6   0.24114    0.14182   1.700   0.0985 .  
+## devStageP10  0.83201    0.14182   5.867 1.43e-06 ***
+## devStage4W   3.63026    0.14182  25.597  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.2738 on 33 degrees of freedom
+## Multiple R-squared:  0.9664,	Adjusted R-squared:  0.9613 
+## F-statistic: 189.7 on 5 and 33 DF,  p-value: &lt; 2.2e-16
+```
+
 ---
 class: middle
 
@@ -783,7 +850,24 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();</script>
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
 (function() {

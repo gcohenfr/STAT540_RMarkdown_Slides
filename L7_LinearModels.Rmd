@@ -705,10 +705,29 @@ multEst
 addEst 
 ```
 ---
-![](L7_LinearModels_files/slide15.png)
+# Factors with multiple levels
+<big>
 
-SHOW AN ANALYSIS WITH MULTIPLE LEVELS
-F-TEST FOR NESTED MODELS
+In  previous examples, we simplified the comparisons and assume that each factor have 2 levels (e.g., E16 *vs* 4W)
+
+We can generalize the regression model to factors with more levels (e.g., E16, P2, P10 and 4W): we just additional dummy variables (and parameters)!!
+
+> With interaction
+
+```{r,echo=FALSE}
+summary(lm(gExp~gType*devStage,hitDat))
+```
+
+Note that all these parameters are still *simple* effects, but we now have more (one for each level of `devStage`)
+
+---
+> Additive
+
+
+```{r,echo=FALSE}
+summary(lm(gExp~gType+devStage,hitDat))
+```
+
 ---
 class: middle
 
