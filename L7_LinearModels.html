@@ -30,7 +30,7 @@ class: middle
 
   - understand which matrix is built by R
   
-### - distinguish between conditional and marginal effects
+### - distinguish between single and multiple hypotheses 
   - `\(t\)`-tests vs `\(F\)`-tests  
 ---
 class: middle
@@ -116,18 +116,23 @@ summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
 ```
 ---
 class: middle
-# Today... more complex models
+## Today... more complex models
 
-### - more than one factor
+### - more than one factor with multiple levels
 
   - how to model many categorical variables and their interaction
 
+### - distinguish between simple and main effects 
+  - `lm` vs `anova` tests
+  
+### - nested models 
+  - `\(t\)`-tests vs `\(F\)`-tests  
+  
 ### - continuous explanatory variables
 
   - the regression line
   
-### - distinguish between conditional and marginal effects (cont.)
-  - `\(t\)`-tests vs `\(F\)`-tests  
+
 ---
 class: middle
 
@@ -163,7 +168,7 @@ Which group means are we comparing in a model with 2 factors?
 class: middle
 ### Reference-treatment effect parametrization
 
-By default, `lm` assumes a &lt;font color = "red"&gt;**reference-treatment effect**&lt;/font&gt; parametrization (let's skip the math for now...)
+By default, `lm` assumes a &lt;font color = "red"&gt;**reference-treatment effect**&lt;/font&gt; parametrization (mathematically, we need *more* dummy variables, see [math handout](math_handout.html))
 
 
 ```r
@@ -238,10 +243,12 @@ In general, one is not interested in: `\(H_0: \theta=0\)`
 ---
 class: middle
 
-## Conditional genotype effect: wt *vs* NrlKO &lt;font color="blue"&gt; at E16 &lt;/font&gt;
+## Simple genotype effect: wt *vs* NrlKO &lt;font color="blue"&gt; at E16 &lt;/font&gt;
 
 &lt;big&gt;
-And now the "treatment effects"... but note that this time effects are not marginal but *conditional* (at a given level of the other factor, e.g., at E16)
+And now the "treatment effects"... 
+
+&gt; **Important**: effects are not marginal but *conditional* effects (&lt;font color="blue"&gt;at a given level &lt;/font&gt; of the other factor, e.g., at E16), usually called **simple effects**
 
 ![](L7_LinearModels_files/figure-html/unnamed-chunk-13-1.svg)&lt;!-- --&gt;
 
@@ -249,11 +256,11 @@ And now the "treatment effects"... but note that this time effects are not margi
 
 class: middle
 
-## Conditional genotype effect: wt *vs* NrlKO &lt;font color="blue"&gt; at E16 &lt;/font&gt;
+## Simple genotype effect: wt *vs* NrlKO &lt;font color="blue"&gt; at E16 &lt;/font&gt;
 
-**Conditional effect of genotype at E16**: `\(\tau_{KO}=E[Y_{NrlKO,E16}]-E[Y_{wt,E16}]\)`
+**Effect of genotype at E16**: `\(\tau_{KO}=E[Y_{NrlKO,E16}]-E[Y_{wt,E16}]\)`
 
-**`lm` estimate**: `\(\hat{\tau}_{KO}\)` is a *difference* of sample means (see table below)
+**`lm` estimate**: `\(\hat{\tau}_{KO}\)` is the *difference* of sample respective means (check below)
 
 
 ```
@@ -277,22 +284,22 @@ class: middle
 ---
 
 class: middle
-### *Conditional* developmental effect: E16 *vs* 4W &lt;font color="blue"&gt; at wt &lt;/font&gt;
+### Simple developmental effect: E16 *vs* 4W &lt;font color="blue"&gt; at wt &lt;/font&gt;
 
 &lt;big&gt;
 
-Similar for the other factor:
+Similarly, for the other factor:
 
 ![](L7_LinearModels_files/figure-html/unnamed-chunk-15-1.svg)&lt;!-- --&gt;
 
 ---
 
 class: middle
-### *Conditional* developmental effect: E16 *vs* 4W &lt;font color="blue"&gt; at wt &lt;/font&gt;
+### Simple developmental effect: E16 *vs* 4W &lt;font color="blue"&gt; at wt &lt;/font&gt;
 
-**Conditional effect of development at wt**: `\(\tau_{4W}=E[Y_{wt,4W}]-E[Y_{wt,E16}]\)`
+**Effect of development at wt**: `\(\tau_{4W}=E[Y_{wt,4W}]-E[Y_{wt,E16}]\)`
 
-**`lm` estimate**: `\(\hat{\tau}_{4W}\)` is another *difference* of sample means (see table below)
+**`lm` estimate**: `\(\hat{\tau}_{4W}\)` is the *difference* of respective sample means (check below)
 
 
 ```
@@ -318,7 +325,7 @@ class: middle
 
 &lt;big&gt;
 
-Is the effect of genotype the same at different developmental stages (or the other way around)? 
+Is the effect of genotype the same at different developmental stages? (or does hte effect of development depend on genotype?) 
 
 **Yes if**, there's no interaction effect, i.e., `\(\tau_{KO4W}=0\)` 
 
@@ -328,7 +335,7 @@ The genotype effect at E16 is `\(\tau_{KO}\)`. However, `\(\tau_{KO}\)` does not
 ---
 ## Interaction effect
 
-`\(\tau_{KO4W}=(E[Y_{wt,E16}]-E[Y_{NrlKO,E16}]) - (E[Y_{wt,4W}]-E[Y_{NrlKO,4W}])\)` 
+`\(\tau_{KO4W}=(E[Y_{NrlKO,4W}]-E[Y_{wt,4W}])-(E[Y_{NrlKO,E16}]-E[Y_{wt,E16}])\)` 
 
 
 ```
@@ -353,8 +360,8 @@ means.2Fact
 ```
 
 ```r
-((means.2Fact$cellMeans[1]-means.2Fact$cellMeans[2])-
-  (means.2Fact$cellMeans[3]-means.2Fact$cellMeans[4]))
+((means.2Fact$cellMeans[4]-means.2Fact$cellMeans[3])-
+    (means.2Fact$cellMeans[2]-means.2Fact$cellMeans[1]))
 ```
 
 ```
@@ -375,7 +382,7 @@ model parameter | R estimate| stats | interpretation
 `\(\tau_{4W}\)` | devStage4_weeks | `\(E[Y_{wt,4W}] - E[Y_{wt,E16}]\)` | *conditional* effect of 4W *at* wt
 `\(\tau_{KO4W}\)` | gTypeNrlKO: devStage4_weeks | `\(E[Y_{NrlKO,4W}] - E[Y_{wt,4W}] - \tau_{KO}\)`  | *interaction* effect of NrlKO and 4W
 
-It is *important* to remember that `lm` reports *conditional, not main* effects!! &lt;font color="blue"&gt; why?? because of the parametrization used!! &lt;/font&gt; (see additional slides at the end)
+It is *important* to remember that `lm` reports *simple, not main* effects!! &lt;font color="blue"&gt; why?? because of the parametrization used!! &lt;/font&gt; (see see [math handout](math_handout.html))
 
 It can also be shown that `\(\tau_{KO4W}=E[Y_{NrlKO,4W}]-\tau_{4W}-\tau_{KO}-\theta\)` 
 
@@ -398,7 +405,7 @@ For our model, `lm` tests 4 hypotheses:
 ![](L7_LinearModels_files/2way_param.png)
 ]
 
-Note that we may not be interested in these hypotheses, e.g., `\(\tau_{KO}\)` and `\(\tau_{4W}\)` are *conditional* effects (*at* a given level of a factor)
+We may not be interested in these hypotheses, e.g., `\(\tau_{KO}\)` and `\(\tau_{4W}\)` are *conditional* effects *at* a given level of a factor (*simple effects*)
 ---
 class: middle
 
@@ -411,7 +418,7 @@ egDat&lt;-prDat %&gt;% subset(row.names(prDat) %in%
        gather(sidChar, gExp,-gene) %&gt;%
        inner_join(prDes,by="sidChar")
 ```
-&lt;small&gt; `\(^*\)` Summary of `lm` shown for the gene in the left plot
+&lt;small&gt; `\(^*\)` Here and in next slides, summary of `lm` shown for the gene in the left plot
 
 
 ```
@@ -426,7 +433,7 @@ egDat&lt;-prDat %&gt;% subset(row.names(prDat) %in%
 
 ---
 class: middle
-### Statistically significant interaction effect: non-parallel pattern 
+### Example 2: statistically significant interaction effect: non-parallel 
 
 
 
@@ -442,30 +449,52 @@ class: middle
 
 ![](L7_LinearModels_files/figure-html/unnamed-chunk-25-1.svg)&lt;!-- --&gt;
 
-When the interaction effect is significant, the *conditional* effects may not agree: compare the genotype effect @E16 with that @4W!
+When the interaction effect is significant, the *simple* effects may not agree: compare the genotype effect @E16 with that @4W!
 
-*Main* effects (overall, regardless of level) may mask interesting patterns! (more discussed later) 
+*Main* effects (overall): does genotype have an effect on gene expression? we can't answer this question! &lt;font color="blue"&gt; it depends (on the level of devStage)! &lt;/font&gt; (more later) 
 
 ---
 class: middle
 
-### Example 3: only genotype @E16 is statistically significant: parallel 
+### Example 3: balance &amp; only genotype @E16 is statistically significant
 
-Note that the interaction effect is not significant (almost parallel pattern).
+To simplify future explanations, I've added a random observation in the NrlKO.E16 group (close to its mean) to have a *balanced* design 
+&gt; In *unbalanced* designs the *main* effects are a *weighted* average of the simple effects, and the weights are not easy to interpret (beyond the scope of this course but worth noting the issue!)
+
+
+```r
+egDat&lt;-prDat %&gt;% subset(row.names(prDat) %in%
+       c("1447753_at","1431651_at")) %&gt;%
+       tibble::rownames_to_column(var = "gene")%&gt;% 
+       gather(sidChar, gExp,-gene) %&gt;%
+       inner_join(prDes,by="sidChar") %&gt;% 
+       mutate(grp=interaction(gType, devStage))
+
+#duplicate sample 6 and add noise to gExp of genes
+set.seed(123)
+egDat &lt;-egDat %&gt;% subset(sidChar=="Sample_6") %&gt;%
+       mutate(sidChar="Sample_r",sidNum="r",
+       gExp=gExp+rnorm(2,0,.1)) %&gt;% rbind(egDat) %&gt;% 
+       arrange(grp)
+```
+---
+class: middle
+
+### Example 3: only genotype @E16 is statistically significant: parallel
+
+The interaction effect is not significant (almost parallel pattern).
 
 Thus, there may be a genotype effect *regardless* of the developmental stage (*main* effect). However, that hypothesis is *not* tested here!!  
 
-How do we test a *main effect*?? coming soon!  
-
-
+How do we test a *main effect*??  
 
 
 ```
-##                         Estimate Std. Error     t value     Pr(&gt;|t|)
-## (Intercept)            6.5007500 0.07279305 89.30454614 4.329107e-17
-*## gTypeNrlKO             0.2475833 0.11119322  2.22660467 4.780966e-02
-## devStage4W            -0.0022500 0.10294491 -0.02185635 9.829540e-01
-## gTypeNrlKO:devStage4W -0.1320833 0.15153081 -0.87165992 4.020184e-01
+##                          Estimate Std. Error    t value     Pr(&gt;|t|)
+## (Intercept)            6.47725000 0.04513333 143.513681 8.795702e-21
+*## gTypeNrlKO             0.28699556 0.06382816   4.496378 7.312501e-04
+## devStage4W            -0.07675000 0.06382816  -1.202447 2.523805e-01
+## gTypeNrlKO:devStage4W -0.09949556 0.09026666  -1.102240 2.919732e-01
 ```
 
 ![](L7_LinearModels_files/figure-html/unnamed-chunk-28-1.svg)&lt;!-- --&gt;
@@ -474,9 +503,10 @@ How do we test a *main effect*?? coming soon!
 class: middle
 ## **How** do we test the *main* effects?
 
-When the interaction is not significant, we may want to test the *overall* association between the response and a factor
+The main effect measures the *overall* association between the response and a factor. They are the (weighted) average of an effect over the levels of the other factor
 
-&gt; **Note**: a significant interaction means that the effect of a factor depends on the level of the other. Thus, main effects may mask interesting results!
+&gt; **Note**: a significant interaction means that the effect of a factor depends on the level of the other one. Thus, main effects may mask interesting results!
+
 
 ![](L7_LinearModels_files/figure-html/unnamed-chunk-29-1.svg)&lt;!-- --&gt;
 
@@ -485,68 +515,133 @@ class: middle
 
 ## Main effects
 
-We can use the function `anova()` in R to test the effect of a factor, on average over the levels of the other 
+`anova()` can be used to test the main effects:
 
-&gt; `anova` uses type II sums of squares, which follows the principle of marginality (order of variables in the model matters)
+`$$H_0: ((E[Y_{KO,E16}]-E[Y_{wt,E16}])+(E[Y_{KO,4W}]-E[Y_{wt,4W}]))/2=0$$`
+&gt; for unbalanced experiments `\(H_0: w_1 \text{effect}_{E16}+ w_2 \text{effect}_{4W}=0\)` 
 
 
 ```r
-tidy(anova(lm(gExp ~ gType * devStage, subset(egDat,gene=="1431651_at"))))
+tidy(anova(lm(gExp ~ gType * devStage, plot1Dat)))
 ```
 
 ```
 ## # A tibble: 4 x 6
-##   term              df  sumsq meansq statistic p.value
-##   &lt;chr&gt;          &lt;int&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-*## 1 gType              1 0.110  0.110      5.21   0.0434
-*## 2 devStage           1 0.0148 0.0148     0.700  0.421 
-## 3 gType:devStage     1 0.0161 0.0161     0.760  0.402 
-## 4 Residuals         11 0.233  0.0212    NA     NA
+##   term              df   sumsq  meansq statistic   p.value
+##   &lt;chr&gt;          &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+*## 1 gType              1 0.225   0.225       27.6   0.000202
+*## 2 devStage           1 0.0640  0.0640       7.86  0.0160  
+## 3 gType:devStage     1 0.00990 0.00990      1.21  0.292   
+## 4 Residuals         12 0.0978  0.00815     NA    NA
 ```
 
-As we suspected in slide #25, there is a significant genotype effect for this gene, i.e., its mean expression changes in NrlKO group (compared to wt), on average over develpmental stages.
----
-&lt;big&gt;
-Is it easier to use an additive model?
-- Additive models are easier and smaller (fewer parameters)
-- But in some applications, we need to test the interaction term.
-- And it does not always test the overall association between a factor and a response.
+As we suspected in slide #26, there is a significant genotype effect for this gene (1447753_at), i.e., its mean expression changes in NrlKO group (compared to wt), on average over develpmental stages.
 
-![](L7_LinearModels_files/slide15.png)
+&lt;small&gt;
+`\(^*\)` `anova` uses type II sums of squares, which follows the principle of marginality, thus order matters in unbalanced designs!
 ---
-class: middle
+# Main &amp; interaction effects: important notes
 
-# Additive model
+&lt;Big&gt;
+
+- A **significant interaction effect** means that the effect of one factor depends on the levels of the other one. 
+  - e.g., the effect of genotype depends on development
+
+- **Main effects**: are the (weighted) average of an effect over the levels of the other factor. 
+
+- A **non-significant main effect** means that, on average, there's no evidence of a factor's effect
+  - e.g, no evidence of a genotype effect, on average over both developmental stages
+
+- **Note of caution**: if the interaction is significant, it is possible that one or both simple effects are significant but the average effect (i.e., the main effect) is not. This is because the effect of a factor *depends on* the level of the other one!
+
+---
+# Additive models
+
+&lt;Big&gt;
+
+- In some applications, we need to test the interaction term
+
+- However, additive models are easier and smaller
+
+- If there are no statistical or theoretical grounds to include the interaction term, additive models are preferred 
 
 
 ```r
-summary(lm(formula = gExp ~ gType +devStage, data = miniDat))
+addFit &lt;- summary(lm(formula = gExp ~ gType +devStage,plot1Dat))$coeff
+addFit
 ```
 
 ```
-## 
-## Call:
-## lm(formula = gExp ~ gType + devStage, data = miniDat)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -2.31027 -1.45530 -0.02388  1.16338  2.54091 
-## 
-## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)       8.9662     0.4432  20.229  &lt; 2e-16 ***
-## gTypeNrlKO       -2.6187     0.3536  -7.406 1.96e-10 ***
-## devStageP2        0.4523     0.5709   0.792    0.431    
-## devStageP6        0.6656     0.5709   1.166    0.248    
-## devStageP10       0.6729     0.5709   1.179    0.242    
-## devStage4_weeks   0.9031     0.5709   1.582    0.118    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 1.558 on 72 degrees of freedom
-## Multiple R-squared:  0.4403,	Adjusted R-squared:  0.4014 
-## F-statistic: 11.33 on 5 and 72 DF,  p-value: 4.436e-08
+##               Estimate Std. Error    t value     Pr(&gt;|t|)
+## (Intercept)  6.5021239  0.0394084 164.993346 5.609641e-23
+## gTypeNrlKO   0.2372478  0.0455049   5.213675 1.670701e-04
+## devStage4W  -0.1264978  0.0455049  -2.779872 1.561988e-02
 ```
+
+&lt;small&gt;
+`\(^*\)` gene=1447753_at in table
+
+---
+&lt;big&gt;
+**Additive models**
+
+- In an additive model, the parameters are **average effects**, over the levels of the other factor. Now, same as in anova()!!
+
+&gt; Note the agreement!! This is gone in unbalanced designs since weights are computed differently! &lt;font color=blue&gt; try!!&lt;/font&gt;
+
+- TypeIII sum of squares are required for agreement in unbalanced designs (use `Anova` in `car`), beyond our scope
+
+
+
+```
+##               Estimate Std. Error    t value     Pr(&gt;|t|)
+## (Intercept)  6.5021239  0.0394084 164.993346 5.609641e-23
+*## gTypeNrlKO   0.2372478  0.0455049   5.213675 1.670701e-04
+## devStage4W  -0.1264978  0.0455049  -2.779872 1.561988e-02
+```
+
+
+```r
+tidy(anova(lm(gExp ~ gType + devStage,plot1Dat)))
+```
+
+```
+## # A tibble: 3 x 6
+##   term         df  sumsq  meansq statistic   p.value
+##   &lt;chr&gt;     &lt;int&gt;  &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+*## 1 gType         1 0.225  0.225       27.2   0.000167
+## 2 devStage      1 0.0640 0.0640       7.73  0.0156  
+## 3 Residuals    13 0.108  0.00828     NA    NA
+```
+---
+
+![](L7_LinearModels_files/figure-html/unnamed-chunk-34-1.svg)&lt;!-- --&gt;
+
+
+```r
+multEst
+```
+
+```
+##           (Intercept)            gTypeNrlKO            devStage4W 
+##            6.47725000            0.28699556           -0.07675000 
+## gTypeNrlKO:devStage4W 
+##           -0.09949556
+```
+
+```r
+addEst 
+```
+
+```
+## (Intercept)  gTypeNrlKO  devStage4W 
+##   6.5021239   0.2372478  -0.1264978
+```
+---
+![](L7_LinearModels_files/slide15.png)
+
+SHOW AN ANALYSIS WITH MULTIPLE LEVELS
+F-TEST FOR NESTED MODELS
 ---
 class: middle
 
@@ -561,53 +656,31 @@ class: middle
 ```
 ## 
 ## Call:
-## lm(formula = gExp ~ gType * devStage, data = miniDat)
+## lm(formula = gExp ~ gType * devStage, data = plot1Dat)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -2.4521 -1.3117  0.3066  1.1132  2.3268 
+##       Min        1Q    Median        3Q       Max 
+## -0.115500 -0.065813  0.002246  0.031062  0.195500 
 ## 
 ## Coefficients:
-##                            Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                  8.6101     0.5607  15.356   &lt;2e-16 ***
-## gTypeNrlKO                  -1.7878     0.8565  -2.087   0.0406 *  
-## devStageP2                   0.6915     0.7929   0.872   0.3862    
-## devStageP6                   1.1386     0.7929   1.436   0.1556    
-## devStageP10                  1.2431     0.7929   1.568   0.1216    
-## devStage4_weeks              1.4010     0.7929   1.767   0.0817 .  
-## gTypeNrlKO:devStageP2       -0.5971     1.1672  -0.512   0.6106    
-## gTypeNrlKO:devStageP6       -1.0648     1.1672  -0.912   0.3648    
-## gTypeNrlKO:devStageP10      -1.2592     1.1672  -1.079   0.2845    
-## gTypeNrlKO:devStage4_weeks  -1.1146     1.1672  -0.955   0.3430    
+##                       Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)            6.47725    0.04513 143.514  &lt; 2e-16 ***
+## gTypeNrlKO             0.28700    0.06383   4.496 0.000731 ***
+## devStage4W            -0.07675    0.06383  -1.202 0.252381    
+## gTypeNrlKO:devStage4W -0.09950    0.09027  -1.102 0.291973    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 1.586 on 68 degrees of freedom
-## Multiple R-squared:  0.4527,	Adjusted R-squared:  0.3802 
-## F-statistic: 6.249 on 9 and 68 DF,  p-value: 2.192e-06
+## Residual standard error: 0.09027 on 12 degrees of freedom
+## Multiple R-squared:  0.7536,	Adjusted R-squared:  0.692 
+## F-statistic: 12.23 on 3 and 12 DF,  p-value: 0.0005827
 ```
----
-class: center
-
-![](L7_LinearModels_files/slide13.png)
----
-class: center
-
-![](L7_LinearModels_files/slide14.png)
-
 
 ---
 class: middle
-## **How** do we test the **overall** association between the response and a factor?
 
-
----
-class: middle
-## **How** do we test the **overall** association between the response and a factor?
 
 ![](L7_LinearModels_files/slide17.png)
----
-
 ---
 Slide 19
 
@@ -627,26 +700,6 @@ class: middle
 - ***t*-tests** can be used to test the significance of *individual* coefficients.
 
 - **F-tests** can be used to test the *simultaneous significance of multiple coefficients*. We need it to test the association between a response and categorical variable.
----
-
-class: middle
-
-### Mathematically (a bit more difficult...)
-
-`$$Y_{ijk}=\theta + \tau_{KO} \times x_{KO,ijk}+ \tau_{4W} \times x_{4W,ijk}+ \tau_{KO4W} \times x_{KO,ijk}\times x_{4W,ijk}+ \varepsilon_{ijk}$$`
-Subscripts: `\(i\)` indexes samples per group, `\(j=\{wt, NrlKO\}\)`, `\(k=\{E16, 4W\}\)`  
-
-The names of these parameters and variables look overwhelming but think of them as just names for:
-
-&gt; `\(x_{KO,ijk}\)`: a dummy variable with value 1 for NrlKO genotype samples (j=NrlKO), and 0 otherwise. I call this variable `\(x_{KO}\)`
-
-&gt; `\(x_{4W,ijk}\)`: a different dummy variable with value 1 for 4W  samples (k=4W), and 0 otherwise. I call this variable `\(x_{4W}\)`
-
-&gt; `\(\tau_{KO}\)`, `\(\tau_{4W}\)`, and `\(\tau_{KO4W}\)`: parameters to model the *conditional* effects of genotype (NrlKO), development (4W), and their interaction
-
-**Note**: in this "simple" version with 2 levels per factor we need only one dummy variable per factor: `\(x_{KO}\)` and `\(x_{4W}\)`. 
-
-### This model can be extended to multiple factors with multiple levels!!
 
 ---
 class: center
@@ -682,51 +735,6 @@ class: center, middle
 ## How do we estimate the intercept and the slope?
 
 ### Is there an optimal line?
----
-class: center
-
-# ADDITIONAL SLIDES
----
-class: middle
-### Example 4: development @wt is statistically significant
-
-Again, the interaction effect is not significant, so there may be a developmetn effect *regardless* of the genotype. 
-
-How do we test a *main effect*?? coming soon!  
-
-
-
-
-```
-##                         Estimate Std. Error    t value     Pr(&gt;|t|)
-## (Intercept)            6.1212500  0.1429553 42.8193149 1.373475e-13
-## gTypeNrlKO            -0.1195833  0.2183679 -0.5476232 5.948876e-01
-*## devStage4W             1.1065000  0.2021694  5.4731332 1.939366e-04
-## gTypeNrlKO:devStage4W -0.4121667  0.2975853 -1.3850371 1.934864e-01
-```
-
-![](L7_LinearModels_files/figure-html/unnamed-chunk-36-1.svg)&lt;!-- --&gt;
-
----
-class: middle
-### Example 5: conditional development and genotype are statistically significant
-
-but not the interaction... note the almost parallel pattern
-
-
-
-
-
-```
-##                       Estimate Std. Error    t value     Pr(&gt;|t|)
-## (Intercept)            9.47325  0.1267862 74.7182965 3.069092e-16
-*## gTypeNrlKO            -0.52625  0.1936691 -2.7172630 2.002920e-02
-*## devStage4W             0.79275  0.1793028  4.4212922 1.026315e-03
-*## gTypeNrlKO:devStage4W -0.20675  0.2639266 -0.7833619 4.499523e-01
-```
-
-![](L7_LinearModels_files/figure-html/unnamed-chunk-39-1.svg)&lt;!-- --&gt;
-
 ---
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
