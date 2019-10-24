@@ -1,7 +1,7 @@
 ---
 title: "Statistical Methods for <br>High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>"
-subtitle: "<font color=red> Lecture 6 -- ANOVA and Linear Models</font> <br style=line-height:2> Gabriela Cohen Freue"
-date: "<font size=5> Other contributors: Jenny Bryan, Sara Mostafavi, Su-In Lee</font>"
+subtitle: "<font color=red> Lecture 6 -- ANOVA and Linear Models</font> <br style=line-height:2> Instructor name"
+date: "<font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan </font>"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -729,7 +729,7 @@ class: middle
     
 ## *F*-test and overall significance of one or more covariates
 <big>
-  - the *t*-test in linear regression allows us to test simple hypotheses:
+  - the *t*-test in linear regression allows us to test single hypotheses:
       $$H_0 : \tau_i = 0$$
       $$H_A : \tau_j \neq 0$$
   - but we often like to test multiple hypotheses *simultaneously*: 
