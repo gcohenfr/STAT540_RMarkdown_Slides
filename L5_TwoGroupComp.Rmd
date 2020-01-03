@@ -28,7 +28,7 @@ class: middle
 ---
 class: middle
 # <center> Hypothesis Testing in Genomics
-![](L5_TwoGroupComp_files/paperRef.PNG)
+[![Akimoto et al. (2006)](L5_TwoGroupComp_files/paperRef.PNG)](https://doi.org/10.1073/pnas.0508214103)
 
 <big>
 
@@ -44,11 +44,21 @@ class: middle
 
 # <center> Why a Hypothesis Test?
 <big>
-From paper: *". we hypothesized that Nrl is the ideal transcription factor to gain insights into gene expression changes ..."*
+From the [Akimoto et al. (2006) paper](https://doi.org/10.1073/pnas.0508214103 ): 
+>"we hypothesized that Nrl is the ideal transcription factor to gain insights into gene expression changes ..."
 
-> **Biological question:** Is the expression level of gene A affected by ablation of the Nrl gene?
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+<b>Biological question:</b> Is the expression level of gene <ii>A</i> affected by ablation of the <i>Nrl</i> gene?
+</div>
 
 ### We can use <font color=red>statistical inference</font> to answer this biological question!
+
+---
+class: middle
+# <center> Statistical inference
 
 **Statistical inference**: we observe and study a <font color=red>random sample</font> to make conclusions about a population (e.g., random sample of gene expressions from mice)
 
@@ -56,16 +66,21 @@ From paper: *". we hypothesized that Nrl is the ideal transcription factor to ga
 **Experimental design**:
 <br> 4 developmental stages
 <br> 2 genotypes: Wild type, NrlKO
-<br> 3-4 replicas for each combination
+<br> 3-4 replicates for each combination
 
 
 ---
 <big>
 Let's take a look at 2 genes as an example: **Irs4 and Nrl**
 
-> **Biological question**: Are these genes truly different in NrlKO compared to WT?
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+<b>Biological question:</b> Are these genes truly different in NrlKO compared to WT?
+</div>
 
-We can't answer this question in general. We can *only* study these genes in collected data.
+We can't answer this question in general. We can *only* study these genes in collected data
 
 ### <center><font color="red"> We only observe a random sample of gene expressions.</font>
 

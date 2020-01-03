@@ -34,7 +34,7 @@ class: middle
 ---
 class: middle
 # &lt;center&gt; Hypothesis Testing in Genomics
-![](L5_TwoGroupComp_files/paperRef.PNG)
+[![Akimoto et al. (2006)](L5_TwoGroupComp_files/paperRef.PNG)](https://doi.org/10.1073/pnas.0508214103)
 
 &lt;big&gt;
 
@@ -50,11 +50,21 @@ class: middle
 
 # &lt;center&gt; Why a Hypothesis Test?
 &lt;big&gt;
-From paper: *". we hypothesized that Nrl is the ideal transcription factor to gain insights into gene expression changes ..."*
+From the [Akimoto et al. (2006) paper](https://doi.org/10.1073/pnas.0508214103 ): 
+&gt;"we hypothesized that Nrl is the ideal transcription factor to gain insights into gene expression changes ..."
 
-&gt; **Biological question:** Is the expression level of gene A affected by ablation of the Nrl gene?
+&lt;style&gt;
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+&lt;/style&gt;
+&lt;div class = "blue"&gt;
+&lt;b&gt;Biological question:&lt;/b&gt; Is the expression level of gene &lt;ii&gt;A&lt;/i&gt; affected by ablation of the &lt;i&gt;Nrl&lt;/i&gt; gene?
+&lt;/div&gt;
 
 ### We can use &lt;font color=red&gt;statistical inference&lt;/font&gt; to answer this biological question!
+
+---
+class: middle
+# &lt;center&gt; Statistical inference
 
 **Statistical inference**: we observe and study a &lt;font color=red&gt;random sample&lt;/font&gt; to make conclusions about a population (e.g., random sample of gene expressions from mice)
 
@@ -62,16 +72,21 @@ From paper: *". we hypothesized that Nrl is the ideal transcription factor to ga
 **Experimental design**:
 &lt;br&gt; 4 developmental stages
 &lt;br&gt; 2 genotypes: Wild type, NrlKO
-&lt;br&gt; 3-4 replicas for each combination
+&lt;br&gt; 3-4 replicates for each combination
 
 
 ---
 &lt;big&gt;
 Let's take a look at 2 genes as an example: **Irs4 and Nrl**
 
-&gt; **Biological question**: Are these genes truly different in NrlKO compared to WT?
+&lt;style&gt;
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+&lt;/style&gt;
+&lt;div class = "blue"&gt;
+&lt;b&gt;Biological question:&lt;/b&gt; Are these genes truly different in NrlKO compared to WT?
+&lt;/div&gt;
 
-We can't answer this question in general. We can *only* study these genes in collected data.
+We can't answer this question in general. We can *only* study these genes in collected data
 
 ### &lt;center&gt;&lt;font color="red"&gt; We only observe a random sample of gene expressions.&lt;/font&gt;
 
@@ -341,7 +356,7 @@ class: middle
 ```
 ## miniDat$gene: Irs4
 ## [1] 0.6002058
-## -------------------------------------------------------- 
+## ------------------------------------------------------------ 
 ## miniDat$gene: Nrl
 ## [1] 6.764663e-19
 ```
@@ -530,7 +545,24 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();</script>
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
 (function() {
