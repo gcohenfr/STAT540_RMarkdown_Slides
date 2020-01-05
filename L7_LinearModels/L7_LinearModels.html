@@ -168,7 +168,7 @@ Which group means are we comparing in a model with 2 factors?
 class: middle
 ### Reference-treatment effect parametrization
 
-By default, `lm` assumes a &lt;font color = "red"&gt;**reference-treatment effect**&lt;/font&gt; parametrization (mathematically, we need *more* dummy variables, see [math handout](math_handout.html))
+By default, `lm` assumes a &lt;font color = "red"&gt;**reference-treatment effect**&lt;/font&gt; parametrization (mathematically, we need *more* dummy variables, see [math handout](../SupportingMaterial/math_handout.html))
 
 
 ```r
@@ -382,7 +382,7 @@ model parameter | R estimate| stats | interpretation
 `\(\tau_{4W}\)` | devStage4_weeks | `\(E[Y_{wt,4W}] - E[Y_{wt,E16}]\)` | *conditional* effect of 4W *at* wt
 `\(\tau_{KO4W}\)` | gTypeNrlKO: devStage4_weeks | `\(E[Y_{NrlKO,4W}] - E[Y_{wt,4W}] - \tau_{KO}\)`  | *interaction* effect of NrlKO and 4W
 
-It is *important* to remember that `lm` reports *simple, not main* effects!! &lt;font color="blue"&gt; why?? because of the parametrization used!! &lt;/font&gt; (see see [math handout](math_handout.html))
+It is *important* to remember that `lm` reports *simple, not main* effects!! &lt;font color="blue"&gt; why?? because of the parametrization used!! &lt;/font&gt; (see see [math handout](../SupportingMaterial/math_handout.html))
 
 It can also be shown that `\(\tau_{KO4W}=E[Y_{NrlKO,4W}]-\tau_{4W}-\tau_{KO}-\theta\)` 
 
@@ -806,7 +806,7 @@ Mathematically:
 **Model 2**: `\(Y_{ijk}=\theta + \tau_{KO}x_{KO,ijk} + \tau_{P2}x_{P2,ijk}+\tau_{P6}x_{P6,ijk}+\tau_{P10}x_{P10,ijk}+\tau_{4W}x_{4W,ijk}+ \varepsilon\)`
 
 &lt;big&gt; `$$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$`
-&lt;small&gt; The `\(x_{DD,ijk}\)` are dummy variables (see [math handout](math_handout.html))
+&lt;small&gt; The `\(x_{DD,ijk}\)` are dummy variables (see [math handout](../SupportingMaterial/math_handout.html))
 ---
 # More general!
 ![](L7_LinearModels_files/nested.png)
