@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
   <head>
-    <title>Statistical Methods for  High Dimensional Biology STAT/BIOF/GSAT 540</title>
+    <title>Statistical Methods for High Dimensional Biology STAT/BIOF/GSAT 540</title>
     <meta charset="utf-8" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
@@ -10,19 +10,27 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Statistical Methods for <br>High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>
-## <font color=red> Lecture 5 – Two Group Comparisons </font> <br style=line-height:2><br> Instructor name
-### <font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan and Sara Mostafavi</font>
+# Statistical Methods for High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>
+## <font color=red> Lecture 5 – Two Group Comparisons </font> <br style=line-height:2><br> Keegan Korthauer
+### 2020/01/15 <br><font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan and Sara Mostafavi</font>
 
 ---
 
 class: middle
+layout: true
+---
 
-![Picture from Dr. Fowler, UW](L5_TwoGroupComp_files/statInference.png)
+&lt;style&gt;
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+&lt;/style&gt;
+
+&lt;center&gt;
+&lt;img src="L5_TwoGroupComp_files/statInference.png" alt="Picture from Dr. Fowler, UW" width="800"/&gt;&lt;/center&gt;
+
 We want to understand a **population** (e.g., gene behaviour) but we can only study a &lt;font color=red&gt;**random sample**&lt;/font&gt; from it. *[Picture from Dr. Fowler, UW]*
 ---
-class: middle
-# Book and online resources
+
+# &lt;center&gt; Book and online resources
 * Linear Models with R by Julian Faraway, Chapman &amp; Hall/CRC Texts in Statistical Science, 2004
 
 * http://www.biostat.jhsph.edu/~iruczins/teaching/jf/faraway.html
@@ -32,7 +40,6 @@ class: middle
 * http://genomicsclass.github.io/book/
 
 ---
-class: middle
 # &lt;center&gt; Hypothesis Testing in Genomics
 [![Akimoto et al. (2006)](L5_TwoGroupComp_files/paperRef.PNG)](https://doi.org/10.1073/pnas.0508214103)
 
@@ -42,109 +49,111 @@ class: middle
 - Retina presents a model system for investigating **regulatory networks** underlying neuronal differentiation.
 
 - **Nrl** transcription factor is known to be important for Rod development
+--
 
 - &lt;font color="red"&gt;**What happens if you delete Nrl?**
 
 ---
-class: middle
-
 # &lt;center&gt; Why a Hypothesis Test?
 &lt;big&gt;
 From the [Akimoto et al. (2006) paper](https://doi.org/10.1073/pnas.0508214103 ): 
 &gt;"we hypothesized that Nrl is the ideal transcription factor to gain insights into gene expression changes ..."
 
-&lt;style&gt;
-div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
-&lt;/style&gt;
 &lt;div class = "blue"&gt;
-&lt;b&gt;Biological question:&lt;/b&gt; Is the expression level of gene &lt;ii&gt;A&lt;/i&gt; affected by ablation of the &lt;i&gt;Nrl&lt;/i&gt; gene?
+&lt;b&gt;Biological question:&lt;/b&gt; Is the expression level of gene &lt;ii&gt;A&lt;/i&gt; affected by knockout of the &lt;i&gt;Nrl&lt;/i&gt; gene?
 &lt;/div&gt;
+--
 
 ### We can use &lt;font color=red&gt;statistical inference&lt;/font&gt; to answer this biological question!
 
 ---
-class: middle
 # &lt;center&gt; Statistical inference
 
-**Statistical inference**: we observe and study a &lt;font color=red&gt;random sample&lt;/font&gt; to make conclusions about a population (e.g., random sample of gene expressions from mice)
+&lt;big&gt;
+**Statistical inference**:
+
+We observe and study a &lt;font color=red&gt;random sample&lt;/font&gt; to make conclusions about a population (e.g., random sample of gene expressions from mice)
 
 &lt;img width="350" style="padding:0 px; float:right" src="L5_TwoGroupComp_files/NrlKOmouse.png"&gt;
+
 **Experimental design**:
-&lt;br&gt; 4 developmental stages
-&lt;br&gt; 2 genotypes: Wild type, NrlKO
-&lt;br&gt; 3-4 replicates for each combination
+* 4 developmental stages
+* 2 genotypes: Wild type (WT), Nrl Knockout (NrlKO)
+* 3-4 replicates for each combination
 
 
 ---
 &lt;big&gt;
 Let's take a look at 2 genes as an example: **Irs4 and Nrl**
 
-&lt;style&gt;
-div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
-&lt;/style&gt;
 &lt;div class = "blue"&gt;
 &lt;b&gt;Biological question:&lt;/b&gt; Are these genes truly different in NrlKO compared to WT?
 &lt;/div&gt;
 
-We can't answer this question in general. We can *only* study these genes in collected data
+We can't answer this question in general. We can *only* study these genes in collected data:
+
+
+
+&lt;img src="L5_TwoGroupComp_files/figure-html/unnamed-chunk-2-1.svg" style="display: block; margin: auto;" /&gt;
+
+--
 
 ### &lt;center&gt;&lt;font color="red"&gt; We only observe a random sample of gene expressions.&lt;/font&gt;
 
 
-
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-2-1.svg)&lt;!-- --&gt;
-
 ---
-class: middle
+
 
 # &lt;center&gt; Statistical Hypothesis
 &lt;big&gt;
 ** Experimental design:**
-  - 2 conditions: Wt *vs* NrlKO
+  - 2 conditions: WT *vs* NrlKO
   - random sample: we observe the expression of many genes in all mice
 
-** Biological hypothesis:** for some  genes, the expression levels are different in both conditions.
+** Biological hypothesis:** for *some* genes, the expression levels are different between conditions.
 
-** Statistical hypotheses:** (for each gene ...)
-  - H&lt;sub&gt;0&lt;/sub&gt; (null hypothesis): the expression level of gene A is the same in both conditions.
-  - &lt;font color="blue"&gt;H&lt;sub&gt;A&lt;/sub&gt; (alternative hypothesis): the expression level of gene A is different.&lt;/font&gt;
+** Statistical hypotheses:** (for each gene `\(g=1,...,G\)`)
+  - H&lt;sub&gt;0&lt;/sub&gt; (null hypothesis): the expression level of gene `\(g\)` is the *same* in both conditions.
+  -  &lt;span style="color:blue"&gt;H&lt;sub&gt;A&lt;/sub&gt; (alternative hypothesis): the expression level of gene `\(g\)` is *different* between conditions.&lt;/span&gt;
 ---
-class: middle
 
-## Notation
+
+## Notation 
 
 &lt;big&gt;
 
-### Random variables and estimates (we can observe)
+### Random variables and estimates (we can observe):
 
-`\(Y_i\)` : expression of gene A in the WT sample `\(i\)`
+`\(Y_i\)` : expression of gene `\(g\)` in the WT sample `\(i\)`
 
-`\(Z_i\)`: expression of gene A in NrlKO sample `\(i\)`
+`\(Z_i\)`: expression of gene `\(g\)` in NrlKO sample `\(i\)` 
 
 `\(Y_1, Y_2,..., Y_{n_Y}\)` : a &lt;font color="red"&gt;random sample&lt;/font&gt; of size `\(n_Y\)`
 
-`\(\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}\)`: sample mean of gene A expressions from WT mice
+`\(\bar{Y}=\frac{\sum_{i=1}^{n_Y}Y_i}{n_Y}\)`: sample mean of gene `\(g\)` expression from WT mice
 
-### Population parameters (unknown)
+&gt; &lt;small&gt; note the different meanings of the word "sample" 
 
-`\(\mu_Y = E[Y]\)` : the (population) expected expression of gene A in WT mice
-&gt; &lt;small&gt; note the different meanings of the word "sample"
+### Population parameters (unknown/unobservable):
+
+`\(\mu_Y = E[Y]\)` : the (population) expected expression of gene `\(g\)` in WT mice
 ---
 
 &lt;big&gt;
 
-### &lt;font color="red"&gt;  Is there **enough** evidence in the data to reject H&lt;sub&gt;0&lt;/sub&gt;? &lt;/font&gt;
+## Is there **enough** evidence in the data to reject H&lt;sub&gt;0&lt;/sub&gt;? &lt;/font&gt;
 
-&gt; H&lt;sub&gt;0&lt;/sub&gt;: `\(\mu_Y = \mu_Z\)`
+&lt;big&gt;
+`\(\color{red}{H_0: \mu_Y = \mu_Z}\)`
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-3-1.svg)&lt;!-- --&gt;
+&lt;img src="L5_TwoGroupComp_files/figure-html/unnamed-chunk-3-1.svg" style="display: block; margin: auto;" /&gt;
 
 ### **Statistical Inference**: random samples are used to learn about the population 
 ---
-class: middle
 
-### We observe... the difference between the **sample averages**: `\(\bar{Y}\)` vs `\(\bar{Z}\)`
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-4-1.svg)&lt;!-- --&gt;
+
+## What we observe: the difference between the **sample averages**: `\(\bar{Y}\)` vs `\(\bar{Z}\)`
+&lt;img src="L5_TwoGroupComp_files/figure-html/unnamed-chunk-4-1.svg" style="display: block; margin: auto;" /&gt;
 
 
 ```r
@@ -170,11 +179,11 @@ theDiff &lt;- theAvgs["NrlKO", ] - theAvgs["wt", ]
 ```
 
 ---
-class: middle
+
 
 ### Is the difference between `\(\bar{Y}\)` and `\(\bar{Z}\)` informative to reject H&lt;sub&gt;0&lt;/sub&gt;?
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-9-1.svg)&lt;!-- --&gt;
+&lt;img src="L5_TwoGroupComp_files/figure-html/unnamed-chunk-9-1.svg" style="display: block; margin: auto;" /&gt;
 
 &lt;big&gt;
 - The sample means, `\(\bar{Y}\)` vs `\(\bar{Z}\)`, by themselves are not enough to make conclusions about the population
@@ -184,7 +193,7 @@ class: middle
 class: center, middle
 
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-10-1.svg)&lt;!-- --&gt;
+&lt;img src="L5_TwoGroupComp_files/figure-html/unnamed-chunk-10-1.svg" style="display: block; margin: auto;" /&gt;
 
 
 .pull-left[
@@ -206,23 +215,24 @@ class: center, middle
 
 ![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-11-1.svg)&lt;!-- --&gt;
 ---
-class: middle
 
-### Assuming that the random variables of each group are independent and identically distributed (iid):
-- `\(Y_1, Y_2,..., Y_{n_Y}\)` are iid
-- `\(Z_1, Z_2,..., Z_{n_Z}\)` are iid
-- `\(Y_i, Z_j\)` are independent
+## Quantifying observed variation
 
-`$$V(\bar{Z}-\bar{Y})=\frac{\sigma_Z^2}{n_Z}+\frac{\sigma_Y^2}{n_Y}$$`
-&lt;br&gt;
-If we also assume equal population variances:&lt;/big&gt; `\(\sigma_Z^2=\sigma_Y^2=\sigma^2\)`
+* Recall that if `\(V(Y_i)=\sigma_Y^2\)`, then `\(V(\bar{Y})=\frac{\sigma_Y^2}{n_Y}\)`
+
+* Assume that the random variables within each group are *independent and identically distributed* (iid), and that the groups are independent. More specifically, that
+  1. `\(Y_1, Y_2,..., Y_{n_Y}\)` are iid, 
+  2. `\(Z_1, Z_2,..., Z_{n_Z}\)` are iid, and
+  3. `\(Y_i, Z_j\)` are independent. Then, it follows that
+$$ V(\bar{Z}-\bar{Y})=\frac{\sigma_Z^2}{n_Z}+\frac{\sigma_Y^2}{n_Y}$$
+* If we also assume equal population variances:&lt;/big&gt; `\(\sigma_Z^2=\sigma_Y^2=\sigma^2\)`, then
 `$$V(\bar{Z}-\bar{Y})=\frac{\sigma_Z^2}{n_Z}+\frac{\sigma_Y^2}{n_Y}=\sigma^2\left[\frac{1}{n_Z}+\frac{1}{n_Y}\right]$$`
 ### But how can we calculate population variance `\(\sigma\)` if it is **unknown**?
 ---
-class: middle
+
 
 ### ...using the sample variances (combined, somehow)!
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-12-1.svg)&lt;!-- --&gt;
+&lt;img src="L5_TwoGroupComp_files/figure-html/unnamed-chunk-12-1.svg" style="display: block; margin: auto;" /&gt;
 
 
 ```r
@@ -239,18 +249,18 @@ theVars &lt;- with(miniDat,
 ```
 ]
 .pull-right[
-&lt;small&gt; `$$\text{e.g., for Nrl: } S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2=1.224$$`
+&lt;small&gt; `$$\text{e.g., for Nrl: } \hat{\sigma}_Y^2 = S_Y^2=\frac{1}{n_Y}\sum_{i=1}^{n_Y}(Y_i-\bar{Y})^2=1.224$$`
 ]
 ---
-class: middle
+
 
 ### Plug these sample variances into your chosen formula for the variance of the difference of sample means
 
 
 Assuming &lt;b&gt;equal&lt;/b&gt; variance of Y's and Z's
 
-`$$'pooled'\;\hat{\sigma}^2=S_Y^2\frac{n_Y-1}{n_Y+n_Z-2}+S_Z^2\frac{n_z-1}{n_Y+n_Z-2}$$`
-`$$\hat{V}(\bar{Z_n}-\bar{Y_n})=\;'pooled'\;\hat{\sigma}^2\left[\frac{1}{n_Y}+\frac{1}{n_Z}\right]$$`
+`$$\hat{\sigma}_{\text{pooled}}^2=S_Y^2\frac{n_Y-1}{n_Y+n_Z-2}+S_Z^2\frac{n_z-1}{n_Y+n_Z-2}$$`
+`$$\hat{V}(\bar{Z_n}-\bar{Y_n})=\hat{\sigma}_{\text{pooled}}^2\left[\frac{1}{n_Y}+\frac{1}{n_Z}\right]$$`
 &lt;br&gt;
 Assuming &lt;b&gt;unequal&lt;/b&gt; variance of Y's and Z's
 `$$\hat{V}(\bar{Z_n}-\bar{Y_n})=\hat{\sigma}_{\bar{Z}_n-\bar{Y}_n}^2=\frac{S_Y^2}{n_Y}+\frac{S_Z^2}{n_Z}$$`
@@ -258,7 +268,7 @@ Assuming &lt;b&gt;unequal&lt;/b&gt; variance of Y's and Z's
 &gt; Note: the 'hat' (^) is used to distinguish an 'estimate' from a 'parameter'.
 
 ---
-class: middle
+
 
 
 
@@ -290,7 +300,7 @@ welchStat &lt;- theDiff / sqrt(s2DiffWelch)
 The difference is about half a standard deviation for Irs4 and ~16 standard deviations for Nrl. 
 
 ---
-class: middle
+
 
 ### The test statistic T is a &lt;font color=red&gt;random variable&lt;/font&gt; because it's based on our &lt;font color=red&gt;random sample&lt;/font&gt;.
 
@@ -300,7 +310,7 @@ class: middle
 ### We need to have a probability distribution!
 ### However, this is unknown to us so we need to **make more assumptions**.
 ---
-class: middle
+
 
 ### Theory now tells us specific **null distributions** for these test statistics, depending on your assumptions.
 
@@ -322,7 +332,7 @@ class: middle
 Then the t-distributions above or even a normal distribution are decent approximations.
 
 ---
-class: middle
+
 
 ## Student's *t*-distribution
 ### Recall that T is a **random variable**. Under certain assumptions, we can prove that T follows a *t*-distribution.
@@ -331,7 +341,7 @@ class: middle
 
 where df = degrees of freedom.
 ---
-class: middle
+
 # &lt;center&gt; Hypothesis testing
 
 ### 1. Define a **test statistic**: 2-sample *t*-test
@@ -348,8 +358,8 @@ tstStat &lt;- theDiff / sqrt(s2Diff)
 ```
 
 ---
-class: middle
-### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the **null sampling distribution** (p-value) 
+
+### 3. Compute the probability of seeing a test statistic at least as extreme as that observed, under the **null sampling distribution** (this is the definition of the p-value) 
 
 
 
@@ -362,15 +372,18 @@ class: middle
 ```
 
 .pull-left[
-### Assuming that H&lt;sub&gt;0&lt;/sub&gt; is true: 
-for Irs4, the probability of seeing a test statistic as extreme that observed (*t* = -0.53) is pretty high (*p*=0.6).
+### In other words, assuming that H&lt;sub&gt;0&lt;/sub&gt; is true: 
+For Irs4, the probability of seeing a test statistic as extreme as that observed `\((t = -0.53)\)` is pretty high `\((p = 0.6)\)`.
+
+But for Nrl, the probability of seeing a test statistic as extreme as that observed `\((t = -16.8)\)` is extremely low `\((p=6.76 \times 10^{-19})\)`
+
 ]
 .pull-right[
-&lt;img src="L5_TwoGroupComp_files/nDist.png" width=400 &gt;
+&lt;img src="L5_TwoGroupComp_files/figure-html/unnamed-chunk-23-1.svg" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
-class: middle
+
 
 ### 4. Make a decision about significance of results, based on a pre-specified value (alpha, significance level)
 
@@ -386,7 +399,7 @@ class: center
 
 ![](L5_TwoGroupComp_files/slide23.png)
 ---
-class: middle
+
 
 ## What is a p-value?
 
@@ -420,14 +433,14 @@ class: middle
 - **Equal variance** *or* unequal variance
 
 ---
-class: middle
+
 
 # Types of Errors in Hypothesis Testing
 
 &lt;center&gt;![](L5_TwoGroupComp_files/hypError.png)
 *[Picture from Dr. Fowler, UW]*
 ---
-class: middle
+
 
 &lt;big&gt;
 What if you don't wish to assume the underlying data is normally distributed AND you aren't sure your samples are large enough to invoke CLT?
@@ -444,7 +457,7 @@ Alternatively, there are *non-parametric* tests that are available here:
 - **Kolmogorov-Smirnov test** uses the empirical CDF to test differences in population cumulative distributions.
 
 ---
-class: middle
+
 
 # Wilcoxon rank sum test
 
@@ -458,12 +471,12 @@ Rank all data, ignoring the **grouping** variable
 Null distribution of such statistics can be worked out or approximated.
 
 ---
-class: middle, center
+, center
 ![](L5_TwoGroupComp_files/slide32.png)
 
-![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-23-1.svg)&lt;!-- --&gt;
+![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
 ---
-class: middle
+
 
 # Kolmogorov-Smirnov test (two sample)
 
@@ -487,7 +500,7 @@ Null distribution does not depend on F, G (!)
 ![](L5_TwoGroupComp_files/slide34.png)
 
 ---
-class: middle
+
 
 # Discussion and questions ...
 &lt;big&gt;
@@ -505,7 +518,8 @@ It is worrisome when methods that are equally appropriate and defensible give ve
 <script>var slideshow = remark.create({
 "highlightStyle": "github",
 "highlightLines": true,
-"countIncrementalSlides": false
+"countIncrementalSlides": false,
+"ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

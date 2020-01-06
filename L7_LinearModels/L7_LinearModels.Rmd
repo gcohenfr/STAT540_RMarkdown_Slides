@@ -1,7 +1,7 @@
 ---
-title: "Statistical Methods for <br>High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>"
-subtitle: "<font color=red> Lecture 7 -- Linear Models</font> <br style=line-height:2> Instructor name"
-date: "<font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan </font>"
+title: "Statistical Methods for High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>"
+subtitle: "<font color=red> Lecture 7 -- Linear Models</font> <br style=line-height:2> Keegan Korthauer"
+date: "2020/01/22 <br><font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan </font>"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -10,7 +10,7 @@ output:
       highlightLines: true
       highlightSpans: true
       countIncrementalSlides: false
-
+      ratio: "16:9"
 ---
 class: middle
 
