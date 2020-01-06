@@ -1,7 +1,8 @@
 ---
-title: "Statistical Methods for High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>"
-subtitle: "<font color=red> Lecture 5 -- Two Group Comparisons </font> <br> Keegan Korthauer"
-date: "2020/01/15 <br><font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan, Sara Mostafavi, and Keegan Korthauer </font>"
+title: "<font color=red>Lecture 5 -- Two Group Comparisons</font>"
+subtitle: "STAT/BIOF/GSAT 540"
+author: Keegan Korthauer
+date: "2020/01/20 <br><br> <font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan, Sara Mostafavi, and Keegan Korthauer </font>"
 output:
   xaringan::moon_reader:
     lib_dir: libs

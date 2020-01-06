@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
   <head>
-    <title>Statistical Methods for  High Dimensional Biology STAT/BIOF/GSAT 540</title>
+    <title> Lecture 7 – Linear Models</title>
     <meta charset="utf-8" />
+    <meta name="author" content="Keegan Korthauer" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
   </head>
@@ -10,9 +11,10 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Statistical Methods for <br>High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>
-## <font color=red> Lecture 7 – Linear Models</font> <br style=line-height:2> Instructor name
-### <font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan </font>
+# <font color=red> Lecture 7 – Linear Models</font>
+## STAT/BIOF/GSAT 540
+### Keegan Korthauer
+### 2020/01/27 <br><br><font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan and Keegan Korthauer </font>
 
 ---
 
@@ -67,14 +69,14 @@ E[Y_{i2}] &amp;= \theta + \tau_2=\mu_1\ + (\mu_2 - \mu_1) = \mu_2
 ]
 
 .pull-right[
-&lt;img src="L7_LinearModels_files/param.png" height="150px" /&gt;
+&lt;img src="L7_LinearModels_files/param.png" width="232" height="150px" /&gt;
 ]
 ---
 class: middle
 
 ## **Using matrix notation ...**
 
-&lt;img src="L7_LinearModels_files/matrix_not.png" height="400px" /&gt;
+&lt;img src="L7_LinearModels_files/matrix_not.png" width="2447" height="400px" /&gt;
 
 ### ... and similarly beyond 2 groups comparisons (ANOVA)
 
@@ -97,7 +99,7 @@ class: middle
 
 ### For example: comparisons of mean expression levels between groups!
 &lt;center&gt;
-&lt;img src="L7_LinearModels_files/diff_means.png" height="250px" /&gt;
+&lt;img src="L7_LinearModels_files/diff_means.png" width="1908" height="250px" /&gt;
 &lt;/center&gt;
 By default, `lm` estimates mean differences (with respect to a reference group):
 
@@ -923,11 +925,16 @@ class: middle
 
 &lt;center&gt;
 
-&lt;img src="L7_LinearModels_files/LM_vbles.png" height="500px" /&gt;
+&lt;img src="L7_LinearModels_files/LM_vbles.png" width="1845" height="500px" /&gt;
 
 &lt;/center&gt;
 
 ### Next class: linear models provides a general flexible framework to study the relation of a response with many variables!
+
+
+
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -935,7 +942,8 @@ class: middle
 "highlightStyle": "github",
 "highlightLines": true,
 "highlightSpans": true,
-"countIncrementalSlides": false
+"countIncrementalSlides": false,
+"ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
@@ -975,7 +983,24 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();</script>
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
 (function() {
