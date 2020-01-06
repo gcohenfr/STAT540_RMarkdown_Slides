@@ -1,6 +1,6 @@
 ---
 title: "Statistical Methods for High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>"
-subtitle: "<font color=red> Lecture 5 -- Two Group Comparisons </font> <br style=line-height:2><br> Keegan Korthauer"
+subtitle: "<font color=red> Lecture 5 -- Two Group Comparisons </font> <br> Keegan Korthauer"
 date: "2020/01/15 <br><font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan, Sara Mostafavi, and Keegan Korthauer </font>"
 output:
   xaringan::moon_reader:
@@ -756,3 +756,4 @@ Which test result should one report ... the 2-sample *t*-test, the Wilcoxon, or 
 Treat p-values as one type of evidence that you should incorporate with others. 
 
 It is worrisome when methods that are equally appropriate and defensible give very different answers.
+
