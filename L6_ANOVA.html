@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
   <head>
-    <title>Statistical Methods for  High Dimensional Biology STAT/BIOF/GSAT 540</title>
+    <title>Statistical Methods for High Dimensional Biology STAT/BIOF/GSAT 540</title>
     <meta charset="utf-8" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
@@ -10,10 +10,14 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Statistical Methods for <br>High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>
-## <font color=red> Lecture 6 – ANOVA and Linear Models</font> <br style=line-height:2> Instructor name
-### <font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan </font>
+# Statistical Methods for High Dimensional Biology<br><font size=8>STAT/BIOF/GSAT 540</font>
+## <font color=red> Lecture 6 – ANOVA and Linear Models</font> <br style=line-height:2> Keegan Korthauer
+### 2020/01/20 <br><font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan </font>
 
+---
+
+class: middle
+layout: true
 ---
 
 class: middle, center
@@ -348,7 +352,7 @@ list("t value"=lm.irs4$coeff[2,3],"p-value"=lm.irs4$coeff[2,4])
 class: middle
 ## Beyond 2-groups comparisons: difference of means
 &lt;center&gt;
-&lt;img src="L6_ANOVA_files/more_2_groups.png" height="500px" /&gt;
+&lt;img src="L6_ANOVA_files/more_2_groups.png" width="3833" height="500px" /&gt;
 &lt;/center&gt;
 ---
 class: middle
@@ -405,7 +409,7 @@ Let's form an `\(X\)`  matrix for a 3-groups comparison:
 
 `$$Y_{ij} = \theta+\tau_2 \times x_{ij2} + \tau_3 \times x_{ij3} +\varepsilon_{ij}$$`
 &lt;center&gt;
-&lt;img src="L6_ANOVA_files/model_matrix_I.png" height="400px" /&gt;
+&lt;img src="L6_ANOVA_files/model_matrix_I.png" width="2363" height="400px" /&gt;
 &lt;/center&gt;
 
 &lt;font size=4&gt;
@@ -414,7 +418,7 @@ Note that `\(x_{ij2}\)` and `\(x_{ij3}\)` become the 2nd and 3rd columns of `\(X
 ---
 class: middle
 
-&lt;img src="L6_ANOVA_files/model_matrix_II.png" height="350px" /&gt;
+&lt;img src="L6_ANOVA_files/model_matrix_II.png" width="960" height="350px" /&gt;
 
 &gt; &lt;font color = "red"&gt;Note that `\(Y_{i1}= 1 \times \theta + 0 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i1}=\theta + \varepsilon_{i1}\)`
 
@@ -431,7 +435,7 @@ Which is the same as `\(\; \rightarrow \; Y_{ij} = \theta +\tau_2 \times x_{ij2}
 ---
 class: middle
 
-&lt;img src="L6_ANOVA_files/rf_tx_matrix.png" height="320px" /&gt;
+&lt;img src="L6_ANOVA_files/rf_tx_matrix.png" width="1205" height="320px" /&gt;
 
 ### Note that the model is still written with a reference-treatment parametrization (difference of means)
 
@@ -450,7 +454,7 @@ class: middle
 ### &lt;font color = "red"&gt;Linear regression&lt;/font&gt; can include **quantitative &amp; qualitative covariates**. 
 
 &lt;center&gt;
-&lt;img src="L6_ANOVA_files/LM_vbles.png" height="470px" /&gt;
+&lt;img src="L6_ANOVA_files/LM_vbles.png" width="960" height="470px" /&gt;
 &lt;/center&gt;
 &gt; &lt;font color="red"&gt;Linear&lt;/font&gt; in the parameters `\(\alpha\)`: `\(X\)` can contain `\(x^2\)`, `\(log(x)\)`, etc.
 
@@ -800,7 +804,7 @@ e.g., Is gene A significantly affected by time (`devStage`)?
 class: middle
 ### Two types of null hypotheses in R:
 
-&lt;img src="L6_ANOVA_files/one_more_H0.png" height="530px" /&gt;
+&lt;img src="L6_ANOVA_files/one_more_H0.png" width="3829" height="530px" /&gt;
     
 ---
 class: middle
@@ -839,7 +843,7 @@ class:middle
 ### - &lt;font color = "red"&gt;Linear model&lt;/font&gt; can include **quantitative &amp; qualitative covariates**. 
 
 &lt;center&gt;
-&lt;img src="L6_ANOVA_files/LM_vbles.png" height="250px" /&gt;
+&lt;img src="L6_ANOVA_files/LM_vbles.png" width="960" height="250px" /&gt;
 &lt;/center&gt;
 
 ### - distinguish between single and joint hypotheses:
@@ -851,7 +855,8 @@ class:middle
 "highlightStyle": "github",
 "highlightLines": true,
 "highlightSpans": true,
-"countIncrementalSlides": false
+"countIncrementalSlides": false,
+"ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
@@ -891,7 +896,24 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     deleted = true;
   });
-})();</script>
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
 (function() {
