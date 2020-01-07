@@ -12,37 +12,44 @@
 class: center, middle, inverse, title-slide
 
 # <font color=red>Lecture 5 – Two Group Comparisons</font>
-## STAT/BIOF/GSAT 540
+## STAT/BIOF/GSAT 540: Statistical Methods for High Dimensional Biology
 ### Keegan Korthauer
-### 2020/01/15 <br><br> <font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan, Sara Mostafavi, and Keegan Korthauer </font>
+### 2020/01/20 <br><br> <font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan, Sara Mostafavi, and Keegan Korthauer </font>
 
 ---
 
 class: middle
 layout: true
+
+&lt;big&gt;
 ---
 
 &lt;style&gt;
 div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 &lt;/style&gt;
 
-&lt;center&gt;
-&lt;img src="L5_TwoGroupComp_files/statInference.png" alt="Picture from Dr. Fowler, UW" width="800"/&gt;&lt;/center&gt;
+# &lt;center&gt; Central dogma of statistics
 
-We want to understand a **population** (e.g., gene behaviour) but we can only study a &lt;font color=red&gt;**random sample**&lt;/font&gt; from it. *[Picture from Dr. Fowler, UW]*
+&lt;center&gt;
+&lt;img src="L5_TwoGroupComp_files/statInference.png" alt="Central dogma of statistics" width="700"/&gt;&lt;br&gt;&lt;small&gt;&lt;a href="https://www.gs.washington.edu/academics/courses/akey/56008/lecture/lecture1.pdf" style="color:grey;"&gt;Image source: Josh Akey's Lecture notes&lt;/a&gt;&lt;/small&gt;&lt;/center&gt;
+
+&lt;br&gt;We want to understand a **population** (e.g., gene behaviour) but we can only study a &lt;font color=red&gt;**random sample**&lt;/font&gt; from it. 
 ---
 
 # &lt;center&gt; Book and online resources
-* Linear Models with R by Julian Faraway, Chapman &amp; Hall/CRC Texts in Statistical Science, 2004
 
-* http://www.biostat.jhsph.edu/~iruczins/teaching/jf/faraway.html
+* [Modern Statistics for Modern Biology](https://www.huber.embl.de/msmb/) by Susan Holmes and Wolfgang Huber, 2019 (free online book)
 
-* https://sites.google.com/a/cs.washington.edu/genome560-spr18/CourseMaterials
+* [Data Analysis for the Life Sciences](http://genomicsclass.github.io/book/) by Rafael Irizarry and Michael Love, 2015 (free online book)
 
-* http://genomicsclass.github.io/book/
+* [Practical Regression and Anova using R](http://www.biostat.jhsph.edu/~iruczins/teaching/jf/faraway.html) by Julian Faraway, 2002 (free online book)
+
+* Linear Models with R by Julian Faraway, Chapman &amp; Hall/CRC Texts in Statistical Science, 2004 
 
 ---
+
 # &lt;center&gt; Hypothesis Testing in Genomics
+
 [![Akimoto et al. (2006)](L5_TwoGroupComp_files/paperRef.PNG)](https://doi.org/10.1073/pnas.0508214103)
 
 &lt;big&gt;
@@ -56,6 +63,7 @@ We want to understand a **population** (e.g., gene behaviour) but we can only st
 - &lt;font color="red"&gt;**What happens if you delete Nrl?**
 
 ---
+
 # &lt;center&gt; Why a Hypothesis Test?
 &lt;big&gt;
 From the [Akimoto et al. (2006) paper](https://doi.org/10.1073/pnas.0508214103 ): 
@@ -69,6 +77,7 @@ From the [Akimoto et al. (2006) paper](https://doi.org/10.1073/pnas.0508214103 )
 ### We can use &lt;font color=red&gt;statistical inference&lt;/font&gt; to answer this biological question!
 
 ---
+
 # &lt;center&gt; Statistical inference
 
 &lt;big&gt;
@@ -85,6 +94,7 @@ We observe and study a &lt;font color=red&gt;random sample&lt;/font&gt; to make 
 
 
 ---
+
 &lt;big&gt;
 Let's take a look at 2 genes as an example: **Irs4 and Nrl**
 
@@ -105,7 +115,6 @@ We can't answer this question in general. We can *only* study these genes in col
 
 ---
 
-
 # &lt;center&gt; Statistical Hypothesis
 &lt;big&gt;
 ** Experimental design:**
@@ -121,8 +130,6 @@ We can't answer this question in general. We can *only* study these genes in col
 
 
 ## Notation 
-
-&lt;big&gt;
 
 ### Random variables and estimates (we can observe):
 
@@ -153,7 +160,7 @@ We can't answer this question in general. We can *only* study these genes in col
 ### **Statistical Inference**: random samples are used to learn about the population 
 ---
 
-
+&lt;small&gt;
 ## What we observe: the difference between the **sample averages**: `\(\bar{Y}\)` vs `\(\bar{Z}\)`
 &lt;img src="L5_TwoGroupComp_files/figure-html/unnamed-chunk-4-1.svg" style="display: block; margin: auto;" /&gt;
 
@@ -220,6 +227,8 @@ class: center, middle
 
 ## Quantifying observed variation
 
+&lt;small&gt;
+
 * Recall that if `\(V(Y_i)=\sigma_Y^2\)`, then `\(V(\bar{Y})=\frac{\sigma_Y^2}{n_Y}\)`
 
 * Assume that the random variables within each group are *independent and identically distributed* (iid), and that the groups are independent. More specifically, that
@@ -276,6 +285,8 @@ Assuming &lt;b&gt;unequal&lt;/b&gt; variance of Y's and Z's
 
 
 ## &lt;center&gt; The Test Statistic:  &lt;small&gt; `\(T=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}\)`&lt;/small&gt;
+
+&lt;small&gt;
 
 Assuming equal variances:
 
@@ -399,7 +410,7 @@ We do not reject H&lt;sub&gt;0&lt;/sub&gt;!
 ---
 class: center
 
-![](L5_TwoGroupComp_files/slide23.png)
+&lt;img src="L5_TwoGroupComp_files/slide23.png" width="850"&gt;
 ---
 
 
@@ -419,6 +430,7 @@ class: center
 
 *[Credit to Dr. Fowler, UW]*
 ---
+
 &lt;big&gt;
 ## "Genome-wide" testing of differential expression
 - In genomics, we often perform thousands of statistical tests (e.g., a *t*-test per gene)
@@ -447,6 +459,7 @@ class: center
 &lt;big&gt;
 What if you don't wish to assume the underlying data is normally distributed AND you aren't sure your samples are large enough to invoke CLT?
 &lt;/big&gt;
+
 ## What are alternatives to the *t*-test?
 
 &lt;big&gt;
@@ -473,7 +486,8 @@ Rank all data, ignoring the **grouping** variable
 Null distribution of such statistics can be worked out or approximated.
 
 ---
-, center
+
+&lt;center&gt;
 ![](L5_TwoGroupComp_files/slide32.png)
 
 ![](L5_TwoGroupComp_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
@@ -499,7 +513,8 @@ Null distribution does not depend on F, G (!)
 
 ---
 
-![](L5_TwoGroupComp_files/slide34.png)
+&lt;center&gt;
+&lt;img src="L5_TwoGroupComp_files/slide34.png" width="800"&gt;
 
 ---
 
