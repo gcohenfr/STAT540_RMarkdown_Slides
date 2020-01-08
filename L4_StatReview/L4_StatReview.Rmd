@@ -110,10 +110,11 @@ A framework for generating conclusions about a population from noisy data from a
 # <center> Random variables
 
 <div class = "blue">
-<b>Random Variable (RV):</b> A variable whose value results from the measurement of a quantity that is subject to variation (i.e. the <i>outcome</i> an experiment)
+<b>Random Variable (RV):</b> A variable whose value results from the measurement of a quantity that is subject to variation (e.g. the <i>outcome</i> an experiment)
 </div>
 
   - Examples: a coin flip, a dice throw, the expression level of gene X
+  
   - An RV has a *probability distribution*
   
 ---
@@ -121,16 +122,17 @@ A framework for generating conclusions about a population from noisy data from a
 # <center> Distributions of RVs
 
 <div class = "blue">
-<b>Probability:</b> A number assigned to an outcome that describes the extent to which it is likely to occur
+<b>Probability:</b> A number assigned to an outcome/event that describes the extent to which it is likely to occur
 </div>
 
   - Must satisfy certain rules (e.g. be between 0 and 1)
-  - Represents the (long-term) *frequency* of an outcome
+  
+  - Represents the (long-term) *frequency* of an event
   
 --
 
 <div class = "blue">
-<b>Probability distribution:</b> A mathematical function that maps outcomes to probabilities
+<b>Probability distribution:</b> A mathematical function that maps outcomes/events to probabilities
 </div>  
   
 ---
@@ -138,19 +140,21 @@ A framework for generating conclusions about a population from noisy data from a
 # <center> Example experiment: Two coin tosses
 
 .pull-left[
-* **Outcome of interest (RV)**: number of heads
 
-* **Possible outcomes**: sample space
+* **Experiment**: Toss two coins
 
-* **Probability distribution**: mapping between each possible outcome and a probability
+* **Sample space**: set of all possible outcomes $S=\{TT, TH, HT, HH\}$
+
+* **Random Variable of interest**: number of heads
+
 
 * Can you think of other RVs?
 
 ]
 .pull-right[
 
-|       | $\omega$  | $X(\omega)$ |
-| :---: |:---------:| :-----------:|
+|       | Outcome  | Number of Heads |
+| :---: |:---------:| :-----------:| 
 | TT    | ![](L4_StatReview_files/tails.png)![](L4_StatReview_files/tails.png) | 0 |
 | TH    | ![](L4_StatReview_files/heads.png)![](L4_StatReview_files/tails.png) | 1 |
 | HT    | ![](L4_StatReview_files/tails.png)![](L4_StatReview_files/heads.png) | 1 |
@@ -160,7 +164,7 @@ A framework for generating conclusions about a population from noisy data from a
 
 ---
 
-# Assigning probability to outcomes
+# <center> Assigning probability to outcomes
 
 .pull-left[
 
@@ -168,11 +172,13 @@ A framework for generating conclusions about a population from noisy data from a
 
   * $\omega=$ an outcome 
 
-  * $X(\omega)=$ number of heads
+  * $X(\omega)=$ number of heads in $\omega$
+  
+* Each possible outcome is associated with a probability
 
-* Each realization of the RV corresponds to an event in the sample space
+* **Event:** A set of outcomes that satisfy some condition
 
-* we can assign a probability to each realization 
+* Each realization of the RV corresponds to an **event** (e.g. $X(\omega)=1$ corresponds to the outcomes $TH$ and $HT$ )
 
 ]
 
@@ -185,5 +191,21 @@ A framework for generating conclusions about a population from noisy data from a
 | HT    | ![](L4_StatReview_files/tails.png)![](L4_StatReview_files/heads.png) | 1 | 0.25 |
 | HH    | ![](L4_StatReview_files/heads.png)![](L4_StatReview_files/heads.png) | 2 | 0.25 |
 ]
+
+---
+
+# Assigning probability to events
+
+The probability distribution of the Random Variable $X$ tells us how likely each event (number of heads) is to occur in the experiment
+
+
+| Event | $x$ | $P(X=x)$ |
+| :-----------:| :-----------:| :---------: |
+| ![](L4_StatReview_files/tails.png)![](L4_StatReview_files/tails.png) | 0 | 0.25 |
+| ![](L4_StatReview_files/heads.png)![](L4_StatReview_files/tails.png) <big>, ![](L4_StatReview_files/tails.png)![](L4_StatReview_files/heads.png) | 1 | 0.50 |
+| ![](L4_StatReview_files/heads.png)![](L4_StatReview_files/heads.png) | 2 | 0.25 |
+
+
+<small> Note on notation: $P(X=x)$ can also be written as $P_x(x)$
 
 
