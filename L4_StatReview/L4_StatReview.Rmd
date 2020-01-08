@@ -24,7 +24,7 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 # <center> Preview of next 6 lectures
 
-* **2020/01/15** - Lecture 4: Stats Philosophy, Math/stat background & review
+* **2020/01/15 - Lecture 4: Stats Philosophy, Math/stat background & review**
 
 * 2020/01/20 - Lecture 5: Statistical Inference - two group comparisons 
 
@@ -34,7 +34,7 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 * 2020/01/29 - Lecture 8: Statistical Inference - continuous model + limma
 
-* 2020/02/03 - Lecture 9: Statistica Inference - multiple testing
+* 2020/02/03 - Lecture 9: Statistical Inference - multiple testing
 
 ---
 
@@ -61,17 +61,129 @@ Your goals:
 * The field of statistics concerns the science of **collecting, analyzing/modeling, interpreting** data and **communicating uncertainty** about the results
   - Data science and machine learning have enabled application to 'big data'
   
-* Statistical and computational methods should not be used as "recipes" to follow --> non-robust science
-  - We emphasize: rigorous understanding to perform routine statistical analysis but also foundation to follow up on specific topics
+* Statistical and computational methods should not be used as generic "recipes" to follow $\rightarrow$ non-robust science
+
+* We aim for:
+  - rigorous understanding to perform routine statistical analysis
+  
+  - solid foundation to follow up on specific topics
 ---
 
 
 # <center> Statistical Inference
+A framework for generating conclusions about a population from noisy data from a sample
 
 <center>
-<img src="L4_StatReview_files/statInference.png" alt="Picture from Dr. Fowler, UW" width="800"/></center>
+<img src="L4_StatReview_files/statInference.png" alt="Picture from Dr. Fowler, UW" width="700"/></center>
 
-"Framework for generating conclusions about a population from noisy data from a sample"
+* Language of **probability** enables us to make *predictions* and discuss *uncertainty*
+* **Statistical inference** enables us to *understand* the data and make *conclusions*
+* We need both to learn from data
 
 ---
+
+# <center> Review: terminology & basic concepts
+
+* Random variables and their distributions
+
+* Models, parameters, and their estimators
+
+* Central Limit Theorem (CLT)
+
+* Hypothesis Testing
+
+---
+
+# <center> Variables
+
+<div class = "blue">
+<b>Variable <i>(noun)</i>:</b> an element, feature, or factor that is liable to vary or change
+</div>
+
+* In statistical terminology, a **variable** is an unknown quantity that we'd like to study
+
+* Most research questions can be formulated as 
+>What's the *relationship* between two or more variables?  
+
+---
+
+# <center> Random variables
+
+<div class = "blue">
+<b>Random Variable (RV):</b> A variable whose value results from the measurement of a quantity that is subject to variation (i.e. the <i>outcome</i> an experiment)
+</div>
+
+  - Examples: a coin flip, a dice throw, the expression level of gene X
+  - An RV has a *probability distribution*
+  
+---
+  
+# <center> Distributions of RVs
+
+<div class = "blue">
+<b>Probability:</b> A number assigned to an outcome that describes the extent to which it is likely to occur
+</div>
+
+  - Must satisfy certain rules (e.g. be between 0 and 1)
+  - Represents the (long-term) *frequency* of an outcome
+  
+--
+
+<div class = "blue">
+<b>Probability distribution:</b> A mathematical function that maps outcomes to probabilities
+</div>  
+  
+---
+
+# <center> Example experiment: Two coin tosses
+
+.pull-left[
+* **Outcome of interest (RV)**: number of heads
+
+* **Possible outcomes**: sample space
+
+* **Probability distribution**: mapping between each possible outcome and a probability
+
+* Can you think of other RVs?
+
+]
+.pull-right[
+
+|       | $\omega$  | $X(\omega)$ |
+| :---: |:---------:| :-----------:|
+| TT    | ![](L4_StatReview_files/tails.png)![](L4_StatReview_files/tails.png) | 0 |
+| TH    | ![](L4_StatReview_files/heads.png)![](L4_StatReview_files/tails.png) | 1 |
+| HT    | ![](L4_StatReview_files/tails.png)![](L4_StatReview_files/heads.png) | 1 |
+| HH    | ![](L4_StatReview_files/heads.png)![](L4_StatReview_files/heads.png) | 2 |
+
+]
+
+---
+
+# Assigning probability to outcomes
+
+.pull-left[
+
+* Let:
+
+  * $\omega=$ an outcome 
+
+  * $X(\omega)=$ number of heads
+
+* Each realization of the RV corresponds to an event in the sample space
+
+* we can assign a probability to each realization 
+
+]
+
+.pull-right[
+
+|       | $\omega$  | $X(\omega)$ | Probability |
+| :---: |:---------:| :-----------:| :---------: |
+| TT    | ![](L4_StatReview_files/tails.png)![](L4_StatReview_files/tails.png) | 0 | 0.25 |
+| TH    | ![](L4_StatReview_files/heads.png)![](L4_StatReview_files/tails.png) | 1 | 0.25 |
+| HT    | ![](L4_StatReview_files/tails.png)![](L4_StatReview_files/heads.png) | 1 | 0.25 |
+| HH    | ![](L4_StatReview_files/heads.png)![](L4_StatReview_files/heads.png) | 2 | 0.25 |
+]
+
 
