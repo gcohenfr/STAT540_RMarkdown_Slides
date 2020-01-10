@@ -194,7 +194,7 @@ A framework for generating conclusions about a population from noisy data from a
 
 ---
 
-# Assigning probability to events
+# <center> Assigning probability to events
 
 The probability distribution of the Random Variable $X$ tells us how likely each event (number of heads) is to occur in the experiment
 
@@ -206,6 +206,86 @@ The probability distribution of the Random Variable $X$ tells us how likely each
 | ![](L4_StatReview_files/heads.png)![](L4_StatReview_files/heads.png) | 2 | 0.25 |
 
 
-<small> Note on notation: $P(X=x)$ can also be written as $P_x(x)$
+<small> Note on notation: $P(X=x)$ can also be written as $P_X(x)$
 
+---
 
+# <center> Two types of random variables
+
+* A **discrete** RV has a countable number of possible values
+  
+  - e.g. throwing dice, genotype measured on a SNP chip
+
+* A **continuous** RV takes on values in an interval of numbers
+
+  - e.g. expression level of a gene, blood glucose level, height of individuals
+  
+---
+
+# <center> Standard Gaussian (Normal) distribution 
+
+.pull-left[
+* probability density function:
+$$f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$
+
+* Mean $=\mu$
+
+* Standard Deviation $=\sigma$
+
+* For convenience, we write $N(\mu, \sigma^2)$
+
+* When $\mu=0$ and $\sigma=1$, this is the *Standard* Normal distribution $N(0,1)$
+]
+
+.pull-right[
+![](L4_StatReview_files/normal.png)
+]
+
+---
+
+# <center> Gaussian (Normal) distribution 
+
+<center><img src="L4_StatReview_files/normal2.png" width=650>
+
+$$\text{Probability density function: }f(x|\mu,\sigma^2) = \phi(x) = \frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$
+
+---
+
+# <center> Density $\rightarrow$ probability requires integration
+
+```{r echo=FALSE, fig.width=8, fig.height=5, fig.align='center'}
+library(ggplot2)
+theme_set(theme_bw())
+x_lower <- -3
+x_upper <- 3
+
+max_height <- max(dnorm(x_lower:x_upper))
+
+ggplot(data.frame(x = c(x_lower, x_upper)), aes(x = x)) + xlim(x_lower, x_upper) + 
+  ylim(0, max_height) +
+  geom_area(stat = "function", fun = dnorm, fill = "blue", alpha = 0.25, xlim = c(-1, 1)) +
+  stat_function(fun = dnorm) + 
+  xlab("x") + 
+  ylab(bquote(phi(x))) +
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.title.x = element_text(face="bold", colour="blue", size = 24),
+        axis.title.y = element_text(face="bold", colour="blue", size = 24)) +
+  geom_vline(xintercept = -1, linetype="dashed", colour="blue") +
+  geom_vline(xintercept = 1, linetype="dashed", colour="blue")
+
+```
+---
+
+# <center> Statistical Inference
+
+* The **parameter space** is the set of all possible values for the parameter
+
+* One major goal: to "figure out" (i.e. estimate) the **parameter values**
+  - i.e. *"fit the model to the data"*
+  
+* The model is a representation that (we hope) approximates the data and (more importantly) the population that the data were sampled from 
+
+* We can then use this model for:
+  - hypothesis testing
+  - prediction 
+  - simulation
