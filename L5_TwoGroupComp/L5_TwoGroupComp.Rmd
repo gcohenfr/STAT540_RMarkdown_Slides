@@ -12,7 +12,7 @@ output:
       countIncrementalSlides: false
       ratio: "16:9"
 ---
-class: middle
+
 layout: true
 
 <big>
@@ -22,7 +22,7 @@ layout: true
 div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 </style>
 
-# <center> Central dogma of statistics
+#  Central dogma of statistics
 
 <center>
 <img src="L5_TwoGroupComp_files/statInference.png" alt="Central dogma of statistics" width="700"/><br><small><a href="https://www.gs.washington.edu/academics/courses/akey/56008/lecture/lecture1.pdf" style="color:grey;">Image source: Josh Akey's Lecture notes</a></small></center>
@@ -30,7 +30,7 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 <br>We want to understand a **population** (e.g., gene behaviour) but we can only study a <font color=red>**random sample**</font> from it. 
 ---
 
-# <center> Book and online resources
+#  Book and online resources
 
 * [Modern Statistics for Modern Biology](https://www.huber.embl.de/msmb/) by Susan Holmes and Wolfgang Huber, 2019 (free online book)
 
@@ -42,7 +42,7 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 ---
 
-# <center> Hypothesis Testing in Genomics
+#  Hypothesis Testing in Genomics
 
 [![Akimoto et al. (2006)](L5_TwoGroupComp_files/paperRef.PNG)](https://doi.org/10.1073/pnas.0508214103)
 
@@ -58,7 +58,7 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 ---
 
-# <center> Why a Hypothesis Test?
+#  Why a Hypothesis Test?
 <big>
 From the [Akimoto et al. (2006) paper](https://doi.org/10.1073/pnas.0508214103 ): 
 >"we hypothesized that Nrl is the ideal transcription factor to gain insights into gene expression changes ..."
@@ -72,7 +72,7 @@ From the [Akimoto et al. (2006) paper](https://doi.org/10.1073/pnas.0508214103 )
 
 ---
 
-# <center> Statistical inference
+#  Statistical inference
 
 <big>
 **Statistical inference**:
@@ -148,14 +148,12 @@ options(repr.plot.width=8, repr.plot.height=5)
 grid.arrange(irsLim + ylim(5, 13), nrlLim + ylim(5, 13), ncol = 1)
 ```
 
---
-
-### <center><font color="red"> We only observe a random sample of gene expressions.</font>
+### <font color="red"> We only observe a random sample of gene expressions.</font>
 
 
 ---
 
-# <center> Statistical Hypothesis
+#  Statistical Hypothesis
 <big>
 ** Experimental design:**
   - 2 conditions: WT *vs* NrlKO
@@ -427,7 +425,7 @@ by(miniDat, miniDat$gene, function(theDat) {
 ```
 
 
-## <center> The Test Statistic:  <small> $T=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}$</small>
+##  The Test Statistic:  <small> $T=\frac{\bar{Z}_n-\bar{Y}_n}{\hat{\sigma}_{Z_n-Y_n}}$</small>
 
 <small>
 
@@ -451,6 +449,7 @@ The difference is about half a standard deviation for Irs4 and ~16 standard devi
 
 ---
 
+class:middle
 
 ### The test statistic T is a <font color=red>random variable</font> because it's based on our <font color=red>random sample</font>.
 
@@ -464,20 +463,23 @@ The difference is about half a standard deviation for Irs4 and ~16 standard devi
 
 ### Theory now tells us specific **null distributions** for these test statistics, depending on your assumptions.
 
-### -->  Willing to assume that F and G are normal distributions?
+### $\large\Rightarrow$ Willing to assume that F and G are normal distributions?
 
 .pull-left[
-### <center> 2-sample *t*-test: 
+###  2-sample *t*-test: 
  <center> (equal variances)
 $$T\sim t_{n_Y+n_Z-2}$$
 ]
 .pull-right[
-### <center> Welch test:
+###  Welch test:
 <center> (unequal variances)
 $$T\sim t_{<something\,ugly>}$$
 ]
 
-### --> Unwilling to assume that F and G are normal distributions? But you feel that n<sub>Y</sub> and n<sub>Z</sub> are large enough?
+--
+
+<br>
+### $\large\Rightarrow$ Unwilling to assume that F and G are normal distributions? But you feel that n<sub>Y</sub> and n<sub>Z</sub> are large enough?
 
 Then the t-distributions above or even a normal distribution are decent approximations.
 
@@ -492,7 +494,7 @@ Then the t-distributions above or even a normal distribution are decent approxim
 where df = degrees of freedom.
 ---
 
-# <center> Hypothesis testing
+#  Hypothesis testing
 
 ### 1. Define a **test statistic**: 2-sample *t*-test
 ### 2. Compute the <font color=red>observed value</font> for the test statistic
@@ -700,6 +702,8 @@ What if you don't wish to assume the underlying data is normally distributed AND
 </big>
 
 ## What are alternatives to the *t*-test?
+
+class:middle
 
 <big>
 First, one could use the t test statistic but use a **bootstrap approach** to compute its p-value. We will cover this later on.

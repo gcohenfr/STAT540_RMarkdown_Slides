@@ -13,6 +13,13 @@ output:
       countIncrementalSlides: false
       ratio: "16:9"
 ---
+
+layout: true
+
+<big>
+
+---
+
 class: middle
 
 ```{r, include=FALSE}
