@@ -532,11 +532,13 @@ Let $\normalsize X_1, X_2, ..., X_n$ be a random sample from a population with a
 ```{r, fig.height=6, fig.width=6, fig.align="center", echo=FALSE}
 library(ggplot2)
 theme_set(theme_bw())
-ggplot(data.frame(x = c(0, 1)), aes(x = x)) +
+p<- ggplot(data.frame(x = c(0, 1)), aes(x = x)) +
   geom_line(stat = "function", fun = dbeta, 
             args = list(shape1=0.5, shape2=0.5),
             color = "blue", cex=2) + 
-  ggtitle("Distribution of X")
+  ggtitle("Distribution of X")+
+  theme(text = element_text(size=20))
+p
 ```
 ]
 
@@ -547,9 +549,12 @@ set.seed(20200111) # set seed for reproducibility
 x_bar <- colMeans(replicate(100, rbeta(n, 0.5, 0.5)))
 ggplot(data.frame(x = x_bar), aes(x = x)) +
   geom_density(color = "blue", cex=2) +
-  geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1) + ggtitle("Sampling Distribution of mean(X)")
+  geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1) + ggtitle(bquote("Sampling Distribution of "~bar(X)))+
+  theme(text = element_text(size=20))+ xlab(bquote(bar(x)))
 ```
 ]
+
+On right: dashed pink line is $N(\mu, \sigma/\sqrt{n})$; solid blue line is $N(\bar{x}, s/\sqrt{n})$ 
 
 ---
 
@@ -558,12 +563,7 @@ ggplot(data.frame(x = x_bar), aes(x = x)) +
 
 .pull-left[
 ```{r, fig.height=6, fig.width=6, fig.align="center", echo=FALSE}
-library(ggplot2)
-theme_set(theme_bw())
-ggplot(data.frame(x = c(0, 1)), aes(x = x)) +
-  geom_line(stat = "function", fun = dbeta, 
-            args = list(shape1=0.5, shape2=0.5),
-            color = "blue", cex=2)+ ggtitle("Distribution of X")
+p
 ```
 ]
 
@@ -574,9 +574,12 @@ set.seed(20200111) # set seed for reproducibility
 x_bar <- colMeans(replicate(100, rbeta(n, 0.5, 0.5)))
 ggplot(data.frame(x = x_bar), aes(x = x)) +
   geom_density(color = "blue", cex=2) +
-  geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1)+ ggtitle("Sampling Distribution of mean(X)")
+  geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1)+ ggtitle(bquote("Sampling Distribution of "~bar(X)))+
+  theme(text = element_text(size=20))+ xlab(bquote(bar(x)))
 ```
 ]
+
+On right: dashed pink line is $N(\mu, \sigma/\sqrt{n})$; solid blue line is $N(\bar{x}, s/\sqrt{n})$ 
 
 ---
 
@@ -585,12 +588,7 @@ ggplot(data.frame(x = x_bar), aes(x = x)) +
 
 .pull-left[
 ```{r, fig.height=6, fig.width=6, fig.align="center", echo=FALSE}
-library(ggplot2)
-theme_set(theme_bw())
-ggplot(data.frame(x = c(0, 1)), aes(x = x)) +
-  geom_line(stat = "function", fun = dbeta, 
-            args = list(shape1=0.5, shape2=0.5),
-            color = "blue", cex=2)+ ggtitle("Distribution of X")
+p
 ```
 ]
 
@@ -601,9 +599,13 @@ set.seed(20200111) # set seed for reproducibility
 x_bar <- colMeans(replicate(100, rbeta(n, 0.5, 0.5)))
 ggplot(data.frame(x = x_bar), aes(x = x)) +
   geom_density(color = "blue", cex=2) +
-  geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1)+ ggtitle("Sampling Distribution of mean(X)")
+  geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1)+ ggtitle(bquote("Sampling Distribution of "~bar(x)))+
+  theme(text = element_text(size=20))
 ```
 ]
+
+
+On right: dashed pink line is $N(\mu, \sigma/\sqrt{n})$; solid blue line is $N(\bar{x}, s/\sqrt{n})$ 
 
 ---
 
@@ -612,12 +614,7 @@ ggplot(data.frame(x = x_bar), aes(x = x)) +
 
 .pull-left[
 ```{r, fig.height=6, fig.width=6, fig.align="center", echo=FALSE}
-library(ggplot2)
-theme_set(theme_bw())
-ggplot(data.frame(x = c(0, 1)), aes(x = x)) +
-  geom_line(stat = "function", fun = dbeta, 
-            args = list(shape1=0.5, shape2=0.5),
-            color = "blue", cex=2)+ ggtitle("Distribution of X")
+p
 ```
 ]
 
@@ -628,9 +625,13 @@ set.seed(20200111) # set seed for reproducibility
 x_bar <- colMeans(replicate(100, rbeta(n, 0.5, 0.5)))
 ggplot(data.frame(x = x_bar), aes(x = x)) +
   geom_density(color = "blue", cex=2) +
-  geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1) + ggtitle("Sampling Distribution of mean(X)")
+  geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1) + ggtitle(bquote("Sampling Distribution of "~bar(X)))+
+  theme(text = element_text(size=20))+ xlab(bquote(bar(x)))
 ```
 ]
+
+
+On right: dashed pink line is $N(\mu, \sigma/\sqrt{n})$; solid blue line is $N(\bar{x}, s/\sqrt{n})$ 
 
 ---
 
@@ -641,7 +642,7 @@ ggplot(data.frame(x = x_bar), aes(x = x)) +
 
 * **Statistical hypothesis:** A hypothesis that is testable on the basis of observing a process that is modeled via a set of random variables
 
-* **Hypothesis Testing:** A formal procedure for determining whether to *accept* or *reject* a statistical hypothesis
+* **Hypothesis Testing:** A formal procedure for determining whether to *accept* or *reject* a statistical hypothesis 
 
 * Requires comparing two hypotheses:
   
@@ -653,13 +654,16 @@ ggplot(data.frame(x = x_bar), aes(x = x)) +
 
 # Hypothesis Testing: motivating example
 
-<big>
 
-* Given the expression level of gene $\normalsize g$ in some patients with disease (e.g. cancer), and some healthy (control) individuals, determine if gene $\normalsize g$ is differentially expressed in cancer vs healthy samples
+* The expression level of gene $\normalsize g$ is measured in $\normalsize n$ patients with disease (e.g. cancer), and $\normalsize m$ healthy (control) individuals:
+  - $\normalsize z_1, z_2, ..., z_n$ and $\normalsize y_1, y_2, ..., y_m$
 
---
+* Is gene $\normalsize g$ is differentially expressed in cancer vs healthy samples?
+  - $\normalsize H_0: \mu_Z = \mu_Y$
+  - $\normalsize H_A: \mu_Z \neq \mu_Y$
 
 * In this setting, hypothesis testing allows us to determine whether observed differences between groups in our data are *significant*
+
 
 ---
 
@@ -673,7 +677,214 @@ ggplot(data.frame(x = x_bar), aes(x = x)) +
 
 3. Compute the p-value associated with the observed test statistic under the null distribution $\normalsize p(t | H_0)$
 
+---
 
+# Motivating example (cancer vs healthy gene expression)
+
+```{r, echo=FALSE, fig.height=4.5, fig.width=4.5, show=TRUE}
+
+library(ggplot2)
+theme_set(theme_bw())
+set.seed(78)
+n <- 4
+delta <- 1
+p1 <- ggplot(data.frame(y=c(rnorm(n), rnorm(n,mean=delta)),
+                        Group=c(rep("healthy", n), rep("cancer", n))),
+             aes(x=Group, y=y, color = Group)) +
+  geom_jitter(size=4) +
+  theme(legend.position = "none") +
+  theme(text = element_text(size=20)) +
+  ylim(-2.75,2.75)
+  
+set.seed(87)
+p1
+```
+
+---
+
+
+# Motivating example (cancer vs healthy gene expression)
+
+```{r, echo=FALSE, fig.height=4.5, fig.width=9, show=TRUE, messsge=FALSE, warning=FALSE}
+
+library(ggplot2)
+theme_set(theme_bw())
+suppressPackageStartupMessages(library(cowplot))
+set.seed(78)
+
+n <- 8
+delta <- 1
+p2 <- ggplot(data.frame(y=c(rnorm(n), rnorm(n,mean=delta)),
+                        Group=c(rep("healthy", n), rep("cancer", n))),
+             aes(x=Group, y=y, color = Group)) +
+  geom_jitter(size=4) +
+  theme(legend.position = "none") +
+  theme(text = element_text(size=20))+
+  ylim(-2.75,2.75)
+  
+set.seed(87)
+plot_grid(p1, p2, nrow=1)
+```
+
+---
+
+# Motivating example (cancer vs healthy gene expression)
+
+```{r, echo=FALSE, fig.height=4.5, fig.width=13.5, show=TRUE, messsge=FALSE, warning=FALSE}
+
+library(ggplot2)
+theme_set(theme_bw())
+suppressPackageStartupMessages(library(cowplot))
+set.seed(78)
+
+n <- 20
+delta <- 1
+p3 <- ggplot(data.frame(y=c(rnorm(n), rnorm(n,mean=delta)),
+                        Group=c(rep("healthy", n), rep("cancer", n))),
+             aes(x=Group, y=y, color = Group)) +
+  geom_jitter(size=4) +
+  theme(legend.position = "none") +
+  theme(text = element_text(size=20))+
+  ylim(-2.75,2.75)
+
+set.seed(87)  
+plot_grid(p1, p2, p3, nrow=1)
+```
+
+---
+
+# Is there a **significant** difference between the two means?
+
+```{r, echo=FALSE, fig.height=4.5, fig.width=13.5, show=TRUE, messsge=FALSE, warning=FALSE}
+
+library(ggplot2)
+theme_set(theme_bw())
+suppressPackageStartupMessages(library(cowplot))
+set.seed(78)
+
+n <- 4
+delta <- 1
+p1 <- ggplot(data.frame(x = c(-2, 3)), aes(x = x)) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=0, sd=sqrt(1/n)), color = "#F8766D", cex=2) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=1, sd=sqrt(1/n)), color = "#00BFC4", cex=2) +
+  theme(legend.position = "none") +
+  theme(text = element_text(size=20)) + 
+  geom_vline(xintercept=c(0,1), linetype="dashed", color="grey")+
+  ggtitle(expression(paste("n=4, ", sigma[X], "=1")))+ ylab("")+ xlab(bquote(bar(X)))
+
+n <- 8
+delta <- 1
+p2 <- ggplot(data.frame(x = c(-2, 3)), aes(x = x)) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=0, sd=sqrt(1/n)), color = "#F8766D", cex=2) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=1, sd=sqrt(1/n)), color = "#00BFC4", cex=2) +
+  theme(legend.position = "none") +
+  theme(text = element_text(size=20))+ 
+  geom_vline(xintercept=c(0,1), linetype="dashed", color="grey")+
+  ggtitle(expression(paste("n=8, ", sigma[X], "=1")))+ ylab("")+ xlab(bquote(bar(X)))
+
+n <- 20
+delta <- 1
+p3 <- ggplot(data.frame(x = c(-2, 3)), aes(x = x)) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=0, sd=sqrt(1/n)), color = "#F8766D", cex=2) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=1, sd=sqrt(1/n)), color = "#00BFC4", cex=2) +
+  theme(legend.position = "none") +
+  theme(text = element_text(size=20))+ 
+  geom_vline(xintercept=c(0,1), linetype="dashed", color="grey")+
+  ggtitle(expression(paste("n=20, ", sigma[X], "=1")))+ 
+  ylab("") + xlab(bquote(bar(X)))
+
+
+n <- 4
+delta <- 1
+p4 <- ggplot(data.frame(x = c(-2, 3)), aes(x = x)) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=0, sd=sqrt(3/n)), color = "#F8766D", cex=2) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=1, sd=sqrt(3/n)), color = "#00BFC4", cex=2) +
+  theme(legend.position = "none") +
+  theme(text = element_text(size=20)) + 
+  geom_vline(xintercept=c(0,1), linetype="dashed", color="grey") +
+  ggtitle(expression(paste("n=4, ", sigma[X], "=3")))+ ylab("")+ xlab(bquote(bar(X)))
+
+n <- 8
+delta <- 1
+p5 <- ggplot(data.frame(x = c(-2, 3)), aes(x = x)) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=0, sd=sqrt(3/n)), color = "#F8766D", cex=2) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=1, sd=sqrt(3/n)), color = "#00BFC4", cex=2) +
+  theme(legend.position = "none") +
+  theme(text = element_text(size=20))+ 
+  geom_vline(xintercept=c(0,1), linetype="dashed", color="grey")+
+  ggtitle(expression(paste("n=8, ", sigma[X], "=3")))+ ylab("")+ xlab(bquote(bar(X)))
+
+n <- 20
+delta <- 1
+p6 <- ggplot(data.frame(x = c(-2, 3)), aes(x = x)) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=0, sd=sqrt(3/n)), color = "#F8766D", cex=2) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=1, sd=sqrt(3/n)), color = "#00BFC4", cex=2) +
+  theme(legend.position = "none") +
+  theme(text = element_text(size=20))+ 
+  geom_vline(xintercept=c(0,1), linetype="dashed", color="grey")+
+  ggtitle(expression(paste("n=20, ", sigma[X], "=3")))+ ylab("")+ xlab(bquote(bar(X)))
+
+set.seed(87)  
+plot_grid(p1, p2, p3, p4, p5, p6, nrow=2)
+```
+
+* Mean difference needs to be put into context of the *spread (standard deviation)* 
+
+* Also depends on the sample size 
+
+---
+
+# t-statistic / t-test
+
+* Measures difference in means, adjusted for spread/standard deviation:
+
+$$\normalsize t=\frac{\bar{z}-\bar{y}}{SE_{\bar{z}-\bar{y}}}$$
+    for $z_1, z_2, ..., z_n$ expression measurements in healthy samples and $y_1, y_2, ..., y_m$ cancer samples
+
+* Standard error estimate for the difference in means:
+
+$$SE_{\bar{z}-\bar{y}} = s_p \sqrt{\frac{1}{n} + \frac{1}{m}} \text{ , where  } s_p^2 = \frac{s^2_z + s^2_y}{(n-1) + (m-1)}$$
+---
+
+# t-test
+
+* From the theory, we know the distribution of our test statistic, if we are willing to make some assumptions
+
+
+* If we assume:
+
+  - Z and Y are normally distributed
+  
+  - Z and Y have equal variance
+  
+Then our t-statistic follows a t distribution with m+n-2 degrees of freedom $$t \sim t_{n+m-2}$$
+
+---
+
+# t distribution
+
+.pull-left[
+<img src="L4_StatReview_files/tdist.png" width=600>
+]
+
+.pull-right[
+* t statistic value tells us how extreme our observed data is relative to the null 
+
+* obtain p-value by computing area to the left and/or right of the t statistic (one-sided vs two-sided)
+
+]
+
+---
+
+# Summary
+
+* Random variables are variables that have an associated probability distribution 
+
+* Any statistic of sampled data is an RV, and hence has an associated probability distribution
+
+* The CLT gives us the sampling distribution of the mean 
+
+* Hypothesis testing gives us a framework to assess a statistical hypothesis under the null
 
 
 
