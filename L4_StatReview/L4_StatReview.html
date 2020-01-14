@@ -14,7 +14,7 @@ class: center, middle, inverse, title-slide
 # <font color=red>Lecture 4 – Review of Probability and Statistics</font>
 ## STAT/BIOF/GSAT 540: Statistical Methods for High Dimensional Biology
 ### Keegan Korthauer
-### 2020/01/15 <br><br> <font size=5> Slides by: Sara Mostafavi with contributions from Keegan Korthauer </font>
+### 2020/01/15 <br><br> <font size=5> Slides by: Sara Mostafavi and Keegan Korthauer </font>
 
 ---
 
@@ -153,12 +153,11 @@ A framework for generating conclusions about a population from noisy data from a
 
 * **Experiment**: Toss two coins
 
-* **Sample space**: set of all possible outcomes `\(S=\{TT, TH, HT, HH\}\)`
+* **Sample space**: set of all possible outcomes &lt;small&gt; `\({\normalsize S=\{TT, TH, HT, HH\}}\)` &lt;/small&gt;
 
 * **Random Variable of interest**: number of heads
 
 
-* Can you think of other RVs?
 
 ]
 .pull-right[
@@ -270,6 +269,7 @@ The probability distribution of the Random Variable `\(X\)` tells us how likely 
 #  Density `\(\rightarrow\)` probability requires integration
 
 &lt;img src="L4_StatReview_files/figure-html/unnamed-chunk-1-1.png" style="display: block; margin: auto;" /&gt;
+
 ---
 
 #  Statistical Inference
@@ -339,6 +339,9 @@ The probability distribution of the Random Variable `\(X\)` tells us how likely 
 * Standard Deviation `\(=\sigma\)`
 
 * For convenience, we write `\(N(\mu, \sigma^2)\)`
+
+* Population parameters are unknown
+
 ]
 
 ---
@@ -464,11 +467,7 @@ By the *Central Limit Theorem (CLT)*, we know that the sampling distribution of 
 
 --
 
-* The *standard deviation* of `\(\bar{X}\)` is `\(\frac{\sigma}{\sqrt{n}}\)`
-
---
-
-* The *standard error* of `\(X\)` is `\(\frac{\sigma}{\sqrt{n}}\)`
+* The *standard error* of the mean is `\(\frac{\sigma}{\sqrt{n}}\)`
 
 --
 
@@ -522,8 +521,7 @@ Let `\(\normalsize X_1, X_2, ..., X_n\)` be a random sample from a population wi
 &lt;img src="L4_StatReview_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
-On right: dashed pink line is `\(N(\mu, \sigma/\sqrt{n})\)`; solid blue line is `\(N(\bar{x}, s/\sqrt{n})\)` 
-
+On right: dashed pink line is `\(N(\mu, \sigma^2/n)\)`
 ---
 
 # Illustration (n = 10)
@@ -537,7 +535,7 @@ On right: dashed pink line is `\(N(\mu, \sigma/\sqrt{n})\)`; solid blue line is 
 &lt;img src="L4_StatReview_files/figure-html/unnamed-chunk-5-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
-On right: dashed pink line is `\(N(\mu, \sigma/\sqrt{n})\)`; solid blue line is `\(N(\bar{x}, s/\sqrt{n})\)` 
+On right: dashed pink line is `\(N(\mu, \sigma^2/n)\)`
 
 ---
 
@@ -553,7 +551,7 @@ On right: dashed pink line is `\(N(\mu, \sigma/\sqrt{n})\)`; solid blue line is 
 ]
 
 
-On right: dashed pink line is `\(N(\mu, \sigma/\sqrt{n})\)`; solid blue line is `\(N(\bar{x}, s/\sqrt{n})\)` 
+On right: dashed pink line is `\(N(\mu, \sigma^2/n)\)`
 
 ---
 
@@ -569,7 +567,7 @@ On right: dashed pink line is `\(N(\mu, \sigma/\sqrt{n})\)`; solid blue line is 
 ]
 
 
-On right: dashed pink line is `\(N(\mu, \sigma/\sqrt{n})\)`; solid blue line is `\(N(\bar{x}, s/\sqrt{n})\)` 
+On right: dashed pink line is `\(N(\mu, \sigma^2/n)\)`
 
 ---
 
@@ -633,6 +631,10 @@ On right: dashed pink line is `\(N(\mu, \sigma/\sqrt{n})\)`; solid blue line is 
 # Motivating example (cancer vs healthy gene expression)
 
 ![](L4_StatReview_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+
+--
+
+All three samples drawn from iid Normal distributions with equal variance and `\(\mu_Z-\mu_Y=1\)`
 
 ---
 

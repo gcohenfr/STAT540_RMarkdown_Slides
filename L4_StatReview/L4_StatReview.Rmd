@@ -2,7 +2,7 @@
 title: "<font color=red>Lecture 4 -- Review of Probability and Statistics</font>"
 subtitle: "STAT/BIOF/GSAT 540: Statistical Methods for High Dimensional Biology"
 author: Keegan Korthauer
-date: "2020/01/15 <br><br> <font size=5> Slides by: Sara Mostafavi with contributions from Keegan Korthauer </font>"
+date: "2020/01/15 <br><br> <font size=5> Slides by: Sara Mostafavi and Keegan Korthauer </font>"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -147,12 +147,11 @@ A framework for generating conclusions about a population from noisy data from a
 
 * **Experiment**: Toss two coins
 
-* **Sample space**: set of all possible outcomes $S=\{TT, TH, HT, HH\}$
+* **Sample space**: set of all possible outcomes <small> ${\normalsize S=\{TT, TH, HT, HH\}}$ </small>
 
 * **Random Variable of interest**: number of heads
 
 
-* Can you think of other RVs?
 
 ]
 .pull-right[
@@ -284,6 +283,7 @@ ggplot(data.frame(x = c(x_lower, x_upper)), aes(x = x)) + xlim(x_lower, x_upper)
   geom_vline(xintercept = 1, linetype="dashed", colour="blue")
 
 ```
+
 ---
 
 #  Statistical Inference
@@ -353,6 +353,9 @@ $$f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x-\mu)^2}{2\sigma^2}
 * Standard Deviation $=\sigma$
 
 * For convenience, we write $N(\mu, \sigma^2)$
+
+* Population parameters are unknown
+
 ]
 
 ---
@@ -478,11 +481,7 @@ By the *Central Limit Theorem (CLT)*, we know that the sampling distribution of 
 
 --
 
-* The *standard deviation* of $\bar{X}$ is $\frac{\sigma}{\sqrt{n}}$
-
---
-
-* The *standard error* of $X$ is $\frac{\sigma}{\sqrt{n}}$
+* The *standard error* of the mean is $\frac{\sigma}{\sqrt{n}}$
 
 --
 
@@ -543,19 +542,18 @@ p
 ]
 
 .pull-right[
-```{r, fig.height=6, fig.width=6, fig.align="center", echo=FALSE}
+```{r, fig.height=6, fig.width=6, fig.align="center", echo=FALSE, warning = FALSE, message=FALSE}
 n <- 3
 set.seed(20200111) # set seed for reproducibility
 x_bar <- colMeans(replicate(100, rbeta(n, 0.5, 0.5)))
 ggplot(data.frame(x = x_bar), aes(x = x)) +
-  geom_density(color = "blue", cex=2) +
+  geom_histogram(aes(y = ..density..), bins=20) +
   geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1) + ggtitle(bquote("Sampling Distribution of "~bar(X)))+
   theme(text = element_text(size=20))+ xlab(bquote(bar(x)))
 ```
 ]
 
-On right: dashed pink line is $N(\mu, \sigma/\sqrt{n})$; solid blue line is $N(\bar{x}, s/\sqrt{n})$ 
-
+On right: dashed pink line is $N(\mu, \sigma^2/n)$
 ---
 
 # Illustration (n = 10)
@@ -568,18 +566,18 @@ p
 ]
 
 .pull-right[
-```{r, fig.height=6, fig.width=6, fig.align="center",echo=FALSE}
+```{r, fig.height=6, fig.width=6, fig.align="center",echo=FALSE, warning = FALSE, message=FALSE}
 n <- 10
 set.seed(20200111) # set seed for reproducibility
 x_bar <- colMeans(replicate(100, rbeta(n, 0.5, 0.5)))
 ggplot(data.frame(x = x_bar), aes(x = x)) +
-  geom_density(color = "blue", cex=2) +
+  geom_histogram(aes(y = ..density..), bins=25) +
   geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1)+ ggtitle(bquote("Sampling Distribution of "~bar(X)))+
   theme(text = element_text(size=20))+ xlab(bquote(bar(x)))
 ```
 ]
 
-On right: dashed pink line is $N(\mu, \sigma/\sqrt{n})$; solid blue line is $N(\bar{x}, s/\sqrt{n})$ 
+On right: dashed pink line is $N(\mu, \sigma^2/n)$
 
 ---
 
@@ -593,19 +591,19 @@ p
 ]
 
 .pull-right[
-```{r, fig.height=6, fig.width=6, fig.align="center", echo=FALSE}
+```{r, fig.height=6, fig.width=6, fig.align="center", echo=FALSE, warning = FALSE, message=FALSE}
 n <- 30
 set.seed(20200111) # set seed for reproducibility
 x_bar <- colMeans(replicate(100, rbeta(n, 0.5, 0.5)))
 ggplot(data.frame(x = x_bar), aes(x = x)) +
-  geom_density(color = "blue", cex=2) +
-  geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1)+ ggtitle(bquote("Sampling Distribution of "~bar(x)))+
+  geom_histogram(aes(y = ..density..), bins=35) +
+  geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1)+ ggtitle(bquote("Sampling Distribution of "~bar(X)))+
   theme(text = element_text(size=20))
 ```
 ]
 
 
-On right: dashed pink line is $N(\mu, \sigma/\sqrt{n})$; solid blue line is $N(\bar{x}, s/\sqrt{n})$ 
+On right: dashed pink line is $N(\mu, \sigma^2/n)$
 
 ---
 
@@ -619,19 +617,19 @@ p
 ]
 
 .pull-right[
-```{r, fig.height=6, fig.width=6, fig.align="center", echo=FALSE}
+```{r, fig.height=6, fig.width=6, fig.align="center", echo=FALSE, warning = FALSE, message=FALSE}
 n <- 100
 set.seed(20200111) # set seed for reproducibility
 x_bar <- colMeans(replicate(100, rbeta(n, 0.5, 0.5)))
 ggplot(data.frame(x = x_bar), aes(x = x)) +
-  geom_density(color = "blue", cex=2) +
+  geom_histogram(aes(y = ..density..), bins=50) +
   geom_line(stat = "function", fun = dnorm, args = list(mean=0.5, sd=sqrt(0.125/n)), color = "pink", cex=2, linetype="dashed") + xlim(0,1) + ggtitle(bquote("Sampling Distribution of "~bar(X)))+
   theme(text = element_text(size=20))+ xlab(bquote(bar(x)))
 ```
 ]
 
 
-On right: dashed pink line is $N(\mu, \sigma/\sqrt{n})$; solid blue line is $N(\bar{x}, s/\sqrt{n})$ 
+On right: dashed pink line is $N(\mu, \sigma^2/n)$
 
 ---
 
@@ -694,7 +692,9 @@ p1 <- ggplot(data.frame(y=c(rnorm(n), rnorm(n,mean=delta)),
   geom_jitter(size=4) +
   theme(legend.position = "none") +
   theme(text = element_text(size=20)) +
-  ylim(-2.75,2.75)
+  ylim(-2.75,2.75)+
+    ylab("")+
+  ggtitle("m=n=4")
   
 set.seed(87)
 p1
@@ -720,7 +720,9 @@ p2 <- ggplot(data.frame(y=c(rnorm(n), rnorm(n,mean=delta)),
   geom_jitter(size=4) +
   theme(legend.position = "none") +
   theme(text = element_text(size=20))+
-  ylim(-2.75,2.75)
+  ylim(-2.75,2.75)+
+    ylab("")+
+  ggtitle("m=n=8")
   
 set.seed(87)
 plot_grid(p1, p2, nrow=1)
@@ -745,11 +747,17 @@ p3 <- ggplot(data.frame(y=c(rnorm(n), rnorm(n,mean=delta)),
   geom_jitter(size=4) +
   theme(legend.position = "none") +
   theme(text = element_text(size=20))+
-  ylim(-2.75,2.75)
+  ylab("")+
+  ylim(-2.75,2.75)+
+  ggtitle("m=n=20")
 
 set.seed(87)  
 plot_grid(p1, p2, p3, nrow=1)
 ```
+
+--
+
+All three samples drawn from iid Normal distributions with equal variance and $\mu_Z-\mu_Y=1$
 
 ---
 
