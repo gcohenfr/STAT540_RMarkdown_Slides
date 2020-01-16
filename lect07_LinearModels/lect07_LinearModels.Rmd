@@ -1,0 +1,915 @@
+---
+title: "<font color=red> Lecture 7 -- Linear Models</font>"
+subtitle: "STAT/BIOF/GSAT 540: Statistical Methods for High Dimensional Biology"
+author: Keegan Korthauer
+date: "2020/01/27 <br><br><font size=5> Slides by: Gabriela Cohen Freue with contributions from Jenny Bryan and Keegan Korthauer </font>"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+layout: true
+
+<big>
+
+---
+
+class: middle
+
+```{r, include=FALSE}
+library(lattice)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+library(grid)
+library(gridExtra)
+library(latex2exp)
+library(tidyr)
+library(broom)
+
+options(lifecycle_disable_warnings = TRUE)
+
+prDes <- readRDS("data/GSE4051_design.rds")
+levels(prDes$devStage)[levels(prDes$devStage)=="4_weeks"] <- "4W"
+
+prDat<-read.table("data/GSE4051_data.tsv",
+                      sep = "\t", header = T, row.names = 1)
+
+## I've selected this as our hit
+theHit <- which(rownames(prDat) == "1440645_at") # 17843
+## and this as our boring gene
+theBore <- which(rownames(prDat) == "1443184_at") # 18898
+
+keepers <- data.frame(row = c(theBore, theHit),
+                       probesetID = I(rownames(prDat)[c(theBore, theHit)]))
+
+devDat <- as.vector(t(prDat[keepers$probesetID, ]))
+devDat <- data.frame(gene = rep(c("theBore", "theHit"), each = nrow(prDes)),gExp = devDat)
+devDat <- data.frame(prDes, devDat)
+
+boreDat <- filter(devDat, gene == "theBore")
+hitDat <- filter(devDat, gene == "theHit")
+```
+
+# Recall from last class...
+
+### - show how to compare means of different groups (2 or more) using a linear regression model
+
+  - dummy variables to model the levels of a qualitative explanatory variable
+
+### - write a linear model using matrix notation
+
+  - understand which matrix is built by R
+  
+### - distinguish between single and multiple hypotheses 
+  - $t$-tests vs $F$-tests  
+---
+class: middle
+
+## **Quick review**: from $t$-test to linear regression
+![](img/ttest_to_reg.png)
+---
+class: middle
+
+## <font color="blue"> **HOW??** </font>
+### Changing the parametrization and using dummy variables
+
+<big>
+$$
+Y \sim G; \ E[Y]= \mu_Y ; \ Z \sim G; \ E[Z]= \mu_Z
+$$
+
+<center>**↓**
+
+$$Y_{ij}=\theta+\tau_2 \times x_{ij2} + \varepsilon_{ij}; \ i=1, \dots, n; \ j={1,2}$$
+
+<center>**↓**
+
+
+.pull-left[
+<br>
+<br>
+<br>
+$$\begin{array}{l}
+E[Y_{i1}] &= \theta=\mu_1 \\
+E[Y_{i2}] &= \theta + \tau_2=\mu_1\ + (\mu_2 - \mu_1) = \mu_2
+\end{array}$$
+
+]
+
+.pull-right[
+```{r,echo=FALSE,out.height="150px"}
+knitr::include_graphics("img/param.png")
+```
+]
+---
+class: middle
+
+## **Using matrix notation ...**
+
+```{r,echo=FALSE,out.height="400px"}
+knitr::include_graphics("img/matrix_not.png")
+```
+
+### ... and similarly beyond 2 groups comparisons (ANOVA)
+
+---
+class: center
+
+![](img/LM_vbles.png)
+---
+class: middle
+##**Parametrizations**
+
+### Different ways of writing this [design matrix, parameter vector] pair correspond to different parametrizations of the model
+# $$Y = [X\alpha] + \varepsilon$$
+<br> <big>
+ Understanding these concepts makes it easier ...
+- to interpret fitted models
+- to fit models such that comparisons you care most about are directly addressed in the inferential "report"
+---
+class: middle
+
+### For example: comparisons of mean expression levels between groups!
+<center>
+```{r,echo=FALSE,out.height="250px"}
+knitr::include_graphics("img/diff_means.png")
+```
+</center>
+By default, `lm` estimates mean differences (with respect to a reference group):
+
+``` {r}
+summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+```
+---
+class: middle
+## Today... more complex models
+
+### - more than one factor with multiple levels
+
+  - how to model many categorical variables and their interaction
+
+### - distinguish between simple and main effects 
+  - `lm` vs `anova` tests
+  
+### - nested models 
+  - $t$-tests vs $F$-tests  
+  
+### - continuous explanatory variables
+
+  - the regression line
+  
+
+---
+class: middle
+
+## Increasing the complexity of the linear model ...
+
+### What if you have two categorical variables?
+
+  
+  e.g., `gType` and `devStage` (for simplicity, let's consider only E16 and 4W)
+
+- ANOVA is usually used to study models with one or more categorical variables (factors)
+
+- Can we combine levels into 4 groups to simplify the analysis??
+
+
+![](img/anova.png)
+
+
+---
+class: middle
+```{r,echo=FALSE, include=FALSE}
+##########################################################
+## simplying devStage to first and last timepoints
+##########################################################
+prDes <- 
+  droplevels(subset(prDes,
+                    subset = devStage %in%
+                      levels(devStage)[c(1, nlevels(devStage))]))
+str(prDes) # 15 obs. of  4 variables
+prDat <- subset(prDat, select = prDes$sidChar)
+
+# Gene selected for illustration
+(luckyGene <- which(rownames(prDat) == "1455695_at")) # 26861
+twoDat <- data.frame(gExp = unlist(prDat[luckyGene, ]))
+twoDat <- data.frame(prDes, twoDat)
+twoDat$grp <- with(twoDat, interaction(gType, devStage))
+str(twoDat)
+with(twoDat, table(gType, devStage))
+table(twoDat$grp)
+
+```
+
+## Two-way ANOVA or a linear model with interaction 
+
+Which group means are we comparing in a model with 2 factors? 
+
+```{r,echo=FALSE,fig.height= 4, dev='svg'}
+mu.hat<-twoDat %>% group_by(grp) %>% summarize(mean(gExp)) %>% as.data.frame()
+lucky <- ggplot(twoDat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+             geom_jitter(width = 0.1) +
+             theme_bw() +
+             theme(legend.justification=c(1,1),legend.position = c(1,1)) +
+             ylim(6, 13) + stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) 
+
+lucky +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+  geom_text(aes(x = .8, y = mu.hat[1,2], label = TeX("$\\widehat{\\mu_1}$", output = "character")),colour="black", size=6,parse = TRUE)+
+  geom_text(aes(x = .8, y = mu.hat[2,2], label = TeX("$\\widehat{\\mu_2}$", output = "character")), colour="black", size=6,parse = TRUE)+
+  geom_text(aes(x = 2.2, y = mu.hat[3,2], label = TeX("$\\widehat{\\mu_3}$", output = "character")), colour="black", size=6, parse = TRUE)+
+  geom_text(aes(x = 2.2, y = mu.hat[4,2], label = TeX("$\\widehat{\\mu_4}$", output = "character")), colour="black", size=6, parse = TRUE)
+```
+
+$$\mu_1=E[Y_{(wt,E16)}], \ \mu_2=E[Y_{(NrlKO,E16)}], 
+\ \mu_3=E[Y_{(wt,4W)}], \ \mu_4=E[Y_{(NrlKO,4W)}]$$
+
+---
+class: middle
+### Reference-treatment effect parametrization
+
+By default, `lm` assumes a <font color = "red">**reference-treatment effect**</font> parametrization (mathematically, we need *more* dummy variables, see [math handout](../SupportingMaterial/math_handout.html))
+
+```{r,tidy.opts=list(width.cutoff=40)}
+twoFactFit <- lm(gExp ~ gType * devStage, twoDat)
+```
+
+```{r,echo=FALSE}
+summary(twoFactFit)$coeff
+```
+
+```{r,tidy.opts=list(width.cutoff=40)}
+means.2Fact <- as.data.frame(twoDat %>% 
+          group_by(grp) %>% summarize(cellMeans=mean(gExp)))
+(means.2Fact <-means.2Fact %>%
+          mutate(txEffects=cellMeans-cellMeans[1],
+          lmEst=summary(twoFactFit)$coeff[,1]))
+```
+
+---
+class: middle
+
+## The reference: <font color="blue"> wt & E16 </font>
+
+<big>
+As before, comparisons are relative to a reference but in this case there is a reference level in each factor: <font color="blue">wt and E16 </font>
+
+```{r,echo=FALSE,fig.height= 2.7, dev='svg'}
+lucky +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+  geom_text(aes(x = .8, y = mu.hat[1,2], label = TeX("$\\widehat{\\theta}=\\widehat{\\mu_1}$", output = "character")),colour="black", size=6, parse = TRUE) + 
+  geom_point(aes(x = 1, y = mu.hat[1,2]),size=7,shape=1,colour='#00BFC4')
+```
+
+---
+class: middle
+
+## The reference: wt & E16
+<big>
+
+**Mean of reference group**: $\theta=E[Y_{wt,E16}]$ 
+  
+**`lm` estimate**: $\hat{\theta}$ is the sample mean of the group 
+
+```{r,echo=FALSE,highlight.output = c(2)}
+summary(twoFactFit)$coeff
+
+means.2Fact
+```
+
+In general, one is not interested in: $H_0: \theta=0$
+
+---
+class: middle
+
+## Simple genotype effect: wt *vs* NrlKO <font color="blue"> at E16 </font>
+
+<big>
+And now the "treatment effects"... 
+
+> **Important**: effects are not marginal but *conditional* effects (<font color="blue">at a given level </font> of the other factor, e.g., at E16), usually called **simple effects**
+
+```{r,echo=FALSE,fig.height= 2.7, dev='svg'}
+lucky +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+  geom_text(aes(x = .7, y = abs(mu.hat[1,2]+mu.hat[2,2])/2, label = TeX("$\\widehat{\\tau_{KO}}$", output = "character")),colour="black", size=6, parse = TRUE) + 
+  geom_point(aes(x = 1, y = mu.hat[1,2]),size=7,shape=1,colour='#00BFC4')+
+  geom_point(aes(x = 1, y = mu.hat[2,2]),size=7,shape=1,colour='#F8766D')+
+  geom_segment(aes(x=.8,y=mu.hat[1,2],xend=.8,yend=mu.hat[2,2]),colour=1,arrow = arrow(length = unit(0.1,"cm")))
+```
+
+---
+
+class: middle
+
+## Simple genotype effect: wt *vs* NrlKO <font color="blue"> at E16 </font>
+
+**Effect of genotype at E16**: $\tau_{KO}=E[Y_{NrlKO,E16}]-E[Y_{wt,E16}]$
+
+**`lm` estimate**: $\hat{\tau}_{KO}$ is the *difference* of sample respective means (check below)
+
+```{r,echo=F,highlight.output = c(3)}
+summary(twoFactFit)$coeff
+
+means.2Fact
+```
+
+**But**, do you want to test the *conditional* effect at E16: $H_0: \tau_{KO}=0$?? 
+
+---
+
+class: middle
+### Simple developmental effect: E16 *vs* 4W <font color="blue"> at wt </font>
+
+<big>
+
+Similarly, for the other factor:
+
+```{r,echo=FALSE,fig.height= 3.5, dev='svg'}
+lucky +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+#circles around mean
+  geom_point(aes(x = 1, y = mu.hat[1,2]),size=7,shape=1,colour='#00BFC4')+
+  geom_point(aes(x = 2, y = mu.hat[3,2]),size=7,shape=1,colour='#00BFC4')+
+#parameter and segments
+  geom_text(aes(x = 2.2, y = abs(mu.hat[1,2]+mu.hat[3,2])/2, label = TeX("$\\widehat{\\tau_{4W}}$", output = "character")),colour="black", size=6, parse = TRUE) + 
+  geom_segment(aes(x=2.1,y=mu.hat[1,2],xend=2.1,yend=mu.hat[3,2]),colour=1,arrow = arrow(length = unit(0.1,"cm"))) + #other way for double arrow??
+  geom_segment(aes(x=1,y=mu.hat[1,2],xend=2,yend=mu.hat[1,2]),colour='grey',linetype=2)
+```
+
+---
+
+class: middle
+### Simple developmental effect: E16 *vs* 4W <font color="blue"> at wt </font>
+
+**Effect of development at wt**: $\tau_{4W}=E[Y_{wt,4W}]-E[Y_{wt,E16}]$
+
+**`lm` estimate**: $\hat{\tau}_{4W}$ is the *difference* of respective sample means (check below)
+
+```{r,echo=F,highlight.output = c(4)}
+summary(twoFactFit)$coeff
+
+means.2Fact
+```
+
+---
+class: middle
+
+## Interaction effect
+
+<big>
+
+Is the effect of genotype the same at different developmental stages? (or does hte effect of development depend on genotype?) 
+
+**Yes if**, there's no interaction effect, i.e., $\tau_{KO4W}=0$ 
+
+```{r,echo=FALSE,fig.height= 3, dev='svg'}
+mu.add<-mu.hat[3,2]-(mu.hat[1,2]-mu.hat[2,2])
+lucky +
+     scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+  #circles at means    
+     geom_point(aes(x = 2, y = mu.hat[3,2]),size=7,shape=1,colour='#00BFC4')+
+     geom_point(aes(x = 2, y = mu.hat[3,2]-(mu.hat[1,2]-mu.hat[2,2])),size=7,shape=1,colour='grey')+
+  #parameters and segments
+  #additive position
+    geom_segment(aes(x=1,y=mu.hat[2,2],xend=2,yend=mu.add),colour='grey',linetype=2)+
+  #tau_4W
+  geom_segment(aes(x=2.1,y=mu.hat[3,2],xend=2.1,yend=mu.add),colour='grey',arrow = arrow(length = unit(0.1,"cm")))+
+  geom_text(aes(x = 2.2, y = abs(mu.hat[3,2]+mu.add)/2, label = TeX("$\\widehat{\\tau_{4W}}$", output = "character")),colour='grey', size=6, parse = TRUE) +
+  #interaction
+  geom_segment(aes(x=2.1,y=mu.add,xend=2.1,yend=mu.hat[4,2]),colour='blue',arrow = arrow(length = unit(0.1,"cm"))) +
+  geom_text(aes(x = 2.2, y = abs(mu.hat[4,2]+mu.add)/2, label = TeX("$\\widehat{\\tau_{KO4W}}$", output = "character")),colour="blue", size=6, parse = TRUE) 
+```
+
+The genotype effect at E16 is $\tau_{KO}$. However, $\tau_{KO}$ does not seem to be the effect at 4W. The difference is the interaction effect!
+---
+## Interaction effect
+
+$\tau_{KO4W}=(E[Y_{NrlKO,4W}]-E[Y_{wt,4W}])-(E[Y_{NrlKO,E16}]-E[Y_{wt,E16}])$ 
+
+```{r,echo=FALSE,highlight.output = c(5)}
+summary(twoFactFit)$coeff
+```
+
+```{r,highlight.output = c(5)}
+means.2Fact
+((means.2Fact$cellMeans[4]-means.2Fact$cellMeans[3])-
+    (means.2Fact$cellMeans[2]-means.2Fact$cellMeans[1]))
+```
+
+---
+class: middle
+## Summary of model parameters: with interaction 
+
+model parameter | R estimate| stats | interpretation
+--------|---------|---------
+$\theta$ | (Intercept) | $E[Y_{wt,E16}]$ | reference
+$\tau_{KO}$ | gTypeNrlKO | $E[Y_{NrlKO,E16}] - E[Y_{wt,E16}]$ | *conditional* effect of NrlKO *at* E16
+$\tau_{4W}$ | devStage4_weeks | $E[Y_{wt,4W}] - E[Y_{wt,E16}]$ | *conditional* effect of 4W *at* wt
+$\tau_{KO4W}$ | gTypeNrlKO: devStage4_weeks | $E[Y_{NrlKO,4W}] - E[Y_{wt,4W}] - \tau_{KO}$  | *interaction* effect of NrlKO and 4W
+
+It is *important* to remember that `lm` reports *simple, not main* effects!! <font color="blue"> why?? because of the parametrization used!! </font> (see see [math handout](../SupportingMaterial/math_handout.html))
+
+It can also be shown that $\tau_{KO4W}=E[Y_{NrlKO,4W}]-\tau_{4W}-\tau_{KO}-\theta$ 
+
+---
+class: middle
+
+### Let's examine these parameters closer and some examples
+
+<big>     
+For our model, `lm` tests 4 hypotheses:
+
+.pull-left[
+> ### $H_0: \theta=0$
+### $H_0: \tau_{KO}=0$
+### $H_0: \tau_{4W}=0$
+### $H_0: \tau_{KO4W}=0$
+]
+.pull-right[
+<br>
+![](img/2way_param.png)
+]
+
+We may not be interested in these hypotheses, e.g., $\tau_{KO}$ and $\tau_{4W}$ are *conditional* effects *at* a given level of a factor (*simple effects*)
+---
+class: middle
+
+### Example 1: nothing is statistically significant, very flat genes $^*$
+```{r,tidy.opts=list(width.cutoff=30)}
+egDat<-prDat %>% subset(row.names(prDat) %in%
+       c("1442080_at","1448243_at")) %>%
+       tibble::rownames_to_column(var = "gene")%>% 
+       gather(sidChar, gExp,-gene) %>%
+       inner_join(prDes,by="sidChar")
+```
+<small> $^*$ Here and in next slides, summary of `lm` shown for the gene in the left plot
+
+```{r,echo=FALSE,highlight.output = c(3:5)}
+multFit <- lm(gExp ~ gType * devStage, subset(egDat,gene=="1448243_at"))
+summary(multFit)$coeff
+```
+
+```{r echo=FALSE, fig.height=3.5, fig.width=14, dev='svg'}
+plot1Dat <- filter(egDat, gene == "1442080_at")
+plot2Dat <- filter(egDat, gene == "1448243_at")
+
+plot1Lim <- ggplot(plot1Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1442080_at") +
+             theme_bw() +
+             theme(legend.justification=c(1,1),legend.position = c(1,1)) +
+             ylim(6, 10) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+plot2Lim <- ggplot(plot2Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1448243_at") +
+             theme_bw() +
+             theme(legend.justification=c(1,1),legend.position = c(1,1)) +
+             ylim(6, 10) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+grid.arrange(plot1Lim, plot2Lim, ncol = 2)
+```
+
+---
+class: middle
+### Example 2: statistically significant interaction effect: non-parallel 
+
+```{r,echo=FALSE,warning=FALSE}
+egDat<-prDat %>% subset(row.names(prDat) %in%
+       c("1434709_at","1458220_at")) %>%
+       tibble::rownames_to_column(var = "gene")%>% 
+       gather(sidChar, gExp,-gene) %>%
+       inner_join(prDes,by="sidChar")%>% 
+       mutate(grp=interaction(gType, devStage))
+```
+
+
+```{r,echo=FALSE,highlight.output = c(3:5),warning=FALSE}
+multFit <- lm(gExp ~ gType * devStage, subset(egDat,gene=="1434709_at"))
+summary(multFit)$coeff
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=14, dev='svg'}
+plot1Dat <- filter(egDat, gene == "1434709_at")
+plot2Dat <- filter(egDat, gene == "1458220_at")
+
+#cell-means for plot
+mu.hat1<-plot1Dat %>% group_by(grp) %>% summarize(mean(gExp)) %>% as.data.frame()
+
+plot1Lim <- ggplot(plot1Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1434709_at") +
+             theme_bw() +
+             theme(legend.justification=c(1,1),legend.position = c(1,1)) +
+             ylim(5, 11) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+  geom_segment(aes(x=1,y=mu.hat1[1,2],xend=1,yend=mu.hat1[2,2]),colour=1,arrow = arrow(length = unit(0.3,"cm")))+
+  geom_segment(aes(x=2,y=mu.hat1[3,2],xend=2,yend=mu.hat1[4,2]),colour=1,arrow = arrow(length = unit(0.3,"cm"))) 
+
+plot2Lim <- ggplot(plot2Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1458220_at") +
+             theme_bw() +
+             theme(legend.justification=c(1,1),legend.position = c(1,1)) +
+             ylim(5, 11) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+grid.arrange(plot1Lim, plot2Lim, ncol = 2)
+```
+
+When the interaction effect is significant, the *simple* effects may not agree: compare the genotype effect @E16 with that @4W!
+
+*Main* effects (overall): does genotype have an effect on gene expression? we can't answer this question! <font color="blue"> it depends (on the level of devStage)! </font> (more later) 
+
+---
+class: middle
+
+### Example 3: balance & only genotype @E16 is statistically significant
+
+To simplify future explanations, I've added a random observation in the NrlKO.E16 group (close to its mean) to have a *balanced* design 
+> In *unbalanced* designs the *main* effects are a *weighted* average of the simple effects, and the weights are not easy to interpret (beyond the scope of this course but worth noting the issue!)
+
+```{r,tidy.opts=list(width.cutoff=40),}
+egDat<-prDat %>% subset(row.names(prDat) %in%
+       c("1447753_at","1431651_at")) %>%
+       tibble::rownames_to_column(var = "gene")%>% 
+       gather(sidChar, gExp,-gene) %>%
+       inner_join(prDes,by="sidChar") %>% 
+       mutate(grp=interaction(gType, devStage))
+
+#duplicate sample 6 and add noise to gExp of genes
+set.seed(123)
+egDat <-egDat %>% subset(sidChar=="Sample_6") %>%
+       mutate(sidChar="Sample_r",sidNum="r",
+       gExp=gExp+rnorm(2,0,.1)) %>% rbind(egDat) %>% 
+       arrange(grp)
+```
+---
+class: middle
+
+### Example 3: only genotype @E16 is statistically significant: parallel
+
+The interaction effect is not significant (almost parallel pattern).
+
+Thus, there may be a genotype effect *regardless* of the developmental stage (*main* effect). However, that hypothesis is *not* tested here!!  
+
+How do we test a *main effect*??  
+
+```{r,echo=FALSE,highlight.output = 3}
+multFit <- lm(gExp ~ gType * devStage, subset(egDat,gene=="1447753_at"))
+multFit <- summary(multFit)$coeff
+multFit
+multEst<-multFit[,1]
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=14, dev='svg'}
+plot1Dat <- filter(egDat, gene == "1447753_at")
+plot2Dat <- filter(egDat, gene == "1431651_at")
+
+#cell-means for plot 1
+mu.hat1<-plot1Dat %>% group_by(grp) %>% summarize(mean(gExp)) %>% as.data.frame()
+
+plot1Lim <- ggplot(plot1Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1447753_at") +
+             theme_bw() +
+             theme(legend.justification=c(1,1),legend.position = c(1,1)) +
+             ylim(6, 7.1) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+  geom_segment(aes(x=1,y=mu.hat1[1,2],xend=1,yend=mu.hat1[2,2]),colour=1,arrow = arrow(length = unit(0.3,"cm")))
+
+plot2Lim <- ggplot(plot2Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "1431651_at") +
+             theme_bw() +
+             theme(legend.justification=c(1,1),legend.position = c(1,1)) +
+             ylim(6, 7.1) +  stat_summary(aes(group=gType,colour=gType), fun.y=mean, geom="line",size=1.5) +
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))
+
+grid.arrange(plot1Lim, plot2Lim, ncol = 2)
+```
+
+---
+class: middle
+## **How** do we test the *main* effects?
+
+The main effect measures the *overall* association between the response and a factor. They are the (weighted) average of an effect over the levels of the other factor
+
+> **Note**: a significant interaction means that the effect of a factor depends on the level of the other one. Thus, main effects may mask interesting results!
+
+
+```{r echo=FALSE, fig.height=3, dev='svg'}
+plot1Lim
+```
+
+---
+class: middle
+
+## Main effects
+
+`anova()` can be used to test the main effects:
+
+$$H_0: ((E[Y_{KO,E16}]-E[Y_{wt,E16}])+(E[Y_{KO,4W}]-E[Y_{wt,4W}]))/2=0$$
+> for unbalanced experiments $H_0: w_1 \text{effect}_{E16}+ w_2 \text{effect}_{4W}=0$ 
+
+```{r,highlight.output = c(4:5)}
+tidy(anova(lm(gExp ~ gType * devStage, plot1Dat)))
+```
+
+As we suspected in slide #26, there is a significant genotype effect for this gene (1447753_at), i.e., its mean expression changes in NrlKO group (compared to wt), on average over develpmental stages.
+
+<small>
+$^*$ `anova` uses type II sums of squares, which follows the principle of marginality, thus order matters in unbalanced designs!
+---
+# Main & interaction effects: important notes
+
+<Big>
+
+- A **significant interaction effect** means that the effect of one factor depends on the levels of the other one. 
+  - e.g., the effect of genotype depends on development
+
+- **Main effects**: are the (weighted) average of an effect over the levels of the other factor. 
+
+- A **non-significant main effect** means that, on average, there's no evidence of a factor's effect
+  - e.g, no evidence of a genotype effect, on average over both developmental stages
+
+- **Note of caution**: if the interaction is significant, it is possible that one or both simple effects are significant but the average effect (i.e., the main effect) is not. This is because the effect of a factor *depends on* the level of the other one!
+
+---
+# Additive models
+
+<Big>
+
+- In some applications, we need to test the interaction term
+
+- However, additive models are easier and smaller
+
+- If there are no statistical or theoretical grounds to include the interaction term, additive models are preferred 
+
+- Additive effects: $E[Y_{NrlKO,4W}]-E[Y_{wt,E16}]=\tau_{KO}+\tau_{4W}$
+
+``` {r}
+addFit <- summary(lm(formula = gExp ~ gType +devStage,plot1Dat))$coeff
+addFit
+```
+
+<small>
+$^*$ gene=1447753_at in table
+
+---
+<big>
+**Additive models**
+
+- In an additive model, the parameters are **average effects**, over the levels of the other factor. Now, same as in anova()!!
+
+> Note the agreement!! This is gone in unbalanced designs since weights are computed differently! <font color=blue> try!!</font>
+
+- TypeIII sum of squares are required for agreement in unbalanced designs (use `Anova` in `car`), beyond our scope
+
+
+``` {r,echo=FALSE,tidy.opts=list(width.cutoff=40),highlight.output =c(3)}
+addFit
+```
+
+```{r,highlight.output=c(4)}
+tidy(anova(lm(gExp ~ gType + devStage,plot1Dat)))
+```
+---
+
+```{r echo=FALSE, fig.height=3, dev='svg'}
+#cell-means for plot 1
+addEst<-addFit[,1]
+
+plot1Lim <- plot1Lim +
+  geom_segment(aes(x=2,y=mu.hat1[3,2],xend=2,yend=mu.hat1[4,2]),colour=1,arrow = arrow(length = unit(0.3,"cm")))
+  
+plotAdd <- ggplot(plot1Dat, aes(x = devStage, y = gExp, group=gType, colour=gType)) + 
+  geom_jitter(width = 0.1) +
+             labs(title = "Additive") +
+             theme_bw() +
+             theme(legend.justification=c(1,1),legend.position = c(1,1)) +
+             ylim(6, 7.1) +  
+  #equal slope regression lines (not mathematical meaning)
+  geom_segment(aes(x = 1, xend = 2, y = addEst[1] + addEst[3], yend = addEst[1] + 2* addEst[3]), color='#00BFC4',size=1.5)+
+  geom_segment(aes(x = 1, xend = 2, y = addEst[1] + addEst[2] + addEst[3], yend = addEst[1] + addEst[2] + 2* addEst[3]), color='#F8766D',size=1.5)+
+  scale_color_manual(values = c('wt' = '#00BFC4', 'NrlKO' = '#F8766D'))+
+#parallel lines
+geom_segment(aes(x=1,y=addEst[1] + addEst[3],xend=1,yend=addEst[1] + addEst[2]+ addEst[3]),colour=1,arrow = arrow(length = unit(0.3,"cm")))+
+  geom_segment(aes(x=2,y=addEst[1]+ 2*addEst[3],xend=2,yend=addEst[1] + addEst[2]+ 2*addEst[3]),colour=1,arrow = arrow(length = unit(0.3,"cm")))
+
+grid.arrange(plot1Lim,plotAdd, ncol=2)
+```
+
+```{r}
+multEst
+addEst 
+```
+---
+# Factors with multiple levels
+<big>
+
+We can generalize the regression model to factors with more levels (e.g., E16, P2, P10 and 4W): we just additional dummy variables (and parameters)!!
+
+> With interaction
+
+```{r,echo=FALSE}
+summary(lm(gExp~gType*devStage,hitDat))$coef
+```
+
+Note that all the `devStage` parameters are still *simple* effects, but we now have more: one for each level compared to the reference
+
+---
+class: middle
+# Factors with multiple levels (cont.)
+<big>
+
+> Without interaction: additive
+
+```{r,echo=FALSE}
+summary(lm(gExp~gType+devStage,hitDat))$coef
+```
+
+Parameters are now *main* effects (on average over the levels of the other factor) but we have more!
+
+<font color="blue"> Is developmental a significant effect? </font> We haven't tested that!!
+---
+class: middle
+
+# Simultaneous hypotheses again
+
+### We generally test two types of null hypotheses:
+      
+.pull-left[
+<center>
+$$H_0: \tau_j = 0$$
+vs
+$$H_0: \tau_j \neq 0$$
+for each *j* <font color="red">individually</font>
+          
+e.g., Is gene A differencially expressed 2 days after birth?
+$$H_0: \tau_{P2}=0$$
+          ]
+    
+.pull-right[
+<center>
+
+$$H_0: \tau_j = 0$$
+        vs
+$$H_0: \tau_j \neq 0$$
+for all *j* <font color="red">at the same time</font>
+        
+e.g., Is gene A significantly affected by time (`devStage`)?
+        
+$$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$
+        ]
+---
+class: middle
+    
+## *F*-test and overall significance: a deja vu 
+<big>
+  - the *t*-test in linear regression allows us to test single hypotheses. Those are given in the summary of `lm`
+      $$H_0 : \tau_i = 0$$
+      $$H_A : \tau_j \neq 0$$
+  - but we often like to test multiple hypotheses *simultaneously*: 
+      $$H_0 : \tau_{P2} = \tau_{P6} = \tau_{P10} = \tau_{4W}=0\textrm{ [AND statement]}$$
+      $$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$ the *F*-test allows us to test such compound tests
+      
+---
+class: middle
+# Overall effects: compound tests
+
+### With interaction
+
+<Big>
+> $H_0: \tau_{KO}=0$ (1 df) 
+$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$ (at wt!, 4 df)
+$H_0: \tau_{KOP2}=\tau_{KOP6}=\tau_{KOP10}=\tau_{KO4W}=0$ (4 df)
+
+```{r}
+tidy(anova(lm(gExp~gType*devStage,hitDat)))
+```
+
+Tests of overall effects of a factor controlling for the other one
+---
+
+class: middle
+## Overall effects: compound tests (cont.)
+
+### Without interaction
+
+<Big>
+> $H_0: \tau_{KO}=0$ (1 df) 
+$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$ (on average!, 4 df)
+
+```{r}
+tidy(anova(lm(gExp~gType+devStage,hitDat)))
+```
+Tests of overall effects of a factor controlling for the other one
+
+<small>
+The $t$-test in `lm` and the $F$-test (1 df) in `anova` for gType are not equivalent due to unbalancedness
+---
+
+class: middle
+
+# Nested models
+
+### These examples are just special cases of nested models 
+For example: does development have a significant effect on gene expression?
+
+<font color=blue> Compare the models with and without `devStage`!!  
+
+<font color=black>
+
+**Model 1**: gExp~gType
+
+**Model 2**: gExp~gType + devStage
+
+Mathematically:
+
+**Model 1**: $Y_{ijk}=\theta + \tau_{KO}x_{KO,ijk} + \varepsilon$
+
+**Model 2**: $Y_{ijk}=\theta + \tau_{KO}x_{KO,ijk} + \tau_{P2}x_{P2,ijk}+\tau_{P6}x_{P6,ijk}+\tau_{P10}x_{P10,ijk}+\tau_{4W}x_{4W,ijk}+ \varepsilon$
+
+<big> $$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$
+<small> The $x_{DD,ijk}$ are dummy variables (see [math handout](../SupportingMaterial/math_handout.html))
+---
+# More general!
+![](img/nested.png)
+---
+class: middle
+### Nested models in R
+
+``` {r}
+addReduced<- lm(gExp ~ gType, data = hitDat)
+addFull<- lm(gExp ~ gType+devStage, data = hitDat)
+anova(addReduced,addFull)
+tidy(anova(addFull))
+```
+
+``` {r , echo = FALSE}
+summary(twoFactFit)
+```
+
+---
+class: middle
+## Another special case: goodness of fit!
+
+<Big> Compare the full *vs* the intercept-only models (compound test)!
+$$H_0: \tau_{KO}=\tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0, \ (5 \text{ df})$$
+
+``` {r,echo=FALSE}
+addReduced<- lm(gExp ~ 1, data = hitDat)
+anova(addReduced,addFull)
+```
+
+``` {r}
+summary(addFull)$fstatistic # also given in the summary of lm
+```
+
+<small> All is valid in the model with interaction, try it!!
+
+---
+class: middle
+## Summary
+<big>
+- ** *t*-tests** can be used to test the equality of **2** population means
+
+- **ANOVA** can be used to test the equality of **more than 2** population means simultaneously (main effects)
+
+- **Linear regression** provides a general framework for modelling the relationship between a response and different type of explanatory variables
+
+  - *t*-tests are used to test the significance of *simple effects* (*individual* coefficients)
+
+  - *F*-tests are used to test the significance of *main effects* (*simultaneously* multiple coefficients) 
+
+- *F*-tests are used to compare nested models
+  - e.g., *overall* effects or *goodness of fit* 
+---
+class: middle
+
+<center>
+
+```{r,echo=FALSE,out.height="500px"}
+knitr::include_graphics("img/LM_vbles.png")
+```
+
+</center>
+
+### Next class: linear models provides a general flexible framework to study the relation of a response with many variables!
+
+
+
+
+
