@@ -12,11 +12,14 @@ output:
       highlightLines: true
       countIncrementalSlides: false
       ratio: "16:9"
+editor_options: 
+  chunk_output_type: console
 ---
 
 layout: true
 
 <big>
+
 ---
 
 <style>
@@ -25,8 +28,11 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 #  Central dogma of statistics
 
-<center>
-<img src="img/statInference.png" alt="Central dogma of statistics" width="700"/><br><small><a href="https://www.gs.washington.edu/academics/courses/akey/56008/lecture/lecture1.pdf" style="color:grey;">Image source: Josh Akey's Lecture notes</a></small></center>
+
+```{r, fig.align="center", echo = FALSE, out.width=650}
+knitr::include_graphics("img/statInference.png")
+```
+<center><small><a href="https://www.gs.washington.edu/academics/courses/akey/56008/lecture/lecture1.pdf" style="color:grey;">Image source: Josh Akey's Lecture notes</a></small></center>
 
 <br>We want to understand a **population** (e.g., gene behaviour) but we can only study a <font color=red>**random sample**</font> from it. 
 ---
@@ -45,14 +51,26 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 #  Hypothesis Testing in Genomics
 
-[![Akimoto et al. (2006)](img/paperRef.PNG)](https://doi.org/10.1073/pnas.0508214103)
 
-<big>
 
-<img width="300" style="padding:0 px; float:right" src="img/cellTypes.png">
+```{r, fig.align="center", echo = FALSE, out.width=600}
+knitr::include_graphics("img/paperRef.PNG")
+```
+
+[Akimoto et al. (2006)]("https://doi.org/10.1073/pnas.0508214103")
+
+.pull-left[
 - Retina presents a model system for investigating **regulatory networks** underlying neuronal differentiation.
 
 - **Nrl** transcription factor is known to be important for Rod development
+]
+.pull-right[
+```{r, fig.align="center", echo = FALSE, out.width=275}
+knitr::include_graphics("img/cellTypes.png")
+```
+]
+
+
 --
 
 - <font color="red">**What happens if you delete Nrl?**
@@ -80,14 +98,18 @@ From the [Akimoto et al. (2006) paper](https://doi.org/10.1073/pnas.0508214103 )
 
 We observe and study a <font color=red>random sample</font> to make conclusions about a population (e.g., random sample of gene expressions from mice)
 
-<img width="350" style="padding:0 px; float:right" src="img/NrlKOmouse.png">
 
+.pull-left[
 **Experimental design**:
 * 4 developmental stages
 * 2 genotypes: Wild type (WT), Nrl Knockout (NrlKO)
 * 3-4 replicates for each combination
-
-
+]
+.pull-right[
+```{r, fig.align="right", echo = FALSE, out.width=340}
+knitr::include_graphics("img/NrlKOmouse.png")
+```
+]
 ---
 
 <big>
@@ -278,8 +300,10 @@ class: center, middle
 
 ``` {r echo=FALSE,fig.height=3, dev='svg', fig.align="center"}
 
-set.seed(20200103)
-artDat <- data.frame("gExp" = c(rnorm(50, mean = 23, sd = 1), rnorm(50, mean = 28, sd = 1)), "gType" = c(rep("NrlKO", times = 50),rep("wt" , times = 50)))
+set.seed(20200117)
+artDat <- data.frame("gExp" = pmax(c(rnorm(50, mean = 6.09, sd = 3), rnorm(50, mean = 11.24, sd = 3)), 0), 
+                     "gType" = factor(c(rep("wt", times = 50), rep("NrlKO" , times = 50))))
+levels(artDat$gType) <- rev(levels(artDat$gType))
 
 artMean <- ggplot(artDat, aes(y = gExp, x = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
@@ -489,15 +513,21 @@ Then the t-distributions above or even a normal distribution are decent approxim
 ## Student's *t*-distribution
 ### Recall that T is a **random variable**. Under certain assumptions, we can prove that T follows a *t*-distribution.
 
-<center><img src="img/stuTDist.png" width="400">
+
+```{r, fig.align="center", echo = FALSE, out.width=400}
+knitr::include_graphics("img/tdist.png")
+```
+
+
 
 where df = degrees of freedom.
 ---
 
 #  Hypothesis testing
 
-### 1. Define a **test statistic**: 2-sample *t*-test
-### 2. Compute the <font color=red>observed value</font> for the test statistic
+### 1. Formulate your hypothesis as a statistical hypothesis: $$H_0: \mu_Y = \mu_Z \text{ vs } H_A: \mu_Y \neq \mu_Z$$
+### 2a. Define a **test statistic**: 2-sample *t*-test
+### 2b. Compute the <font color=red>observed value</font> for the test statistic:
 
 ```{r}
 tstStat <- theDiff / sqrt(s2Diff)
@@ -651,13 +681,17 @@ We do not reject H<sub>0</sub>!
 ---
 class: center
 
-<img src="img/slide23.png" width="850">
+
+```{r, fig.align="center", echo = FALSE, out.width=850}
+knitr::include_graphics("img/slide23.png")
+```
+
 ---
 
 
 ## What is a p-value?
 
-> Likelihood of obtaining a test statistic at least <font color=green> as extreme as the one observed</font>, given that the null hypothesis is true (we are making a conditional p-value statement)
+> Likelihood of obtaining a test statistic at least <font color=green> as extreme as the one observed</font>, given that the null hypothesis is true (we are making a conditional probability statement)
 
 ## What is a p-value <font color=red>NOT</font>?
 
@@ -692,18 +726,34 @@ class: center
 
 # Types of Errors in Hypothesis Testing
 
-<center>![](img/hypError.png)
-*[Picture from Dr. Fowler, UW]*
+```{r, fig.align="center", echo = FALSE, out.width=675}
+knitr::include_graphics("img/hypError.png")
+```
+
+<br>
+$$ \alpha = P(\text{Type I Error}), \text{   } \beta = P(\text{Type II Error}), \text{   Power} = 1- \beta$$ 
+---
+
+# $H_0$: "*Innocent until proven guilty*"
+
+<big>
+
+* The default state is $H_0 \rightarrow$ we only reject if we have enough evidence
+
+* If $H_0$: Innocent and $H_A$: Guilty, then
+
+    * Type I Error $(\alpha)$: Wrongfully convict innocent (*False Positive*)
+    
+    * Type II Error $(\beta)$: Fail to convict criminal (*False Negative*)
+
 ---
 
 
-<big>
-What if you don't wish to assume the underlying data is normally distributed AND you aren't sure your samples are large enough to invoke CLT?
-</big>
+>What if you don't wish to assume the underlying data is normally distributed **AND** you aren't sure your samples are large enough to invoke CLT?
+
 
 ## What are alternatives to the *t*-test?
 
-class:middle
 
 <big>
 First, one could use the t test statistic but use a **bootstrap approach** to compute its p-value. We will cover this later on.
@@ -730,10 +780,12 @@ Null distribution of such statistics can be worked out or approximated.
 
 ---
 
-<center>
-![](img/slide32.png)
+```{r, fig.align="center", echo = FALSE, out.width=750}
+knitr::include_graphics("img/slide32.png")
+```
 
-```{r echo=FALSE, fig.height=2.5, dev='svg'}
+
+```{r echo=FALSE, fig.height=2.5, dev='svg', fig.align="center"}
 options(repr.plot.width=8, repr.plot.height=3)
 
 grid.arrange(irsLim, nrlLim, ncol = 1)
@@ -760,8 +812,10 @@ Null distribution does not depend on F, G (!)
 
 ---
 
-<center>
-<img src="img/slide34.png" width="800">
+
+```{r, fig.align="center", echo = FALSE, out.width=800}
+knitr::include_graphics("img/slide34.png")
+```
 
 ---
 
