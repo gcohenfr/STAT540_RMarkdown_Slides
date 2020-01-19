@@ -13,18 +13,61 @@ output:
       highlightSpans: true
       countIncrementalSlides: false
       ratio: "16:9"
+editor_options: 
+  chunk_output_type: console
 --- 
 
 layout: true
 
 <big>
 
+```{r, include = FALSE}
+knitr::opts_chunk$set(tidy = FALSE, tidy.opts=list(width.cutoff=80))
+ggplot2::theme_set(ggplot2::theme_bw(base_size = 20))
+ggplot2::update_geom_defaults("point", list(size = 3))
+```
+
+
+```{css, echo = FALSE}
+.remark-code, .remark-inline-code {
+  background: #f0f0f0;
+}
+.remark-code {
+  font-size: 24px;
+}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+.smaller .remark-code { /*Change made here*/
+  font-size: 80% !important;
+}
+```
+
+
+```{r wrap-hook, include=FALSE}
+library(knitr)
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+```
+
 ---
 
 class: middle, center
 ### <font color="red"> Are these genes truly different in NrlKO compared to WT?</font>
 
-### H<sub>0</sub>: the expression level of gene A is the same in both conditions.
+### H<sub>0</sub>: the expression level of gene $g$ is the same in both conditions.
 
 ### Is there **enough** evidence in the data to reject H<sub>0</sub>?
 
@@ -57,82 +100,152 @@ miniDat$gType <- factor(miniDat$gType, rev(levels(miniDat$gType)))
 str(miniDat)
 ```
 
-```{r echo=FALSE, fig.height=3.5, dev='svg'}
+```{r echo=FALSE, fig.height=3.5, fig.width=9, dev='svg'}
 irsDat <- filter(miniDat, gene == "Irs4")
 nrlDat <- filter(miniDat, gene == "Nrl")
 
 irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
              labs(title = "Irs4 Gene Expression") +
-             theme_bw() +
+             
              theme(legend.position = "none") +
              xlim(5, 15)
 
 nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
              labs(title = "Nrl Gene Expression") +
-             theme_bw() +
+             
              theme(legend.position = "none") +
              xlim(5, 15)
 
 options(repr.plot.width=8, repr.plot.height=5)
 
-grid.arrange(irsLim, nrlLim, ncol = 1)
+grid.arrange(irsLim, nrlLim, ncol = 2)
 ```
 
 ---
-class: middle
-### **Statistics**: use a random sample to learn about the population
-![](img/pop_sample.png)
+
+## **Statistics**: use a random sample to learn about the population
+
+
+.pull-left[
+### <center>**Population** (Unknown)
+$$Y \sim F$$
+$$Z \sim G$$
+$$E[Y] = \mu_Y$$
+$$E[Z] = \mu_Z$$
+$$H_0: \mu_Y = \mu_Z$$
+
+$$H_A: \mu_Y \neq \mu_Z$$
+
+]
+.pull-right[
+### <center> **Sample** (Observed, with randomness)
+
+$$Y_1, Y_2, ..., Y_{n_Y}$$
+
+$$Z_1, Z_2, ..., Z_{n_Z}$$
+$$\hat{\mu}_Y = \bar{Y} = \frac{\sum_{i=1}^{n_Z} Z_i}{n_Z}$$
+$$T = \frac{\bar{Y}-\bar{Z}}{\sqrt{Var(\bar{Y}-\bar{Z}))}}$$
+]
+
+
 ---
-class: middle
 
-# Last class: hypothesis testing
+# Summary: Hypothesis testing
 
-### 1. Define a <font color = "red">test statistic</font> to test $H_0$
+### 1. Formulate scientific hypothesis as a <font color = "red">statistical hypothesis</font> $(H_0 \text{ vs } H_A)$
+
+### 2. Define a <font color = "red">test statistic</font> to test $H_0$ and compute its <font color=red>observed value</font>. For example:
+<small>
 - 2-sample *t*-test
 - Welch *t*-test
 - Wilcoxon rank-sum test
 - Kolmogorov-Smirnov test
+</small>
 
-### 2. Compute the <font color=red>observed value</font> for the test statistic
 ### 3. Compute the probability of seeing a test statistic as extreme as that observed, under the <font color = "red">null sampling distribution</font> (p-value) 
-### 4. Make a decision about the <font color = "red">significance</font> of the results, based on a pre-specified value (alpha, significance level)
+### 4. Make a decision about the <font color = "red">significance</font> of the results, based on a pre-specified value ( $\alpha$, significance level)
 ---
-class: middle
-## We can run these tests in R 
-### Example: use the `t.test` function to test $H_0$ using a classical 2-sample *t*-test.
 
-``` {r,tidy=TRUE, tidy.opts=list(width.cutoff=60)}
-miniDat %>% subset(gene=="Irs4")%>% t.test(gExp ~ gType, data=., var.equal = TRUE)
+## We can run these tests in R 
+
+### Example: use the `t.test` function to test $H_0$ using a classical 2-sample *t*-test with equal variance.
+.smaller[
+``` {r}
+miniDat %>% 
+  subset(gene=="Irs4") %>%
+  t.test(gExp ~ gType, data=., var.equal = TRUE)
 ```
+]
 ---
-class: middle
+
 # Today...
 
-### - show how to compare means of different groups (2 or more) using a linear regression model
+### 1. Show how to compare means of different groups (2 or more) using a linear regression model
 
-  - dummy variables to model the levels of a qualitative explanatory variable
+  - 'dummy' variables to model the levels of a qualitative explanatory variable
 
-### - write a linear model using matrix notation
+### 2. Write a linear model using matrix notation
 
   - understand which matrix is built by R
   
-### - distinguish between conditional and marginal effects
+### 3. distinguish between conditional and marginal effects
   - $t$-tests vs $F$-tests  
+  
 ---
-class: middle
-![](img/t_aov_lm.png)
+
+# $H_0: \mu_1 = \mu_2$
+
+### 2-sample t-test (with equal variance)
+```{r, eval=FALSE, echo = TRUE}
+t.test(gExp ~ gType, data=miniDat, subset = gene=="Irs4",
+       var.equal = TRUE)
+```
+### (one-way) Analysis of Variance (ANOVA)
+```{r, eval=FALSE, echo = TRUE}
+summary(aov(gExp ~ gType, data=miniDat, subset = gene=="Irs4"))
+```
+### Linear regression model
+```{r, eval=FALSE, echo = TRUE}
+summary(lm(gExp ~ gType, data=miniDat, subset = gene == "Irs4"))
+```
+---
+
+.pull-left[
+.smaller[
+#### All three methods give the same result!
+<small>
+2-sample t-test (with equal variance)
+
+```{r, eval=TRUE, echo = FALSE, tidy=TRUE, linewidth=50}
+t.test(gExp ~ gType, data=miniDat, subset = gene=="Irs4", var.equal = TRUE)
+```
+]]
+.pull-right[
+.smaller[
+(one-way) Analysis of Variance (ANOVA)
+```{r, eval=TRUE, echo = FALSE, tidy=TRUE, linewidth=50}
+summary(aov(gExp ~ gType, data=miniDat, subset = gene=="Irs4"))
+```
+Linear regression model
+```{r, eval=TRUE, echo = FALSE, linewidth=50}
+summary(lm(gExp ~ gType, data=miniDat, subset = gene == "Irs4"))
+```
+]]
+
 
 ---
-class: middle
-It seems that we can use any of these methods to test $H_0$
 
-![](img/t_aov_lm_res.png)
+```{r, fig.align="center", echo = FALSE, out.width=850}
+knitr::include_graphics("img/t_aov_lm_res.png")
+```
+
 ---
-class: middle
+
 ## *t*-test *vs* linear regression: <font color = "red">why the same results?</font>
 
+.smaller[
 ``` {r}
 irs4Dat <- subset(miniDat,gene=="Irs4")
 ttest.irs4<-t.test(gExp ~ gType, irs4Dat, var.equal = TRUE)
@@ -144,44 +257,43 @@ list("t value"=ttest.irs4$stat,"p-value"=ttest.irs4$p.value)
 lm.irs4 <- summary(lm(gExp ~ gType, irs4Dat))
 list("t value"=lm.irs4$coeff[2,3],"p-value"=lm.irs4$coeff[2,4])
 ```
+]
 
 ---
-class: middle
-## *t*-test *vs* linear regression: <font color = "red">where's the line?</font>
 
-```{r echo=FALSE, fig.width=5, fig.height= 3, dev='svg'}
+## *t*-test vs linear regression: <font color = "red">where's the line?</font>
+
+```{r echo=FALSE, fig.width=10, fig.height= 4, fig.align="center"}
 irsDat <- filter(miniDat, gene == "Irs4")
 nrlDat <- filter(miniDat, gene == "Nrl")
 
 irsLim <- ggplot(irsDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
              labs(title = "Irs4") +
-             theme_bw() +           
              theme(legend.position = "none") +
              xlim(5, 15)
 
 nrlLim <- ggplot(nrlDat, aes(x = gExp, y = gType, colour = gType)) + 
              geom_point(alpha = 0.5) +
              labs(title = "Nrl") +
-             theme_bw() +
              theme(legend.position = "none") +
              xlim(5, 15)
 
-grid.arrange(irsLim, nrlLim, ncol = 1)
+grid.arrange(irsLim, nrlLim, ncol = 2)
 ```
 > Note that the $y$-axis in these plots is not numerical, thus a line in this space does not have any mathematical meaning. 
 
 ### Why can we run a $t$-test with a <font color = "red">linear</font> regression model?
 ---
-class: middle
+
 # From *t*-test to linear regression
 Let's change the notation to give a common framework to all methods
-<br> <br>
+<br>
 <font size=5> $$Y \sim G; \; E[Y] = \mu_Y$$ </font>
  **<center>↓</center>**
 
 <font size=5> $$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim G; \; E[\varepsilon_Y] = 0$$ </font>
-<br>
+
 We can use a subindeces to distinguish observations from each group, i.e., 
 
 <font size=5> $$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G_j; \; \;E[\varepsilon_{ij}] = 0;$$ </font>
@@ -193,7 +305,7 @@ and $i=1, \ldots, n_j$ identifies the observations within each group
  > For example: $Y_{11}$ is the first observation in group 1 or WT
  
 ---
-class: middle
+
 
 ## The goal is to test 
 
@@ -210,7 +322,7 @@ where $j = \textrm{\{wt, NrlKO}\}$ or $j=\textrm{\{1, 2}\}$; and $i=1, \ldots, n
 
 ### Note that the population means are given by $E[Y_{ij}] = \mu_j$, i.e., the model is written with a <font color = "red">cell-means</font> - $\mu_j$ - parametrization
 ---
-class: middle
+
 
 ### Note that for each group, the <font color = "red">population</font> mean is given by 
 ### $$E[Y_{ij}] = \mu_j,$$ 
@@ -225,17 +337,19 @@ See, for example, the `t.test` function in R:
 ttest.irs4$estimate
 ```
 ---
-class: middle
+
 ### However, the `lm` function reports other estimates, <font color = "red">why?</font>  
 
-```{r,tidy=TRUE, tidy.opts=list(width.cutoff=60)}
-(means.irs4<-as.data.frame(irs4Dat %>% group_by(gType) %>% summarize(meanGroups=mean(gExp,digits=6))))
+```{r, tidy = FALSE}
+(means.irs4<-as.data.frame(irs4Dat %>% group_by(gType) %>%
+                             summarize(meanGroups=mean(gExp,digits=6))))
 ```
 
 ```{r}
 lm.irs4$coefficients[,1]
 ```
-$\hspace{3em}$ **↓**
+<center> **↓**
+<br>
 .pull-left[
 `(Intercept)` is the <font color = "red">sample mean</font> of NrlKO group 
 ]
@@ -243,10 +357,10 @@ $\hspace{3em}$ **↓**
 but `gTypewt` is <font color = "red">not</font> the sample mean of the WT group
 ]
 ---
-class: middle
+
 
 ### Parametrizations: which parameters we use to write the model?
-<Big>
+
 By default, the `lm` does not use the cell-means parametrization 
 The goal is to *compare* the means, not to study each in isolation
 
@@ -257,18 +371,21 @@ From <font color=red>**cell-means**</font> - $\mu_j$:  $$Y_{ij} = \mu_j + \varep
 
 to <font color = "red">**reference-treatment effect**</font> - $(\theta,\tau_j)$: $$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
 
+--
+
 Note that for each group, the population mean is given by 
 $$E[Y_{ij}] = \theta+\tau_j=\mu_j,$$
 and $\tau_2=\mu_2-\mu_1=E[Y_{i2}] -E[Y_{i1}]$ *compares* the means
 ---
 
-class: middle
+
 ## Relation between parametrizations
 
-![](img/param_2.png)
----
-class: middle
+```{r, fig.align="center", echo = FALSE, out.width=800}
+knitr::include_graphics("img/param_2.png")
+```
 
+---
 
 ### `lm` reports the sample mean of the <font color = "red">reference</font> group (NrlKO): $\hat\theta$
 
@@ -281,7 +398,7 @@ data.frame(meanWT=means.irs4[1,2],
 ```
 
 ---
-class: middle
+
 ## We still haven't answered ... where's the line?? 
 
 <Big> 
@@ -291,9 +408,8 @@ $$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{i
 nrlLim
 ```
 ---
-class: middle
+
 # <font color="red">Dummy</font> variables
-<Big>
 
 Let's re-write our model using <font color="red">dummy</font> (or indicator) variables:
 
@@ -305,7 +421,7 @@ $$Y_{ij} = \theta+\tau_2 \times x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\b
 0 \text{ otherwise}\\
 \end{array}$$
 
-<br>
+--
 
 > Note that $Y_{i1} = \theta + \varepsilon_{i1}$, because $\tau_1=0$ and $x_{i1}=0$ 
 > and $Y_{i2} = \theta + \tau_2+ \varepsilon_{i2}$, because $x_{i2}=1$ (for all $i$)
@@ -313,32 +429,38 @@ $$Y_{ij} = \theta+\tau_2 \times x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\b
 The second form is written as a <font color="red">linear</font> ( $y=a + bx +\varepsilon$ ) regression, with a special (<font color="red">dummy</font>) explanatory variable <font color="red"> $x_{ij}$ </font> 
 ---
 
-class: middle
+
   
-### Using a dummy variables to model our categorical variables `gtype` we can perform a  <font color = "red">2-sample *t*-test</font> with a linear model
+### Using dummy variables to model our categorical variables `gtype` we can perform a  <font color = "red">2-sample *t*-test</font> with a linear model
 
 $$Y_{ij} = \theta+\tau_2 \times x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\begin{array}{l}
 1 \text{ if } j=2\\
 0 \text{ if } j=1\\
 \end{array}$$
 
-
+.pull-left[
 ``` {r}
-list("t value"=ttest.irs4$stat,"p-value"=ttest.irs4$p.value)
-
-list("t value"=lm.irs4$coeff[2,3],"p-value"=lm.irs4$coeff[2,4])
+list("t value"=ttest.irs4$stat,
+     "p-value"=ttest.irs4$p.value)
 ```
+]
+.pull-right[
+```{r}
+list("t value"=lm.irs4$coeff[2,3],
+     "p-value"=lm.irs4$coeff[2,4])
+```
+]
+
 ---
 
-class: middle
 ## Beyond 2-groups comparisons: difference of means
-<center>
-```{r,echo=FALSE,out.height="500px"}
+
+```{r,echo=FALSE, out.width="720", fig.align="center"}
 knitr::include_graphics("img/more_2_groups.png")
 ```
-</center>
+
 ---
-class: middle
+
 
   
 ### Dummy variables can be used to model one *or more* categorical variables with 2 *or more* levels!
@@ -363,7 +485,7 @@ $$Y_{ij} = \theta+\tau_2 \times x_{ij2} + \tau_3 \times x_{ij3} +\varepsilon_{ij
 <small>
 $^{(*)}$ in general, *yet* another parametrization is used to present ANOVA 
 ---
-class: middle
+
 
 ## <font color = "red">t-test</font> 
   > Special case of <font color = "red">ANOVA</font>, but with ANOVA you can compare **more than two groups** and **more than one factor**.
@@ -378,51 +500,57 @@ class: middle
  
 ### <font color = "red">In R</font>: all can be computed using the `lm()` function. 
 ---
-class: middle
+
 # Linear models using matrix notation
 
-![](img/linear_form.png)
+```{r,echo=FALSE, out.width="700", fig.align="center"}
+knitr::include_graphics("img/linear_form.png")
+```
 
 ### It will become handy to write our model using matrix notation
 ---
-class: middle
+
 <Big>
 
 Let's form an $X$  matrix for a 3-groups comparison: 
 
 $$Y_{ij} = \theta+\tau_2 \times x_{ij2} + \tau_3 \times x_{ij3} +\varepsilon_{ij}$$
-<center>
-```{r,echo=FALSE,out.height="400px"}
+<div style= "float:right; position: relative; top: -25px;">
+```{r,echo=FALSE, out.width="650", fig.align="right"}
 knitr::include_graphics("img/model_matrix_I.png")
 ```
-</center>
+</div>
 
-<font size=4>
-Note that $x_{ij2}$ and $x_{ij3}$ become the 2nd and 3rd columns of $X$: $x_{i12}=x_{i13}=0$ for the reference group; $x_{i22}=1$ for the 2nd group; and $x_{i33}=1$ for the 3rd group
+Note that $x_{ij2}$ and $x_{ij3}$ become the 2nd and 3rd columns of $X$:
+
+* $x_{i12}=x_{i13}=0$ for the reference group
+
+* $x_{i22}=1$ for the 2nd group 
+
+* $x_{i33}=1$ for the 3rd group
+
 
 ---
-class: middle
 
-```{r,echo=FALSE,out.height="350px"}
+<div style= "top: -15px;">
+```{r,echo=FALSE,out.width="700", fig.align="center"}
 knitr::include_graphics("img/model_matrix_II.png")
 ```
+</div>
 
-> <font color = "red">Note that $Y_{i1}= 1 \times \theta + 0 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i1}=\theta + \varepsilon_{i1}$
+ <font color = "red"> $Y_{i1}= 1 \times \theta + 0 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i1} =\theta + \varepsilon_{i1}$
 
-> <font color = "blue">Note that $Y_{i2}= 1 \times \theta + 1 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i2}=\theta + \tau_2+\varepsilon_{i2}$
+ <font color = "blue"> $Y_{i2}= 1 \times \theta + 1 \times \tau_2 + 0 \times \tau_3 + \varepsilon_{i2}=\theta + \tau_2+\varepsilon_{i2}$
 
-> <font color = "green">Note that $Y_{i3}= 1 \times \theta + 0 \times \tau_2 + 1 \times \tau_3 + \varepsilon_{i3}=\theta + \tau_3+\varepsilon_{i3}$
+ <font color = "green"> $Y_{i3}= 1 \times \theta + 0 \times \tau_2 + 1 \times \tau_3 + \varepsilon_{i3}=\theta + \tau_3+\varepsilon_{i3}$
 
-
-<font color="black"> 
-Which is the same as $\; \rightarrow \; Y_{ij} = \theta + \tau_j + \varepsilon_{ij}, \; \tau_1=0$
-
-Which is the same as $\; \rightarrow \; Y_{ij} = \theta +\tau_2 \times x_{ij2} + \tau_3 \times x_{ij3} + \varepsilon_{ij}$
+<font color = "black">
+$$\; Y_{ij} = \theta +\tau_2 \times x_{ij2} + \tau_3 \times x_{ij3} + \varepsilon_{ij}$$
 
 ---
-class: middle
 
-```{r,echo=FALSE,out.height="320px"}
+
+```{r,echo=FALSE, fig.align="center", out.width=650}
 knitr::include_graphics("img/rf_tx_matrix.png")
 ```
 
@@ -438,32 +566,31 @@ $E[Y_{i2}]=\theta+\tau_2 \; \rightarrow \tau_2=E[Y_{i2}]-E[Y_{i1}]=\mu_2-\mu_1$
 $E[Y_{i3}]=\theta+\tau_3 \; \rightarrow \tau_3=E[Y_{i3}]-E[Y_{i1}]=\mu_3-\mu_1$
 
 ---
-class: middle
+
 
 ### <font color = "red">Linear regression</font> can include **quantitative & qualitative covariates**. 
 
-<center>
-```{r,echo=FALSE,out.height="470px"}
+
+```{r,echo=FALSE, out.width="625", fig.align="center"}
 knitr::include_graphics("img/LM_vbles.png")
 ```
-</center>
+
 > <font color="red">Linear</font> in the parameters $\alpha$: $X$ can contain $x^2$, $log(x)$, etc.
 
 ---
-class: middle, center
 
 ## How it works in practice using <font color=red>lm()</font> in R
 
 <big>
 
 ## $$Y = X\alpha + \varepsilon$$ 
-**↓**
+<center> **↓**
 <br>
 
 ```
 lm(y ~ x, data = yourData)
 ```
-</font>
+</center>
 .pull-left[
 <font color = red> y ~ x: </font> formula, 
 <br><font color = red>y</font> numeric, 
@@ -474,9 +601,10 @@ lm(y ~ x, data = yourData)
 <font color = red> yourData: </font> data.frame in which x and y are to be found (optional but recommended)
 ]
 <br>
-### By default, R uses a ref-tx parametrization but you can control that!
+### <center> By default, R uses a ref-tx parametrization but you can control that!
 ---
-class: middle
+
+# Special `factor` class un R 
 
 ## $$Y=X\alpha+\varepsilon$$
 - ### Mathematically, $X$ is a numeric matrix
@@ -487,17 +615,19 @@ class: middle
 str(irs4Dat$gType)
 ```
 ---
-class: middle
+
 
 ### Under the hood, R creates a numeric $X$:
 
+.smaller[
 ```{r,tidy=TRUE, tidy.opts=list(width.cutoff=45)}
-data.frame(X=model.matrix(gExp ~ gType, irs4Dat),
-                gType=irs4Dat$gType) %>% head(10)
+model.matrix(gExp ~ gType, irs4Dat) %>% head(10)
+irs4Dat$gType %>% head(10)
 ```
+]
 
 ---
-class: middle
+
 ## Beyond 2-group comparisons in our case study:
 
 ### <font color="red"> Is the expression of gene A the same at all developmental stages?</font>
@@ -521,18 +651,17 @@ keepers <- data.frame(row = c(theBore, theHit),
                        probesetID = I(rownames(prDat)[c(theBore, theHit)]))
 
 devDat <- as.vector(t(prDat[keepers$probesetID, ]))
-devDat <- data.frame(gene = rep(c("theBore", "theHit"), each = nrow(prDes)),gExp = devDat)
+devDat <- data.frame(gene = rep(c("geneA", "geneB"), each = nrow(prDes)),gExp = devDat)
 devDat <- data.frame(prDes, devDat)
 
-boreDat <- filter(devDat, gene == "theBore")
-hitDat <- filter(devDat, gene == "theHit")
+boreDat <- filter(devDat, gene == "geneA")
+hitDat <- filter(devDat, gene == "geneB")
 ```
 
-```{r, echo=FALSE, fig.height= 3, dev='svg'}
+```{r, echo=FALSE, fig.width=10.5, fig.height=3.2, dev='svg', fig.align="center"}
 boreLim <- ggplot(boreDat, aes(x = devStage, y = gExp)) + 
              geom_jitter(width = 0.2, alpha = 0.5) +
-             labs(title = "theBore") +
-             theme_bw() +
+             labs(title = "geneA") +
              theme(legend.position = "none") +
              ylim(5, 10) +
              xlab("") +
@@ -540,8 +669,7 @@ boreLim <- ggplot(boreDat, aes(x = devStage, y = gExp)) +
 
 hitLim <- ggplot(hitDat, aes(x = devStage, y = gExp)) + 
              geom_jitter(width = 0.2, alpha = 0.5) +
-             labs(title = "theHit") +
-             theme_bw() +
+             labs(title = "geneB") +
              theme(legend.position = "none") +
              ylim(5, 10) +
              ylab("") +
@@ -552,44 +680,44 @@ grid.arrange(boreLim, hitLim, nrow = 1)
 ```
 
 
-<font size=3>
-.left[Note: 4W = 4_weeks]
-</font>
+<small>
+> Note: 4W = 4_weeks]
+
 ---
-class: middle
+
 ### The <font color="red">sample</font> means: $\hat\mu_{E16}, \; \hat\mu_{P2}, \; \hat\mu_{P6}, \; \hat\mu_{P10}, \; \hat\mu_{4W}$
 ``` {r}
 with(devDat, tapply(gExp, list(devStage, gene), mean))
 ```
-<center>
-```{r, echo=FALSE, fig.height= 3, dev='svg'}
+
+```{r, echo=FALSE, fig.height= 3, dev='svg', fig.align="center", fig.width=10}
 grid.arrange(boreLim, hitLim, nrow = 1)
 ```
 ---
-class: middle
-## "theHit" with significant time ("treatment") effect
+
+## "geneB" with significant time ("treatment") effect
 
 ``` {r,echo=FALSE,results="hide"}
-means.dev <- as.data.frame(devDat %>% subset(gene=="theHit") %>% group_by(devStage) %>% summarize(cellMeans=mean(gExp)))
+means.dev <- as.data.frame(devDat %>% subset(gene=="geneB") %>% group_by(devStage) %>% summarize(cellMeans=mean(gExp)))
 means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
-![](img/devStage.png)
+<div style= "top: -50px;">
+```{r, echo=FALSE, fig.align="center", out.width=825}
+knitr::include_graphics("img/devStage.png")
+```
+</div>
 
----
-class: middle
-## "theHit" with significant time ("treatment") effect
+--
 
 ### Can you guess the size of the $X$ matrix??
 > How many dummy variables do we need?
 
-![](img/devStage.png)
-
 ---
-class: middle
-## "theHit" with significant time ("treatment") effect
 
-``` {r,echo=FALSE,highlight.output = c(3:6)}
-means.dev <- as.data.frame(devDat %>% subset(gene=="theHit") %>% group_by(devStage) %>% summarize(cellMeans=mean(gExp)))
+## "geneB" with significant time ("treatment") effect
+
+``` {r,echo=FALSE,highlight.output = c(3:6), highlight.color="pink"}
+means.dev <- as.data.frame(devDat %>% subset(gene=="geneB") %>% group_by(devStage) %>% summarize(cellMeans=mean(gExp)))
 means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
 
@@ -607,102 +735,97 @@ $$Y_{ij}=\theta+\tau_{P2} \times x_{ijP2}+\tau_{P6} \times x_{ijP6}+\tau_{P10} \
 <font size=3>
 *Notation*: $x_{ijk}$, where $i$ is an index for the observation, $j$ for the level of `devStage`, and $k$ for the name of the dummy variable
 ---
-class: middle
+
 ### Under the hood, R creates a numeric $X$:
 
-```{r,tidy=TRUE, tidy.opts=list(width.cutoff=60)}
-X.matrix<-data.frame(X=model.matrix(gExp ~ devStage, irs4Dat),
-                devStage=irs4Dat$devStage)
+.smaller[
+```{r,tidy=TRUE, tidy.opts=list(width.cutoff=60), results="show"}
+model.matrix(gExp ~ devStage, irs4Dat) %>% head(16)
 ```
+...
+]
 
-```{r,echo=F}
-colnames(X.matrix)[2:6] <- c("X.dStP2", "X.dStP6","X.dStP10","X.dS4W","dS")
-head(X.matrix,16)
-```
-<font size=3>
-Note: column names changed and  first 16 rows displayed to fit output in the page (code hidden) 
 ---
-class: middle
 
+.smaller[
 ```{r,highlight.output = c(2)}
-summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+summary(lm(gExp~devStage,subset(devDat,gene=="geneB")))$coeff
 
 means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
+]
 
 .pull-left[
 <font size=5>
-**Estimate**: $\hat\theta=\hat\mu_{E16}=\bar{Y}_{.E16}$
+$H_0: \theta=0$ or $H_0: \mu_{E16}=0$
 
-$H_0: \theta=0$ or 
-
-$H_0: \mu_{E16}=0$
+**Estimate**: $\hat\theta=\hat\mu_{E16}=\bar{Y}_{E16}$
 ]
 
 .pull-right[
-<br>
-
-> we are not usually interested in testing this hypothesis
+> we are not usually interested in testing this hypothesis: baseline mean = 0
 ]
 
 ---
-class: middle
 
+.smaller[
 ```{r,highlight.output = c(3)}
-summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+summary(lm(gExp~devStage,subset(devDat,gene=="geneB")))$coeff
 
 means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
+]
 
 .pull-left[
 <font size=5>
-**Estimate**: $\hat\tau_{P2}=\hat\mu_{P2}-\hat\mu_{E16}=\bar{Y}_{.P2}-\bar{Y}_{.E16}$
+$H_0: \tau_{P2}=0$ or $H_0: \mu_{P2}=\mu_{E16}$
 
-$H_0: \tau_{P2}=0$ or
-
-$H_0: \mu_{P2}=\mu_{E16}$
+**Estimate**: $\hat{\tau}_{P2}=\hat{\mu}_{P2}-\hat{\mu}_{E16}=\bar{Y}_{P2}-\bar{Y}_{E16}$
 ]
 .pull-right[
-> we *are* usually interested in testing this hypothesis: first 2 days after birth
+> we *are* usually interested in testing this hypothesis: change from E16 to 2 days old = 0
 ]
 ---
-class: middle
 
+.smaller[
 ```{r,highlight.output = c(6)}
-summary(lm(gExp~devStage,subset(devDat,gene=="theHit")))$coeff
+summary(lm(gExp~devStage,subset(devDat,gene=="geneB")))$coeff
 
 means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
+]
 
 .pull-left[
 <font size=5>
+$H_0: \tau_{4W}=0$ or $H_0: \mu_{4W}=\mu_{E16}$
+
 **Estimate**: $\hat\tau_{4W}=\hat\mu_{4W}-\hat\mu_{E16}=\bar{Y}_{.4W}-\bar{Y}_{.E16}$
-
-$H_0: \tau_{4W}=0$ or
-
-$H_0: \mu_{4W}=\mu_{E16}$
 ]
 
 .pull-right[
-<br>
-> we *are* usually interested in testing this hypothesis: 4 weeks after birth
+> we *are* usually interested in testing this hypothesis: change from E16 to 4 weeks old = 0
 ]
 ---
-class: middle
 
-```{r, echo=FALSE, fig.height= 3, dev='svg'}
+
+```{r, echo=FALSE, fig.height= 2.5, fig.width=7, fig.align="center"}
 hitLim
 ```
-![](img/same_se.png)
+
+
+```{r, echo=FALSE, fig.align="center", out.width=975}
+knitr::include_graphics("img/same_se.png")
+```
+
 
 ---
-class: middle
+
 <big>
   <font size = 5>$$Y = X \alpha + \varepsilon$$</font>
     $$\alpha = (\theta, \tau_{P2}, \tau_{P6}, \tau_{P10}, \tau_{4W})$$
       
-### We generally test two types of null hypotheses:
-      
+### <center> We generally test two types of null hypotheses:
+<small>
 .pull-left[
 <center>
 $$H_0: \tau_j = 0$$
@@ -716,7 +839,6 @@ $$H_0: \tau_{P2}=0$$
     
 .pull-right[
 <center>
-
 $$H_0: \tau_j = 0$$
         vs
 $$H_0: \tau_j \neq 0$$
@@ -727,15 +849,15 @@ e.g., Is gene A significantly affected by time (`devStage`)?
 $$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$
         ]
 ---
-class: middle
+
 ### Two types of null hypotheses in R:
 
-```{r,echo=FALSE,out.height="530px"}
+```{r,echo=FALSE, out.width="775", fig.align="center"}
     knitr::include_graphics("img/one_more_H0.png")
 ```
     
 ---
-class: middle
+
     
 ## *F*-test and overall significance of one or more covariates
 <big>
@@ -746,16 +868,16 @@ class: middle
       $$H_0 : \tau_{P2} = \tau_{P6} = \tau_{P10} = \tau_{4W}=0\textrm{ [AND statement]}$$
       $$H_A : \tau_i \neq 0 \textrm{ for some i [OR statement]}$$ the *F*-test allows us to test such compound tests
 ---
-class: middle
+
 ## To conclude
 
-### - we can use different parametrizations to write statistical models
+### 1. We can use different parametrizations to write statistical models
 From <font color=red>**cell-means**</font> - $\mu_j$:  $Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$
 
 to <font color = "red">**reference-treatment effect**</font> - $(\theta,\tau_j)$: (used by default by `lm`)
 $$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
 
-### - we can compare group means  (2 or more) using a linear model
+### 2. We can compare group means  (2 or more) using a linear model
   - <font color=red>**dummy variables**</font> (e.g., $x_{ijP2}$) to model the levels of a qualitative explanatory variables
   $$Y_{ij}=\theta+\tau_{P2} \times x_{ijP2}+\tau_{P6} \times x_{ijP6}+\tau_{P10} \times x_{ijP10}+\tau_{4W} \times x_{ij4W}+\varepsilon_{ij}$$
   - qualitative variables need to be set as "factors" in the data --> R creates the dummy variables
@@ -763,19 +885,17 @@ $$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{i
 ---
 class:middle
 
-### - we can write a linear model using matrix notation: 
+### 3. We can write a linear model using matrix notation: 
 <font size =5>
 
 $$Y = X \alpha + \varepsilon$$
 
-### - <font color = "red">Linear model</font> can include **quantitative & qualitative covariates**. 
+### 4. <font color = "red">Linear models</font> can include **quantitative & qualitative covariates**. 
 
-<center>
-```{r,echo=FALSE,out.height="250px"}
+```{r,echo=FALSE,out.width="430", fig.align="center"}
 knitr::include_graphics("img/LM_vbles.png")
 ```
-</center>
 
-### - distinguish between single and joint hypotheses:
+### 5. We use different tests to distinguish between single and joint hypotheses:
   - $t$-tests vs $F$-tests
   
