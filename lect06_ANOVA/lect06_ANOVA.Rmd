@@ -22,7 +22,7 @@ layout: true
 <big>
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(tidy = FALSE, tidy.opts=list(width.cutoff=80))
+knitr::opts_chunk$set(tidy = FALSE, tidy.opts=list(width.cutoff=80), fig.retina=3)
 ggplot2::theme_set(ggplot2::theme_bw(base_size = 20))
 ggplot2::update_geom_defaults("point", list(size = 3))
 ```
@@ -42,7 +42,10 @@ ggplot2::update_geom_defaults("point", list(size = 3))
   font-size: 60% !important;
 }
 .smaller .remark-code { /*Change made here*/
-  font-size: 80% !important;
+  font-size: 90% !important;
+}
+.smaller2 .remark-code { /*Change made here*/
+  font-size: 85% !important;
 }
 ```
 
@@ -58,14 +61,33 @@ knit_hooks$set(output = function(x, options) {
     if (any(nchar(x) > n)) x = strwrap(x, width = n)
     x = paste(x, collapse = '\n')
   }
+  
+  lines <- options$output.lines
+   if (is.null(lines)) {
+     return(hook_output(x, options))  # pass to default hook
+   }
+   x <- unlist(strsplit(x, "\n"))
+   if (length(lines)==1) {        # first n lines
+     if (length(x) > lines) {
+       # truncate the output
+       x <- c(head(x, lines))
+     }
+   } else {
+     x <- c(x[lines])
+   }
+   # paste these lines together
+   x <- paste(c(x, ""), collapse = "\n")
+
   hook_output(x, options)
 })
+
+
 ```
 
 ---
 
 class: middle, center
-### <font color="red"> Are these genes truly different in NrlKO compared to WT?</font>
+### <font color="red"> Recap: Are these genes truly different in NrlKO compared to WT?</font>
 
 ### H<sub>0</sub>: the expression level of gene $g$ is the same in both conditions.
 
@@ -145,7 +167,7 @@ $$H_A: \mu_Y \neq \mu_Z$$
 $$Y_1, Y_2, ..., Y_{n_Y}$$
 
 $$Z_1, Z_2, ..., Z_{n_Z}$$
-$$\hat{\mu}_Y = \bar{Y} = \frac{\sum_{i=1}^{n_Z} Z_i}{n_Z}$$
+$$\hat{\mu}_Y = \bar{Y} = \frac{\sum_{i=1}^{n_Y} Y_i}{n_Y}$$
 $$T = \frac{\bar{Y}-\bar{Z}}{\sqrt{Var(\bar{Y}-\bar{Z}))}}$$
 ]
 
@@ -159,7 +181,7 @@ $$T = \frac{\bar{Y}-\bar{Z}}{\sqrt{Var(\bar{Y}-\bar{Z}))}}$$
 ### 2. Define a <font color = "red">test statistic</font> to test $H_0$ and compute its <font color=red>observed value</font>. For example:
 <small>
 - 2-sample *t*-test
-- Welch *t*-test
+- Welch *t*-test (unequal variance)
 - Wilcoxon rank-sum test
 - Kolmogorov-Smirnov test
 </small>
@@ -212,24 +234,24 @@ summary(lm(gExp ~ gType, data=miniDat, subset = gene == "Irs4"))
 ```
 ---
 
+# All three methods give the same result!
+
 .pull-left[
 .smaller[
-#### All three methods give the same result!
-<small>
-2-sample t-test (with equal variance)
+## 2-sample t-test (with equal variance)
 
-```{r, eval=TRUE, echo = FALSE, tidy=TRUE, linewidth=50}
+```{r, eval=TRUE, echo = FALSE, tidy=TRUE, linewidth=37, highlight.output = 5:6}
 t.test(gExp ~ gType, data=miniDat, subset = gene=="Irs4", var.equal = TRUE)
 ```
 ]]
 .pull-right[
 .smaller[
-(one-way) Analysis of Variance (ANOVA)
-```{r, eval=TRUE, echo = FALSE, tidy=TRUE, linewidth=50}
+## (one-way) Analysis of Variance (ANOVA)
+```{r, eval=TRUE, echo = FALSE, tidy=TRUE, linewidth=37, highlight.output=2}
 summary(aov(gExp ~ gType, data=miniDat, subset = gene=="Irs4"))
 ```
-Linear regression model
-```{r, eval=TRUE, echo = FALSE, linewidth=50}
+## Linear regression model
+```{r, eval=TRUE, echo = FALSE, linewidth=37, output.lines=c(11:16), highlight.output=6}
 summary(lm(gExp ~ gType, data=miniDat, subset = gene == "Irs4"))
 ```
 ]]
@@ -237,7 +259,7 @@ summary(lm(gExp ~ gType, data=miniDat, subset = gene == "Irs4"))
 
 ---
 
-```{r, fig.align="center", echo = FALSE, out.width=850}
+```{r, fig.align="center", echo = FALSE, out.width=800}
 knitr::include_graphics("img/t_aov_lm_res.png")
 ```
 
@@ -288,11 +310,11 @@ grid.arrange(irsLim, nrlLim, ncol = 2)
 
 # From *t*-test to linear regression
 Let's change the notation to give a common framework to all methods
-<br>
-<font size=5> $$Y \sim G; \; E[Y] = \mu_Y$$ </font>
- **<center>↓</center>**
 
-<font size=5> $$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim G; \; E[\varepsilon_Y] = 0$$ </font>
+$$Y \sim G; \; E[Y] = \mu_Y$$
+ <center> **↓** </center>
+
+$$Y = \mu_Y + \varepsilon_Y; \; \varepsilon_Y \sim G; \; E[\varepsilon_Y] = 0$$ 
 
 We can use a subindeces to distinguish observations from each group, i.e., 
 
@@ -306,12 +328,13 @@ and $i=1, \ldots, n_j$ identifies the observations within each group
  
 ---
 
+# Cell-means model
 
-## The goal is to test 
+The goal is to test 
 
-### $$H_0 : \mu_1 = \mu_2$$
+ $$H_0 : \mu_1 = \mu_2$$
 
-### using data from the model
+using data from the model
 
 <font size=5> $$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$</font>
 <br>
@@ -320,25 +343,29 @@ where $j = \textrm{\{wt, NrlKO}\}$ or $j=\textrm{\{1, 2}\}$; and $i=1, \ldots, n
 
 > For simplicity, we assume a common distribution $G$ for all groups
 
-### Note that the population means are given by $E[Y_{ij}] = \mu_j$, i.e., the model is written with a <font color = "red">cell-means</font> - $\mu_j$ - parametrization
+--
+
+<br>
+### Note that the population means are given by $E[Y_{ij}] = \mu_j$, i.e., the model is written with a <font color = "red">cell-means</font> $(\mu_j)$ parametrization
 ---
 
+# Recall: sample mean estimator of population mean 
 
-### Note that for each group, the <font color = "red">population</font> mean is given by 
-### $$E[Y_{ij}] = \mu_j,$$ 
+Note that for each group, the <font color = "red">population</font> mean is given by 
+ $$E[Y_{ij}] = \mu_j,$$ 
 
-###A natural **estimator** of the population mean is the <font color = "red">**sample mean**</font>
+* A natural **estimator** of the population mean is the <font color = "red">**sample mean**</font>
 
-### Classical hypothesis testing methods use the group sample means as estimators
+* Classical hypothesis testing methods use the group sample means as estimators
 
-See, for example, the `t.test` function in R:
+* See, for example, the `t.test` function in R:
 
 ```{r}
 ttest.irs4$estimate
 ```
 ---
 
-### However, the `lm` function reports other estimates, <font color = "red">why?</font>  
+## However, the `lm` function reports other estimates, <font color = "red">why?</font>  
 
 ```{r, tidy = FALSE}
 (means.irs4<-as.data.frame(irs4Dat %>% group_by(gType) %>%
@@ -359,23 +386,24 @@ but `gTypewt` is <font color = "red">not</font> the sample mean of the WT group
 ---
 
 
-### Parametrizations: which parameters we use to write the model?
+## Parametrizations: which parameters should we use to write the model?
 
 By default, the `lm` does not use the cell-means parametrization 
 The goal is to *compare* the means, not to study each in isolation
 
 
-From <font color=red>**cell-means**</font> - $\mu_j$:  $$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
+Let's reformulate from <font color=red>**cell-means**</font> $(\mu_j)$:  $$Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
 
 **<center>↓</center>**
 
-to <font color = "red">**reference-treatment effect**</font> - $(\theta,\tau_j)$: $$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
+to <font color = "red">**reference-treatment effect**</font> $(\theta,\tau_j)$: $$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
 
 --
 
-Note that for each group, the population mean is given by 
-$$E[Y_{ij}] = \theta+\tau_j=\mu_j,$$
+* Note that for each group, the population mean is given by $E[Y_{ij}] = \theta+\tau_j=\mu_j,$
 and $\tau_2=\mu_2-\mu_1=E[Y_{i2}] -E[Y_{i1}]$ *compares* the means
+
+* $\tau_1$ must be set to zero, since group 1 is the *reference* group
 ---
 
 
@@ -399,7 +427,7 @@ data.frame(meanWT=means.irs4[1,2],
 
 ---
 
-## We still haven't answered ... where's the line?? 
+## We still haven't answered our question ... where's the line?? 
 
 <Big> 
 $$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
@@ -423,7 +451,7 @@ $$Y_{ij} = \theta+\tau_2 \times x_{ij} + \varepsilon_{ij};\; \; x_{ij}=\bigg\{\b
 
 --
 
-> Note that $Y_{i1} = \theta + \varepsilon_{i1}$, because $\tau_1=0$ and $x_{i1}=0$ 
+> Note that $Y_{i1} = \theta + \varepsilon_{i1}$, because $x_{i1}=0$ 
 > and $Y_{i2} = \theta + \tau_2+ \varepsilon_{i2}$, because $x_{i2}=1$ (for all $i$)
 
 The second form is written as a <font color="red">linear</font> ( $y=a + bx +\varepsilon$ ) regression, with a special (<font color="red">dummy</font>) explanatory variable <font color="red"> $x_{ij}$ </font> 
@@ -455,7 +483,7 @@ list("t value"=lm.irs4$coeff[2,3],
 
 ## Beyond 2-groups comparisons: difference of means
 
-```{r,echo=FALSE, out.width="720", fig.align="center"}
+```{r,echo=FALSE, out.width="700", fig.align="center"}
 knitr::include_graphics("img/more_2_groups.png")
 ```
 
@@ -463,7 +491,7 @@ knitr::include_graphics("img/more_2_groups.png")
 
 
   
-### Dummy variables can be used to model one *or more* categorical variables with 2 *or more* levels!
+## Dummy variables can be used to model one *or more* categorical variables with 2 *or more* levels!
 
 ### <font color = "red">2-sample *t*-test</font> using a linear model
 
@@ -483,7 +511,7 @@ $$Y_{ij} = \theta+\tau_2 \times x_{ij2} + \tau_3 \times x_{ij3} +\varepsilon_{ij
 
 ### This is why R can estimate all of them with `lm()`
 <small>
-$^{(*)}$ in general, *yet* another parametrization is used to present ANOVA 
+$^{(*)}$ in general, *yet* another parametrization can be used to present ANOVA 
 ---
 
 
@@ -516,7 +544,7 @@ Let's form an $X$  matrix for a 3-groups comparison:
 
 $$Y_{ij} = \theta+\tau_2 \times x_{ij2} + \tau_3 \times x_{ij3} +\varepsilon_{ij}$$
 <div style= "float:right; position: relative; top: -25px;">
-```{r,echo=FALSE, out.width="650", fig.align="right"}
+```{r,echo=FALSE, out.width="600", fig.align="right"}
 knitr::include_graphics("img/model_matrix_I.png")
 ```
 </div>
@@ -604,11 +632,12 @@ lm(y ~ x, data = yourData)
 ### <center> By default, R uses a ref-tx parametrization but you can control that!
 ---
 
-# Special `factor` class un R 
+# Special `factor` class in R 
 
 ## $$Y=X\alpha+\varepsilon$$
 - ### Mathematically, $X$ is a numeric matrix
 - ### If your data contains categorical variables (e.g., `gType`), you need to set them as **factors**
+> especially important if your categorical variables are encoded numerically (`lm` will automaticlaly treat character variables as factors)!
 - ### R creates appropriate dummy variables for factors!
 
 ```{r}
@@ -658,7 +687,7 @@ boreDat <- filter(devDat, gene == "geneA")
 hitDat <- filter(devDat, gene == "geneB")
 ```
 
-```{r, echo=FALSE, fig.width=10.5, fig.height=3.2, dev='svg', fig.align="center"}
+```{r, echo=FALSE, fig.width=12.5, fig.height=4, dev='svg', fig.align="center"}
 boreLim <- ggplot(boreDat, aes(x = devStage, y = gExp)) + 
              geom_jitter(width = 0.2, alpha = 0.5) +
              labs(title = "geneA") +
@@ -681,7 +710,7 @@ grid.arrange(boreLim, hitLim, nrow = 1)
 
 
 <small>
-> Note: 4W = 4_weeks]
+Note: 4W = 4_weeks
 
 ---
 
@@ -702,7 +731,7 @@ means.dev <- as.data.frame(devDat %>% subset(gene=="geneB") %>% group_by(devStag
 means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
 <div style= "top: -50px;">
-```{r, echo=FALSE, fig.align="center", out.width=825}
+```{r, echo=FALSE, fig.align="center", out.width=750}
 knitr::include_graphics("img/devStage.png")
 ```
 </div>
@@ -716,13 +745,13 @@ knitr::include_graphics("img/devStage.png")
 
 ## "geneB" with significant time ("treatment") effect
 
-``` {r,echo=FALSE,highlight.output = c(3:6), highlight.color="pink"}
+``` {r,echo=FALSE,highlight.output = c(3:6)}
 means.dev <- as.data.frame(devDat %>% subset(gene=="geneB") %>% group_by(devStage) %>% summarize(cellMeans=mean(gExp)))
 means.dev %>% mutate(txEffects=cellMeans-cellMeans[1])
 ```
 
-### We need 4 dummy variables to estimate and test 4 time differences: 
-> $x_{P2}$: P2 vs E16, 
+### We need 4 dummy variables to estimate and test 4 time differences (between 5 time points): 
+> ($x_{P2}$: P2 vs E16, 
 > $x_{P6}$: P6 vs E16,
 > $x_{P10}$: P10 vs E16, 
 > $x_{4W}$: 4W vs E16)
@@ -738,16 +767,15 @@ $$Y_{ij}=\theta+\tau_{P2} \times x_{ijP2}+\tau_{P6} \times x_{ijP6}+\tau_{P10} \
 
 ### Under the hood, R creates a numeric $X$:
 
-.smaller[
+.smaller2[
 ```{r,tidy=TRUE, tidy.opts=list(width.cutoff=60), results="show"}
 model.matrix(gExp ~ devStage, irs4Dat) %>% head(16)
 ```
-...
 ]
 
 ---
 
-.smaller[
+.smaller2[
 ```{r,highlight.output = c(2)}
 summary(lm(gExp~devStage,subset(devDat,gene=="geneB")))$coeff
 
@@ -768,7 +796,7 @@ $H_0: \theta=0$ or $H_0: \mu_{E16}=0$
 
 ---
 
-.smaller[
+.smaller2[
 ```{r,highlight.output = c(3)}
 summary(lm(gExp~devStage,subset(devDat,gene=="geneB")))$coeff
 
@@ -787,7 +815,7 @@ $H_0: \tau_{P2}=0$ or $H_0: \mu_{P2}=\mu_{E16}$
 ]
 ---
 
-.smaller[
+.smaller2[
 ```{r,highlight.output = c(6)}
 summary(lm(gExp~devStage,subset(devDat,gene=="geneB")))$coeff
 
@@ -852,7 +880,7 @@ $$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$
 
 ### Two types of null hypotheses in R:
 
-```{r,echo=FALSE, out.width="775", fig.align="center"}
+```{r,echo=FALSE, out.width="750", fig.align="center"}
     knitr::include_graphics("img/one_more_H0.png")
 ```
     
@@ -872,9 +900,9 @@ $$H_0: \tau_{P2}=\tau_{P6}=\tau_{P10}=\tau_{4W}=0$$
 ## To conclude
 
 ### 1. We can use different parametrizations to write statistical models
-From <font color=red>**cell-means**</font> - $\mu_j$:  $Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$
+From <font color=red>**cell-means**</font> $(\mu_j)$:  $Y_{ij} = \mu_j + \varepsilon_{ij};\; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$
 
-to <font color = "red">**reference-treatment effect**</font> - $(\theta,\tau_j)$: (used by default by `lm`)
+to <font color = "red">**reference-treatment effect**</font> $(\theta,\tau_j)$: (used by default by `lm`)
 $$Y_{ij} = \theta+\tau_j + \varepsilon_{ij};\; \; \tau_1=0, \; \; \varepsilon_{ij} \sim G; \; \;E[\varepsilon_{ij}] = 0;$$
 
 ### 2. We can compare group means  (2 or more) using a linear model
@@ -892,7 +920,7 @@ $$Y = X \alpha + \varepsilon$$
 
 ### 4. <font color = "red">Linear models</font> can include **quantitative & qualitative covariates**. 
 
-```{r,echo=FALSE,out.width="430", fig.align="center"}
+```{r,echo=FALSE,out.width="410", fig.align="center"}
 knitr::include_graphics("img/LM_vbles.png")
 ```
 
