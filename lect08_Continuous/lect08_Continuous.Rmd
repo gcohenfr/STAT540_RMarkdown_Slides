@@ -15,6 +15,8 @@ output:
       ratio: "16:9"
 editor_options: 
   chunk_output_type: console
+header-includes:
+   - \usepackage{xcolor}
 ---
 
 layout: true
@@ -622,7 +624,7 @@ $$\text{big: } y_{ij}  = \alpha_{0} + \tau_{1}x_{ij}^{dummy} + \tau_2 x_{ij}^{Ag
 $$\text{small: } y_{ij}  = \alpha_{0} + \tau_2 x_{ij}^{Age}$$
 
 <big>
-$$F = \frac{\frac{RSS_{small}-RSS_{big}}{p_{big}-p_{small}}}{\frac{RSS_{big}}{n-p_{big}}} \sim {\tiny{H_0}} \text{  } F_{p_{big}-p_{small}, n-{p_{big}}}$$
+$$F = \frac{\frac{RSS_{small}-RSS_{big}}{p_{big}-p_{small}}}{\frac{RSS_{big}}{n-p_{big}}} \sim {\tiny{H_0}} \text{  } F_{p_{big}-p_{small},\text{ } n-{p_{big}}}$$
 
 
 
@@ -707,11 +709,246 @@ class: middle
 <big>
 <center>
 <div class = "blue">
-Some genes with **very small p-values** (large -log10 p-values) are not **biologically meaningful** (small effect size)
+Some genes with very <b>small p-values</b> (large -log10 p-values) are not <b>biologically meaningful</b> (small effect size)
 </div>
 
 ---
 
 # How do we end up with small p-values but subtle effects?
+
+<big>
+
+$$\large t_{gj} = \frac{\hat{\alpha}_{gj}}{SE(\hat{\alpha}_{gj})} = \frac{\hat{\alpha}_{gj}}{s_g \sqrt{v_j}} \sim t_d \text{ under } H_0$$
+--
+
+* Small variance estimate $s_g$ leads to large *t* statistic $\rightarrow$ small *p*-value
+
+--
+
+* Estimates of variance from small sample sizes tend to under-estimate the true variance!
+
+--
+
+* This has led to the development of specialized methodology for assessing genome-wide differential expression 
+
+---
+
+# Empirical Bayesian techniques: `limma`
+
+.pull-left[
+```{r,echo=FALSE,out.width="500", fig.align="center"}
+knitr::include_graphics("img/limma_paper.png")
+```
+
+[Smyth 2004](https://pubmed.ncbi.nlm.nih.gov/16646809-linear-models-and-empirical-bayes-methods-for-assessing-differential-expression-in-microarray-experiments/)
+]
+.pull-right[
+```{r,echo=FALSE,out.width="500", fig.align="center"}
+knitr::include_graphics("img/limma_bioc.png")
+```
+]
+
+---
+
+# eBayes: limma
+
+<big>
+
+* **Borrows information** from all genes to get a better estimate of the variance
+
+* Efficiently fits many regression models **without replicating unnecessary calculations**!
+
+* Arranges output in a convenient way to ease further analysis, visualization, and interpretation
+
+---
+
+# Empirical Bayes
+
+<big>
+
+.pull-left[
+Shrinkage = borrowing information across all genes
+```{r,echo=FALSE,out.width="450", fig.align="center"}
+knitr::include_graphics("img/shrink.jpg")
+```
+]
+.pull-right[
+* **Empirical**: observed
+
+* **Bayesian**: incorporate 'prior' information
+
+* Intuition: estimate prior information from data; shrink/nudge all estimates toward the consensus 
+]
+
+---
+
+# Practically
+
+<big>
+
+* Gene by gene (no shrinkage): 
+
+  * `lm(y ~ x)` for each gene
+  
+  * For example, `by(myDat, gene, lm(y ~ x))`
+ 
+* All genes at once, using `limma`: 
+
+  * `lmFit(myDat, desMat)`
+  
+  * `desMat` is a specially formated design matrix (more on this later)
+  
+---
+
+class: middle
+
+##'Industrial scale' model fitting is good, because computations involving just the design matrix $\mathbf{X}$ are not repeated 30K unnecessarily 
+
+* **OLS estimator**: $$\hat{\boldsymbol\alpha} =(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}$$
+
+* **Fitted/predicted values**: $$\hat{\mathbf{y}} = \mathbf{X} (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y} = \mathbf{H}\mathbf{y}$$ 
+
+---
+
+class: middle 
+
+# How can we better estimate the SE?
+
+<big> 
+$$\large t_{gj} = \frac{\hat{\alpha}_{gj}}{SE(\hat{\alpha}_{gj})} = \frac{\hat{\alpha}_{gj}}{s_g \sqrt{v_j}} \sim t_d \text{ under } H_0$$
+<div class="blue">
+<center> Small variance estimate leads to large t statistic, which leads to small p-value
+</div>
+
+---
+
+# Modeling in `limma` 
+
+limma assumes that 
+
+$$\hat{\alpha}_{gj} \,|\,\alpha_{gj}, \sigma_g^2 \sim N(\alpha_{gj}, v_j\sigma_g^2)$$
+$$s^2_g \,|\, \sigma_g^2 \sim \frac{\sigma_g^2}{d}\chi^2_d$$ 
+which assumes the usual result about ordinary $t$-statistics:
+
+
+$$\large t_{gj} = \frac{\hat{\alpha}_{gj}}{SE(\hat{\alpha}_{gj})} = \frac{\hat{\alpha}_{gj}}{s_g \sqrt{v_j}} \sim t_d \text{ under } H_0$$
+
+So far, nothing new...
+
+---
+
+# Modeling in `limma` (cont'd)
+
+<big>
+
+* limma imposes a hierarchical model, which describes how the gene-wise $\alpha_{gj}$'s and $\sigma^2_g$'s vary *across the genes*
+
+* this is done by assuming a *prior distribution* for those quantities
+
+* **gene-specific variances** $\sigma^2_g$: an inverse Chi-square prior with mean $s_0^2$ and $d_0$ degrees of freedom
+
+$$\frac{1}{\sigma^2_g} \sim \frac{1}{d_0s_0^2} \chi^2_{d_0}$$
+--
+
+* this should feel funny compared to previous lectures - $\sigma^2_g$ is no longer a **fixed** quantity! (i.e. this is **Bayesian**)
+
+---
+
+# OK, but how does this help us get a better estimate of the variance?
+
+* The *posterior* (updated based on prior) mean for gene-specific variance:
+
+$$\tilde{s}^2_g = \frac{d_0s_0^2 + ds^2_g}{d_0 + d}$$
+where $d_0$ and $s_0^2$ need to be estimated
+
+--
+
+* How to think about it: a weighted mean of the prior (indirect evidence) and the observed (direct evidence) gene-specific variances:
+
+$$\tilde{s}^2_g = \frac{d_0}{d_0 + d}s_0^2 + \frac{d}{d_0 + d}s^2_g$$
+--
+
+* More simply: "shrinking" the observed gene-specific variance towards the "typical" variance implied by the prior
+
+---
+
+# Moderated *t*-statistic
+
+<big>
+
+* plug in this posterior mean estimate to obtain a 'moderated' *t*-statistic:
+
+
+$$\large \tilde{t}_{gj} = \frac{\hat{\alpha}_{gj}}{\tilde{s}_g \sqrt{v_j}}$$
+* Under limma assumptions, we know the null distribution for the moderated *t*-statistic:
+$$\tilde{t}_{gj} \sim t_{d_0+d} \text{ under } H_0$$
+
+
+<div style= "float:right;position: relative;">
+```{r,echo=FALSE,out.width="200"}
+knitr::include_graphics("img/hybrid.jpg")
+```
+</div>
+
+* This is how limma is a hybrid of frequentist (*t*-statistic) and Bayesian (hierarchical model) approaches
+
+---
+
+# Side-by-side comparison of key quantities and results
+
+<big>
+<center>
+
+|  | "plain vanilla"  | limma |
+| ---- | :----------------: | :-----: |
+| Estimated gene-wise <br>residual variance: | ${s}_g^2 =  \frac{1}{n-p} \hat{\boldsymbol\varepsilon}^T \hat{\boldsymbol\varepsilon}$ | $\tilde{s}^2_g = \frac{d_0s_0^2 + ds^2_g}{d_0 + d}$ |
+| *t*-statistic for <br> $H_0: \alpha_{gj} = 0$:| ${t}_{gj} = \frac{\hat{\alpha}_{gj}}{{s}_g \sqrt{v_j}}$ | $\tilde{t}_{gj} = \frac{\hat{\alpha}_{gj}}{\tilde{s}_g \sqrt{v_j}}$ |
+| distribution of the <br>*t*-statistic under $H_0$: | ${t}_{gj} \sim t_{d}$ | $\tilde{t}_{gj} \sim t_{d_0+d}$ |
+
+
+---
+
+# Moderated vs traditional tests
+
+<big>
+
+* moderated variances will be "shrunk" toward the typical gene-wise variance, relative to to raw sample residual variances
+
+* degrees of freedom for null distribution goes **up** relative to default $d=n-p \rightarrow$ makes it closer to a standard normal $\rightarrow$ makes tail probabilities (p-values) smaller $\rightarrow$ easier to reject the null
+
+* overall, when all is well, limma will deliver statistical results that are *more stable* and *more powerful*
+
+---
+
+# `limma` workflow
+
+```{r,echo=FALSE,out.width="700", fig.align="center"}
+knitr::include_graphics("img/limma_flow.png")
+```
+
+---
+
+# Functions that make your life easier
+
+| Function | Description |
+| -------- | ----------- |
+| `model.matrix` | Takes in your data frame and makes a design matrix |
+| `limma::lmFit` | Fits the linear model to all genes (each gene separately) – replace gene with “feature” depending on your data |
+| `limma::makeContrasts` | Create the contrast matrix C that you desire |
+| `limma::contrast.fit` | Apply a contrast to your estimates |
+| `limma::eBayes` | Use output of linear regression to compute moderated *t* statistics |
+| `limma::topTable` | Query your results; sort your p-values; sort genes; Adjust for multiple comparisons |
+
+---
+
+# Getting help
+
+```{r,echo=FALSE,out.width="900", fig.align="center"}
+knitr::include_graphics("img/limma_help.png")
+```
+
+[Bioconductor homepage for limma](https://bioconductor.org/packages/release/bioc/html/limma.html)
+
+
 
 
