@@ -15,8 +15,6 @@ output:
       ratio: "16:9"
 editor_options: 
   chunk_output_type: console
-header-includes:
-   - \usepackage{xcolor}
 ---
 
 layout: true
@@ -902,7 +900,7 @@ knitr::include_graphics("img/hybrid.jpg")
 |  | "plain vanilla"  | limma |
 | ---- | :----------------: | :-----: |
 | Estimated gene-wise <br>residual variance: | ${s}_g^2 =  \frac{1}{n-p} \hat{\boldsymbol\varepsilon}^T \hat{\boldsymbol\varepsilon}$ | $\tilde{s}^2_g = \frac{d_0s_0^2 + ds^2_g}{d_0 + d}$ |
-| *t*-statistic for <br> $H_0: \alpha_{gj} = 0$:| ${t}_{gj} = \frac{\hat{\alpha}_{gj}}{{s}_g \sqrt{v_j}}$ | $\tilde{t}_{gj} = \frac{\hat{\alpha}_{gj}}{\tilde{s}_g \sqrt{v_j}}$ |
+| *t*-statistic for <br> $H_0: \alpha_{gj} = 0$:| ${t}_{gj} = \frac{\hat{\alpha}_{gj}}{s_g \sqrt{v_j}}$ | $\tilde{t}_{gj} = \frac{\hat{\alpha}_{gj}}{\tilde{s}_g \sqrt{v_j}}$ |
 | distribution of the <br>*t*-statistic under $H_0$: | ${t}_{gj} \sim t_{d}$ | $\tilde{t}_{gj} \sim t_{d_0+d}$ |
 
 
