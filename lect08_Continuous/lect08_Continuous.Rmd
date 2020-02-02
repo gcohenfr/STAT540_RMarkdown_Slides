@@ -910,7 +910,7 @@ knitr::include_graphics("img/hybrid.jpg")
 
 <big>
 
-* moderated variances will be "shrunk" toward the typical gene-wise variance, relative to to raw sample residual variances
+* moderated variances will be "shrunk" toward the typical gene-wise variance, relative to raw sample residual variances
 
 * degrees of freedom for null distribution goes **up** relative to default $d=n-p \rightarrow$ makes it closer to a standard normal $\rightarrow$ makes tail probabilities (p-values) smaller $\rightarrow$ easier to reject the null
 
